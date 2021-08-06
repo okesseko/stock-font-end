@@ -6,9 +6,9 @@ import RouterLink from "./component/router-link";
 const App = () => {
   return (
     <BrowserRouter>
-      <div className="flex my-10">
+      <div className="flex ">
         <RouterLink />
-        <div className="flex-1">
+        <div className="flex-1 my-10 ">
           <Switch>
             <Route path="/" exact component={Main} />
             <Route path="/echart-example" component={EchartExample} />
