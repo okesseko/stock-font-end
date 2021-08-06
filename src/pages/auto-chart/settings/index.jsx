@@ -1,8 +1,11 @@
 import { configConsumerProps } from "antd/lib/config-provider";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { renderData } from "./math-model";
 
 export default function Settings() {
+  const isFirst = useRef(true);
+  const timer = useRef();
+
   const [setting, setSetting] = useState({
     default_lambda_B: 10,
     default_lambda_A: 10,
@@ -16,7 +19,13 @@ export default function Settings() {
     mu_A: 10,
   });
   useEffect(() => {
-    renderData(setting);
+    if (!isFirst) {
+      clearTimeout(timer.current);
+    } else {
+      isFirst.current = false;
+      timer.current = renderData(setting);
+      console.log(timer.current, "recall2");
+    }
   }, [setting]);
 
   const handleInputChangeLambdaB = (e) => {

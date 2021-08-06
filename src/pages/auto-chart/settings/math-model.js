@@ -84,7 +84,6 @@ export const renderData = function (params) {
   let final_price = 100;
   let timer;
 
-
   defaultAxios({
     url: api.getDisplay.url,
     method: api.getDisplay.method,
@@ -94,8 +93,8 @@ export const renderData = function (params) {
   }).then((res) => {
     const content = res.data;
     console.log("datas", content);
-    timer = setTimeout(function tick() {
-      console.log('default_lambda_B', default_lambda_B)
+    setTimeout(function tick() {
+      console.log("default_lambda_B", default_lambda_B);
       let T = {};
       var count = 0;
       content.tickRange.forEach(function (data) {
@@ -125,8 +124,8 @@ export const renderData = function (params) {
       let kind = lowest[0].substring(0, 1);
       let type = lowest[0].substring(1, 2);
 
-      console.log('T', T);
-      
+      console.log("T", T);
+
       switch (kind) {
         // 限價單
         case "L":
@@ -183,10 +182,7 @@ export const renderData = function (params) {
 
           break;
       }
-
-      timer = setTimeout(tick, next); // (*)
+      return setTimeout(tick, next); // (*)
     }, 1000);
   });
-
-  return timer;
 };
