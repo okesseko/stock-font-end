@@ -1,5 +1,5 @@
 import React from "react";
-import { mathRenderData } from "./math-model";
+import { renderData } from "./math-model";
 
 export default class Settings extends React.Component {
   constructor(props) {
@@ -17,8 +17,18 @@ export default class Settings extends React.Component {
       mu_A: 10,
     };
 
+    renderData(this.state);
+
     this.handleInputChangeLambdaB = this.handleInputChangeLambdaB.bind(this);
     this.handleInputChangeLambdaA = this.handleInputChangeLambdaA.bind(this);
+    this.handleInputChangeLambdaRatioB = this.handleInputChangeLambdaRatioB.bind(this);
+    this.handleInputChangeLambdaRatioA = this.handleInputChangeLambdaRatioA.bind(this);
+    this.handleInputChangeThetaB = this.handleInputChangeThetaB.bind(this);
+    this.handleInputChangeThetaA = this.handleInputChangeThetaA.bind(this);
+    this.handleInputChangeThetaRatioB = this.handleInputChangeThetaRatioB.bind(this);
+    this.handleInputChangeThetaRatioA = this.handleInputChangeThetaRatioA.bind(this);
+    this.handleInputChangeMuB = this.handleInputChangeMuB.bind(this);
+    this.handleInputChangeMuA = this.handleInputChangeMuA.bind(this);
   }
 
   handleInputChangeLambdaB = (e) => {
