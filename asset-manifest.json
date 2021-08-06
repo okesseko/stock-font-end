@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.css": "/stock-font-end/static/css/main.d855ccf3.chunk.css",
+    "main.js": "/stock-font-end/static/js/main.172c5002.chunk.js",
+    "main.js.map": "/stock-font-end/static/js/main.172c5002.chunk.js.map",
+    "runtime-main.js": "/stock-font-end/static/js/runtime-main.894a8e19.js",
+    "runtime-main.js.map": "/stock-font-end/static/js/runtime-main.894a8e19.js.map",
+    "static/js/2.dc808ebf.chunk.js": "/stock-font-end/static/js/2.dc808ebf.chunk.js",
+    "static/js/2.dc808ebf.chunk.js.map": "/stock-font-end/static/js/2.dc808ebf.chunk.js.map",
+    "index.html": "/stock-font-end/index.html",
+    "static/css/main.d855ccf3.chunk.css.map": "/stock-font-end/static/css/main.d855ccf3.chunk.css.map",
+    "static/js/2.dc808ebf.chunk.js.LICENSE.txt": "/stock-font-end/static/js/2.dc808ebf.chunk.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.894a8e19.js",
+    "static/js/2.dc808ebf.chunk.js",
+    "static/css/main.d855ccf3.chunk.css",
+    "static/js/main.172c5002.chunk.js"
+  ]
+}
