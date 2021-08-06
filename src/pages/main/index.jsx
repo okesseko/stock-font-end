@@ -1,7 +1,7 @@
 import React from "react";
 
 const Main = () => {
-  return <div>testestestst</div>;
+  return <div></div>;
 };
 
 export default Main;
