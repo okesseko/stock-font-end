@@ -12,6 +12,9 @@ const RouterLink = () => {
       <li className="py-5 text-xl border-b border-black">
         <NavLink to="/echart-example">echart example</NavLink>
       </li>
+      <li className="py-5 text-xl border-b border-black">
+        <NavLink to="/auto-chart">auto chart</NavLink>
+      </li>
     </ul>
   );
 };
