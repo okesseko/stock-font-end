@@ -45,12 +45,12 @@ const options = {
     {
       type: "value",
       scale: true,
-      name: "价格",
+      name: "價格",
     },
     {
       type: "value",
       scale: true,
-      name: "预购量",
+      name: "購買量",
     },
   ],
   dataZoom: [
@@ -69,7 +69,7 @@ const options = {
       data: [10, 20, 15, 30, 50, 35, 20],
     },
     {
-      name: "最新成交价",
+      name: "成交價",
       type: "line",
       step: "end",
       data: [100, 50, 120, 87, 150, 32, 10],

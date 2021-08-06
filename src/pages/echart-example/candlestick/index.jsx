@@ -18,10 +18,6 @@ function calculateMA(dayCount) {
   return result;
 }
 const options = {
-  title: {
-    text: "上证指数",
-    left: 0,
-  },
   tooltip: {
     trigger: "axis",
     axisPointer: {
@@ -88,7 +84,7 @@ const options = {
         },
         data: [
           {
-            name: "XX标点",
+            name: "XX標點",
             coord: ["2013/5/31", 2300],
             value: 2300,
             itemStyle: {
