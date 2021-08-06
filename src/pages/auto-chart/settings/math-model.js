@@ -82,18 +82,20 @@ export const renderData = function (params) {
   let mu_B = params.mu_B;
   let mu_A = params.mu_A;
   let final_price = 100;
+  let timer;
+
 
   defaultAxios({
     url: api.getDisplay.url,
     method: api.getDisplay.method,
     params: {
-      tickRange: final_price,
       isGetLatest: true,
     },
   }).then((res) => {
     const content = res.data;
     console.log("datas", content);
-    let timer = setTimeout(function tick() {
+    timer = setTimeout(function tick() {
+      console.log('default_lambda_B', default_lambda_B)
       let T = {};
       var count = 0;
       content.tickRange.forEach(function (data) {
@@ -102,14 +104,14 @@ export const renderData = function (params) {
         let lambda_A = default_lambda_A * Math.pow(R_A, count);
         let theta_A = default_theta_A * Math.pow(R_theta_A, count);
 
-        if (data < content.firstOrderSellPrice) {
-          T["LB" + data] = nextExponential(lambda_B);
-          T["CB" + data] = nextExponential(theta_B);
+        if (data.price < content.firstOrderSellPrice) {
+          T["LB" + data.price] = nextExponential(lambda_B);
+          T["CB" + data.price] = nextExponential(theta_B);
         }
 
-        if (data > content.firstOrderBuyPrice) {
-          T["LA" + data] = nextExponential(lambda_A);
-          T["CA" + data] = nextExponential(theta_A);
+        if (data.price > content.firstOrderBuyPrice) {
+          T["LA" + data.price] = nextExponential(lambda_A);
+          T["CA" + data.price] = nextExponential(theta_A);
         }
         count++;
       });
@@ -118,11 +120,13 @@ export const renderData = function (params) {
       T["MS"] = nextExponential(mu_A);
 
       let lowest = lowestValueAndKey(T);
-      let next = lowest[1] * 1000 * 1000;
+      let next = lowest[1] * 1000 * 100;
 
       let kind = lowest[0].substring(0, 1);
       let type = lowest[0].substring(1, 2);
 
+      console.log('T', T);
+      
       switch (kind) {
         // 限價單
         case "L":
@@ -183,4 +187,6 @@ export const renderData = function (params) {
       timer = setTimeout(tick, next); // (*)
     }, 1000);
   });
+
+  return timer;
 };
