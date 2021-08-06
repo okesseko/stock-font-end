@@ -1,217 +1,203 @@
-import React from "react";
+import { configConsumerProps } from "antd/lib/config-provider";
+import React, { useEffect, useState } from "react";
 import { renderData } from "./math-model";
 
-export default class Settings extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      default_lambda_B: 10,
-      default_lambda_A: 10,
-      R_B: 0.8,
-      R_A: 0.8,
-      default_theta_B: 10,
-      default_theta_A: 10,
-      R_theta_B: 0.8,
-      R_theta_A: 0.8,
-      mu_B: 10,
-      mu_A: 10,
-    };
+export default function Settings() {
+  const [setting, setSetting] = useState({
+    default_lambda_B: 10,
+    default_lambda_A: 10,
+    R_B: 0.8,
+    R_A: 0.8,
+    default_theta_B: 10,
+    default_theta_A: 10,
+    R_theta_B: 0.8,
+    R_theta_A: 0.8,
+    mu_B: 10,
+    mu_A: 10,
+  });
+  useEffect(() => {
+    renderData(setting);
+  }, [setting]);
 
-    renderData(this.state);
-
-    this.handleInputChangeLambdaB = this.handleInputChangeLambdaB.bind(this);
-    this.handleInputChangeLambdaA = this.handleInputChangeLambdaA.bind(this);
-    this.handleInputChangeLambdaRatioB = this.handleInputChangeLambdaRatioB.bind(this);
-    this.handleInputChangeLambdaRatioA = this.handleInputChangeLambdaRatioA.bind(this);
-    this.handleInputChangeThetaB = this.handleInputChangeThetaB.bind(this);
-    this.handleInputChangeThetaA = this.handleInputChangeThetaA.bind(this);
-    this.handleInputChangeThetaRatioB = this.handleInputChangeThetaRatioB.bind(this);
-    this.handleInputChangeThetaRatioA = this.handleInputChangeThetaRatioA.bind(this);
-    this.handleInputChangeMuB = this.handleInputChangeMuB.bind(this);
-    this.handleInputChangeMuA = this.handleInputChangeMuA.bind(this);
-  }
-
-  handleInputChangeLambdaB = (e) => {
-    this.setState({ default_lambda_B: e.currentTarget.value });
+  const handleInputChangeLambdaB = (e) => {
+    setSetting({ ...setting, default_lambda_B: e.currentTarget.value });
   };
 
-  handleInputChangeLambdaA = (e) => {
-    this.setState({ default_lambda_A: e.currentTarget.value });
+  const handleInputChangeLambdaA = (e) => {
+    setSetting({ ...setting, default_lambda_A: e.currentTarget.value });
   };
 
-  handleInputChangeLambdaRatioB = (e) => {
-    this.setState({ R_B: e.currentTarget.value });
+  const handleInputChangeLambdaRatioB = (e) => {
+    setSetting({ ...setting, R_B: e.currentTarget.value });
   };
 
-  handleInputChangeLambdaRatioA = (e) => {
-    this.setState({ R_A: e.currentTarget.value });
+  const handleInputChangeLambdaRatioA = (e) => {
+    setSetting({ ...setting, R_A: e.currentTarget.value });
   };
 
-  handleInputChangeThetaB = (e) => {
-    this.setState({ default_theta_B: e.currentTarget.value });
+  const handleInputChangeThetaB = (e) => {
+    setSetting({ ...setting, default_theta_B: e.currentTarget.value });
   };
 
-  handleInputChangeThetaA = (e) => {
-    this.setState({ default_theta_A: e.currentTarget.value });
+  const handleInputChangeThetaA = (e) => {
+    setSetting({ ...setting, default_theta_A: e.currentTarget.value });
   };
 
-  handleInputChangeThetaRatioB = (e) => {
-    this.setState({ R_theta_B: e.currentTarget.value });
+  const handleInputChangeThetaRatioB = (e) => {
+    setSetting({ ...setting, R_theta_B: e.currentTarget.value });
   };
 
-  handleInputChangeThetaRatioA = (e) => {
-    this.setState({ R_theta_A: e.currentTarget.value });
+  const handleInputChangeThetaRatioA = (e) => {
+    setSetting({ ...setting, R_theta_A: e.currentTarget.value });
   };
 
-  handleInputChangeMuB = (e) => {
-    this.setState({ mu_B: e.currentTarget.value });
+  const handleInputChangeMuB = (e) => {
+    setSetting({ ...setting, mu_B: e.currentTarget.value });
   };
-  handleInputChangeMuA = (e) => {
-    this.setState({ mu_A: e.currentTarget.value });
+  const handleInputChangeMuA = (e) => {
+    setSetting({ ...setting, mu_A: e.currentTarget.value });
   };
 
-  render() {
-    return (
-      <div className="flex justify-center mt-10">
-        <div className="mr-5 pr-5 border-r">
+  return (
+    <div className="flex justify-center mt-10">
+      <div className="mr-5 pr-5 border-r">
+        <div>
           <div>
-            <div>
-              λ<sub>B</sub>: {this.state.default_lambda_B}
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="20"
-              step="0.1"
-              onInput={this.handleInputChangeLambdaB}
-              value={this.state.default_lambda_B}
-            />
+            λ<sub>B</sub>: {setting.default_lambda_B}
           </div>
-          <div>
-            <div>
-              R<sub>B</sub>: {this.state.R_B}
-            </div>
-            <input
-              type="range"
-              min="0.1"
-              max="5"
-              step="0.1"
-              onInput={this.handleInputChangeLambdaRatioB}
-              value={this.state.R_B}
-            />
-          </div>
-          <hr className="my-3" />
-          <div>
-            <div>
-              θ<sub>B</sub>: {this.state.default_theta_B}
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="20"
-              step="0.1"
-              onInput={this.handleInputChangeThetaB}
-              value={this.state.default_theta_B}
-            />
-          </div>
-          <div>
-            <div>
-              R<sub>B</sub>: {this.state.R_theta_B}
-            </div>
-            <input
-              type="range"
-              min="0.1"
-              max="5"
-              step="0.1"
-              onInput={this.handleInputChangeThetaRatioB}
-              value={this.state.R_theta_B}
-            />
-          </div>
-          <hr className="my-3" />
-          <div>
-            <div>
-              μ<sub>B</sub>: {this.state.mu_B}
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="20"
-              step="0.1"
-              onInput={this.handleInputChangeMuB}
-              value={this.state.mu_B}
-            />
-          </div>
+          <input
+            type="range"
+            min="1"
+            max="20"
+            step="0.1"
+            onInput={handleInputChangeLambdaB}
+            value={setting.default_lambda_B}
+          />
         </div>
         <div>
           <div>
-            <div>
-              λ<sub>A</sub>: {this.state.default_lambda_A}
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="20"
-              step="0.1"
-              onInput={this.handleInputChangeLambdaA}
-              value={this.state.default_lambda_A}
-            />
+            R<sub>B</sub>: {setting.R_B}
           </div>
+          <input
+            type="range"
+            min="0.1"
+            max="5"
+            step="0.1"
+            onInput={handleInputChangeLambdaRatioB}
+            value={setting.R_B}
+          />
+        </div>
+        <hr className="my-3" />
+        <div>
           <div>
-            <div>
-              R<sub>A</sub>: {this.state.R_A}
-            </div>
-            <input
-              type="range"
-              min="0.1"
-              max="5"
-              step="0.1"
-              onInput={this.handleInputChangeLambdaRatioA}
-              value={this.state.R_A}
-            />
+            θ<sub>B</sub>: {setting.default_theta_B}
           </div>
-          <hr className="my-3" />
+          <input
+            type="range"
+            min="1"
+            max="20"
+            step="0.1"
+            onInput={handleInputChangeThetaB}
+            value={setting.default_theta_B}
+          />
+        </div>
+        <div>
           <div>
-            <div>
-              θ<sub>A</sub>: {this.state.default_theta_A}
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="20"
-              step="0.1"
-              onInput={this.handleInputChangeThetaA}
-              value={this.state.default_theta_A}
-            />
+            R<sub>B</sub>: {setting.R_theta_B}
           </div>
+          <input
+            type="range"
+            min="0.1"
+            max="5"
+            step="0.1"
+            onInput={handleInputChangeThetaRatioB}
+            value={setting.R_theta_B}
+          />
+        </div>
+        <hr className="my-3" />
+        <div>
           <div>
-            <div>
-              R<sub>A</sub>: {this.state.R_theta_A}
-            </div>
-            <input
-              type="range"
-              min="0.1"
-              max="5"
-              step="0.1"
-              onInput={this.handleInputChangeThetaRatioA}
-              value={this.state.R_theta_A}
-            />
+            μ<sub>B</sub>: {setting.mu_B}
           </div>
-          <hr className="my-3" />
-          <div>
-            <div>
-              μ<sub>A</sub>: {this.state.mu_A}
-            </div>
-            <input
-              type="range"
-              min="1"
-              max="20"
-              step="0.1"
-              onInput={this.handleInputChangeMuA}
-              value={this.state.mu_A}
-            />
-          </div>
+          <input
+            type="range"
+            min="1"
+            max="20"
+            step="0.1"
+            onInput={handleInputChangeMuB}
+            value={setting.mu_B}
+          />
         </div>
       </div>
-    );
-  }
+      <div>
+        <div>
+          <div>
+            λ<sub>A</sub>: {setting.default_lambda_A}
+          </div>
+          <input
+            type="range"
+            min="1"
+            max="20"
+            step="0.1"
+            onInput={handleInputChangeLambdaA}
+            value={setting.default_lambda_A}
+          />
+        </div>
+        <div>
+          <div>
+            R<sub>A</sub>: {setting.R_A}
+          </div>
+          <input
+            type="range"
+            min="0.1"
+            max="5"
+            step="0.1"
+            onInput={handleInputChangeLambdaRatioA}
+            value={setting.R_A}
+          />
+        </div>
+        <hr className="my-3" />
+        <div>
+          <div>
+            θ<sub>A</sub>: {setting.default_theta_A}
+          </div>
+          <input
+            type="range"
+            min="1"
+            max="20"
+            step="0.1"
+            onInput={handleInputChangeThetaA}
+            value={setting.default_theta_A}
+          />
+        </div>
+        <div>
+          <div>
+            R<sub>A</sub>: {setting.R_theta_A}
+          </div>
+          <input
+            type="range"
+            min="0.1"
+            max="5"
+            step="0.1"
+            onInput={handleInputChangeThetaRatioA}
+            value={setting.R_theta_A}
+          />
+        </div>
+        <hr className="my-3" />
+        <div>
+          <div>
+            μ<sub>A</sub>: {setting.mu_A}
+          </div>
+          <input
+            type="range"
+            min="1"
+            max="20"
+            step="0.1"
+            onInput={handleInputChangeMuA}
+            value={setting.mu_A}
+          />
+        </div>
+      </div>
+    </div>
+  );
 }
