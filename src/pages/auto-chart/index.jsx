@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Settings from "./settings";
-import BarChart from "../echart-example/bar"
+import BarChart from "../echart-example/bar";
 import { defaultAxios, api } from "../../environment/api";
 import { obj } from "duplexify";
 
@@ -13,38 +13,41 @@ const AutoChart = () => {
       defaultAxios({
         url: api.getDisplay.url,
         method: api.getDisplay.method,
+        params: {
+          isGetLatest: true,
+        },
       }).then((res) => {
         const data = res.data;
-        console.log('chart data', data);
+        console.log("chart data", data);
 
-        let chartData = {};
-        data.tickRange.reverse().map(function(obj) {
+        let xAxis = [],
+          series = [];
+        data.tickRange.reverse().map(function (obj) {
           if (obj.price < data.matchPrice) {
-            chartData[obj.price] = -obj.buyQuantity;
+            xAxis.push(obj.price);
+            series.push(-obj.buyQuantity);
           } else if (obj.price > data.matchPrice) {
-            chartData[obj.price] = obj.sellQuantity;
+            xAxis.push(obj.price);
+            series.push(obj.sellQuantity);
           }
-          console.log(obj.price);
-        })
+        });
 
-        const ordered = Object.keys(chartData).sort().reduce(
-          (obj, key) => { 
-            obj[key] = chartData[key]; 
-            return obj;
-          }, 
-          {}
-        );
+        console.log({ xAxis, series });
+        // const ordered = Object.keys(chartData)
+        //   .sort()
+        //   .reduce((obj, key) => {
+        //     obj[key] = chartData[key];
+        //     return obj;
+        //   }, {});
+        //   console.log(ordered,'qweqwe')
 
-        console.log('chart data 2 ', chartData, ordered);
-
-        setBarData(() => (
-          ordered
-        ));
+        setBarData(() => ({ xAxis, series }));
       });
     }
+    renderData();
     const barLoop = setInterval(() => {
       renderData();
-    }, 200);
+    }, 1000);
     return () => {
       clearInterval(barLoop);
     };

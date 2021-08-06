@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ReactECharts from "echarts-for-react";
 import { data } from "../mock-data";
 
@@ -19,7 +19,7 @@ const BarChart = ({ data = {} }) => {
     xAxis: [
       {
         type: "category",
-        data: Object.keys(data),
+        data: data.xAxis,
       },
     ],
     yAxis: [
@@ -31,7 +31,7 @@ const BarChart = ({ data = {} }) => {
       {
         name: "成交量",
         type: "bar",
-        data: Object.values(data),
+        data: data.series,
         itemStyle: {
           color: function (p) {
             return p.value < 0 ? "red" : "green";

@@ -70,7 +70,7 @@ function sendCancelApi(data) {
   });
 }
 
-export const renderData = function(params) {
+export const renderData = function (params) {
   let default_lambda_B = params.default_lambda_B;
   let default_lambda_A = params.default_lambda_A;
   let R_B = params.R_B;
@@ -88,13 +88,13 @@ export const renderData = function(params) {
     method: api.getDisplay.method,
     params: {
       tickRange: final_price,
+      isGetLatest: true,
     },
   }).then((res) => {
     const content = res.data;
     console.log("datas", content);
     let timer = setTimeout(function tick() {
       let T = {};
-
       var count = 0;
       content.tickRange.forEach(function (data) {
         let lambda_B = default_lambda_B * Math.pow(R_B, count);
@@ -102,7 +102,6 @@ export const renderData = function(params) {
         let lambda_A = default_lambda_A * Math.pow(R_A, count);
         let theta_A = default_theta_A * Math.pow(R_theta_A, count);
 
-        
         if (data < content.firstOrderSellPrice) {
           T["LB" + data] = nextExponential(lambda_B);
           T["CB" + data] = nextExponential(theta_B);
@@ -127,11 +126,11 @@ export const renderData = function(params) {
       switch (kind) {
         // 限價單
         case "L":
-          console.log('Limit order')
+          console.log("Limit order");
           sendOrderApi({
             investorId: 1,
             stockId: 1,
-            method: (type == 'B') ? 0 : 1,  // BUY = 0, SELL = 1
+            method: type == "B" ? 0 : 1, // BUY = 0, SELL = 1
             price: Number(lowest[0].substring(2, 10)),
             quantity: getBatches(),
             priceType: 1, // MARKET = 0, LIMIT = 1
@@ -141,11 +140,11 @@ export const renderData = function(params) {
 
         // 市價單
         case "M":
-          console.log('Market order')
+          console.log("Market order");
           sendOrderApi({
             investorId: 1,
             stockId: 1,
-            method: (type == 'B') ? 0 : 1,  // BUY = 0, SELL = 1
+            method: type == "B" ? 0 : 1, // BUY = 0, SELL = 1
             price: 0,
             quantity: getBatches(),
             priceType: 0, // MARKET = 0, LIMIT = 1
@@ -161,19 +160,21 @@ export const renderData = function(params) {
           }).then((res) => {
             const orderData = res.data;
             console.log("order datas", orderData);
-            let content = orderData.content.filter(function(data) { return data.price == lowest[0].substring(2, 10) });
+            let content = orderData.content.filter(function (data) {
+              return data.price == lowest[0].substring(2, 10);
+            });
 
             let randomProperty = function (obj) {
-                let keys = Object.keys(obj);
-                return obj[keys[ keys.length * Math.random() << 0]];
+              let keys = Object.keys(obj);
+              return obj[keys[(keys.length * Math.random()) << 0]];
             };
             let random = randomProperty(content);
-            console.log('randomProperty', random)
-        
+            console.log("randomProperty", random);
+
             sendCancelApi({
-                "id": random.id,
-                "quantity": getBatches(),
-            });        
+              id: random.id,
+              quantity: getBatches(),
+            });
           });
 
           break;
@@ -182,4 +183,4 @@ export const renderData = function(params) {
       timer = setTimeout(tick, next); // (*)
     }, 1000);
   });
-}
+};
