@@ -33,14 +33,6 @@ const AutoChart = () => {
         });
 
         console.log({ xAxis, series });
-        // const ordered = Object.keys(chartData)
-        //   .sort()
-        //   .reduce((obj, key) => {
-        //     obj[key] = chartData[key];
-        //     return obj;
-        //   }, {});
-        //   console.log(ordered,'qweqwe')
-
         setBarData(() => ({ xAxis, series }));
       });
     }
