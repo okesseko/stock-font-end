@@ -1,9 +1,11 @@
 import { defaultAxios, api } from "../../../environment/api";
 
 function nextExponential(lambda) {
-  if ("number" !== typeof lambda) {
-    throw new TypeError("nextExponential: lambda must be number.");
-  }
+  // if ("number" !== typeof lambda) {
+  //   throw new TypeError("nextExponential: lambda must be number.");
+  // }
+  lambda = Number(lambda);
+
   if (lambda <= 0) {
     throw new TypeError("nextExponential: " + "lambda must be greater than 0.");
   }
@@ -57,13 +59,8 @@ function sendCancelApi(data) {
     url: api.deleteOrder.url,
     method: api.deleteOrder.method,
     data: {
-      investorId: data.investorId,
-      stockId: data.stockId,
-      method: data.method, // BUY = 0, SELL = 1
-      price: data.price,
+      id: data.id,
       quantity: data.quantity,
-      priceType: data.priceType, // MARKET = 0, LIMIT = 1
-      timeRestriction: data.timeRestriction, // ROD = 0, IOC = 1, FOK = 2
     },
   }).then((res) => {
     console.log(res.data);
@@ -172,12 +169,14 @@ export const renderData = function (params) {
               return obj[keys[(keys.length * Math.random()) << 0]];
             };
             let random = randomProperty(content);
-            console.log("randomProperty", random);
+            if (random) {
+              console.log("randomProperty", random);
 
-            sendCancelApi({
-              id: random.id,
-              quantity: getBatches(),
-            });
+              sendCancelApi({
+                id: random.id,
+                quantity: getBatches(),
+              });
+            }
           });
 
           break;
