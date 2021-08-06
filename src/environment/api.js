@@ -1,4 +1,4 @@
-import axios, { Method } from "axios";
+import axios from "axios";
 
 export const defaultAxios = axios.create({
   baseURL: "http://220.141.212.175:8080/",
