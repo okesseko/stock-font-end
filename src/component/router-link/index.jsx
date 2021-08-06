@@ -15,6 +15,12 @@ const RouterLink = () => {
       <li className="py-5 text-xl border-b border-black">
         <NavLink to="/auto-chart">auto chart</NavLink>
       </li>
+      <li className="py-5 text-xl border-b border-black">
+        <NavLink to="/oreder-table">委託紀錄表單</NavLink>
+      </li>
+      <li className="py-5 text-xl border-b border-black">
+        <NavLink to="/price-table">成交紀錄表單</NavLink>
+      </li>
     </ul>
   );
 };

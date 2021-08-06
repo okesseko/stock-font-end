@@ -10,5 +10,6 @@ export const api = {
   getOrder: { url: "api/order", method: "GET" },
   postOrder: { url: "api/order", method: "POST" },
   deleteOrder: { url: "api/order", method: "DELETE" },
-  getDisplay: { url: "api/display?isGetLatest=true", method: "GET" },
+  getDisplay: { url: "api/display", method: "GET" },
+  getTransaction: { url: "api/transaction", method: "GET" },
 };
