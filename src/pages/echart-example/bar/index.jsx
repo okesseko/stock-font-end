@@ -39,7 +39,12 @@ const BarChart = ({ data }) => {
         type: "value",
         max: yAxis.max, // 可根据传入数据，动态获取最大值，且向上取整
         min: yAxis.min,
-        interval: Math.round((yAxis.max - yAxis.min) / 500)*100 // 可根据传入数据，动态获取间隔(此处除以5默认设置y轴数值间隔5段)
+        interval: Math.round((yAxis.max - yAxis.min) / 500) * 100, // 可根据传入数据，动态获取间隔(此处除以5默认设置y轴数值间隔5段)
+        axisLabel: {
+          formatter: (value) => {
+            return value ? value : -value;
+          },
+        },
       },
     ],
     series: [
