@@ -35,7 +35,7 @@ function getBatches() {
 }
 
 function sendOrderApi(data) {
-  console.log("sendData", data);
+  // console.log("sendData", data);
   defaultAxios({
     url: api.postOrder.url,
     method: api.postOrder.method,
@@ -49,12 +49,12 @@ function sendOrderApi(data) {
       timeRestriction: data.timeRestriction, // ROD = 0, IOC = 1, FOK = 2
     },
   }).then((res) => {
-    console.log(res.data);
+    // console.log(res.data);
   });
 }
 
 function sendCancelApi(data) {
-  console.log("cancelData", data);
+  // console.log("cancelData", data);
   defaultAxios({
     url: api.deleteOrder.url,
     method: api.deleteOrder.method,
@@ -63,11 +63,11 @@ function sendCancelApi(data) {
       quantity: data.quantity,
     },
   }).then((res) => {
-    console.log(res.data);
+    // console.log(res.data);
   });
 }
 
-export const renderData = function (params) {
+export const renderData = function (params, content) {
   let default_lambda_B = params.default_lambda_B;
   let default_lambda_A = params.default_lambda_A;
   let R_B = params.R_B;
@@ -81,107 +81,97 @@ export const renderData = function (params) {
   let final_price = 100;
   let timer;
 
-  defaultAxios({
-    url: api.getDisplay.url,
-    method: api.getDisplay.method,
-    params: {
-      isGetLatest: true,
-    },
-  }).then((res) => {
-    const content = res.data;
-    console.log("datas", content);
-    setTimeout(function tick() {
-      console.log("default_lambda_B", default_lambda_B);
-      let T = {};
-      var count = 0;
-      content.tickRange.forEach(function (data) {
-        let lambda_B = default_lambda_B * Math.pow(R_B, count);
-        let theta_B = default_theta_B * Math.pow(R_theta_B, count);
-        let lambda_A = default_lambda_A * Math.pow(R_A, count);
-        let theta_A = default_theta_A * Math.pow(R_theta_A, count);
+  // console.log("datas", content);
 
-        if (data.price < content.firstOrderSellPrice) {
-          T["LB" + data.price] = nextExponential(lambda_B);
-          T["CB" + data.price] = nextExponential(theta_B);
-        }
+  // console.log("default_lambda_B", default_lambda_B);
+  let T = {};
+  var count = 0;
+  content.tickRange.forEach(function (data) {
+    let lambda_B = default_lambda_B * Math.pow(R_B, count);
+    let theta_B = default_theta_B * Math.pow(R_theta_B, count);
+    let lambda_A = default_lambda_A * Math.pow(R_A, count);
+    let theta_A = default_theta_A * Math.pow(R_theta_A, count);
 
-        if (data.price > content.firstOrderBuyPrice) {
-          T["LA" + data.price] = nextExponential(lambda_A);
-          T["CA" + data.price] = nextExponential(theta_A);
+    if (data.price < content.firstOrderSellPrice) {
+      T["LB" + data.price] = nextExponential(lambda_B);
+      T["CB" + data.price] = nextExponential(theta_B);
+    }
+
+    if (data.price > content.firstOrderBuyPrice) {
+      T["LA" + data.price] = nextExponential(lambda_A);
+      T["CA" + data.price] = nextExponential(theta_A);
+    }
+    count++;
+  });
+
+  T["MB"] = nextExponential(mu_B);
+  T["MS"] = nextExponential(mu_A);
+
+  let lowest = lowestValueAndKey(T);
+  let next = lowest[1] * 1000 * 100;
+
+  let kind = lowest[0].substring(0, 1);
+  let type = lowest[0].substring(1, 2);
+
+  // console.log("T", T);
+
+  switch (kind) {
+    // 限價單
+    case "L":
+      // console.log("Limit order");
+      sendOrderApi({
+        investorId: 1,
+        stockId: 1,
+        method: type == "B" ? 0 : 1, // BUY = 0, SELL = 1
+        price: Number(lowest[0].substring(2, 10)),
+        quantity: getBatches(),
+        priceType: 1, // MARKET = 0, LIMIT = 1
+        timeRestriction: 0, // ROD = 0, IOC = 1, FOK = 2
+      });
+      break;
+
+    // 市價單
+    case "M":
+      // console.log("Market order");
+      sendOrderApi({
+        investorId: 1,
+        stockId: 1,
+        method: type == "B" ? 0 : 1, // BUY = 0, SELL = 1
+        price: 0,
+        quantity: getBatches(),
+        priceType: 0, // MARKET = 0, LIMIT = 1
+        timeRestriction: 0, // ROD = 0, IOC = 1, FOK = 2
+      });
+      break;
+
+    // 取消單
+    case "C":
+      defaultAxios({
+        url: api.getOrder.url,
+        method: api.getOrder.method,
+      }).then((res) => {
+        const orderData = res.data;
+        // console.log("order datas", orderData);
+        let content = orderData.content.filter(function (data) {
+          return data.price == lowest[0].substring(2, 10);
+        });
+
+        let randomProperty = function (obj) {
+          let keys = Object.keys(obj);
+          return obj[keys[(keys.length * Math.random()) << 0]];
+        };
+        let random = randomProperty(content);
+        if (random) {
+          // console.log("randomProperty", random);
+
+          sendCancelApi({
+            id: random.id,
+            quantity: getBatches(),
+          });
         }
-        count++;
       });
 
-      T["MB"] = nextExponential(mu_B);
-      T["MS"] = nextExponential(mu_A);
-
-      let lowest = lowestValueAndKey(T);
-      let next = lowest[1] * 1000 * 100;
-
-      let kind = lowest[0].substring(0, 1);
-      let type = lowest[0].substring(1, 2);
-
-      console.log("T", T);
-
-      switch (kind) {
-        // 限價單
-        case "L":
-          console.log("Limit order");
-          sendOrderApi({
-            investorId: 1,
-            stockId: 1,
-            method: type == "B" ? 0 : 1, // BUY = 0, SELL = 1
-            price: Number(lowest[0].substring(2, 10)),
-            quantity: getBatches(),
-            priceType: 1, // MARKET = 0, LIMIT = 1
-            timeRestriction: 0, // ROD = 0, IOC = 1, FOK = 2
-          });
-          break;
-
-        // 市價單
-        case "M":
-          console.log("Market order");
-          sendOrderApi({
-            investorId: 1,
-            stockId: 1,
-            method: type == "B" ? 0 : 1, // BUY = 0, SELL = 1
-            price: 0,
-            quantity: getBatches(),
-            priceType: 0, // MARKET = 0, LIMIT = 1
-            timeRestriction: 0, // ROD = 0, IOC = 1, FOK = 2
-          });
-          break;
-
-        // 取消單
-        case "C":
-          defaultAxios({
-            url: api.getOrder.url,
-            method: api.getOrder.method,
-          }).then((res) => {
-            const orderData = res.data;
-            console.log("order datas", orderData);
-            let content = orderData.content.filter(function (data) {
-              return data.price == lowest[0].substring(2, 10);
-            });
-
-            let randomProperty = function (obj) {
-              let keys = Object.keys(obj);
-              return obj[keys[(keys.length * Math.random()) << 0]];
-            };
-            let random = randomProperty(content);
-            if (random) {
-              console.log("randomProperty", random);
-
-              sendCancelApi({
-                id: random.id,
-                quantity: getBatches(),
-              });
-            }
-          });
-
-          break;
-      }
-      return setTimeout(tick, next); // (*)
-    }, 1000);
-  });
+      break;
+  }
+  return next;
 };

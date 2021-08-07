@@ -1,10 +1,13 @@
 import { configConsumerProps } from "antd/lib/config-provider";
 import React, { useEffect, useRef, useState } from "react";
 import { renderData } from "./math-model";
+import { defaultAxios, api } from "../../../environment/api";
 
-export default function Settings() {
+export default function Settings({ buttonStatus = "stop" }) {
   const isFirst = useRef(true);
-  const timer = useRef();
+  const displayData = useRef();
+  const timeSet = useRef();
+  const [nextTime, setNextTime] = useState(0);
 
   const [setting, setSetting] = useState({
     default_lambda_B: 10,
@@ -19,14 +22,26 @@ export default function Settings() {
     mu_A: 10,
   });
   useEffect(() => {
-    if (!isFirst) {
-      clearTimeout(timer.current);
-    } else {
-      isFirst.current = false;
-      timer.current = renderData(setting);
-      console.log(timer.current, "recall2");
+    defaultAxios({
+      url: api.getDisplay.url,
+      method: api.getDisplay.method,
+      params: {
+        isGetLatest: true,
+      },
+    }).then((res) => {
+      displayData.current = res.data;
+      setNextTime(renderData(setting, res.data));
+    });
+  }, []);
+
+  useEffect(() => {
+    console.log(buttonStatus);
+    if (nextTime && buttonStatus !== "stop") {
+      setTimeout(() => {
+        setNextTime(() => renderData(setting, displayData.current));
+      }, nextTime);
     }
-  }, [setting]);
+  }, [nextTime, buttonStatus]);
 
   const handleInputChangeLambdaB = (e) => {
     setSetting({ ...setting, default_lambda_B: e.currentTarget.value });
