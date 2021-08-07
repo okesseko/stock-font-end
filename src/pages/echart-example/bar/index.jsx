@@ -25,6 +25,9 @@ const BarChart = ({ data = {} }) => {
     yAxis: [
       {
         type: "value",
+        min: -1500,
+        max: 1500,
+        interval:300,
       },
     ],
     series: [
