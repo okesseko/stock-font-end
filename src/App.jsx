@@ -18,8 +18,7 @@ const App = () => {
             <Route path="/auto-chart" component={AutoChart} />
             <Route path="/oreder-table" component={OrderTable} />
             <Route path="/price-table" component={PriceTable} />
-            <Route path="/404" component={() => <div>page not find</div>} />
-            <Redirect from="*" to="/404" />
+            <Redirect from="*" to="/" />
           </Switch>
         </div>
       </div>
