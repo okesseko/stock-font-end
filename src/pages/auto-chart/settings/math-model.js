@@ -28,8 +28,7 @@ function geometricDistribution(min, max, prob) {
   }
 }
 
-function getBatches() {
-  let batch_size = 10;
+function getBatches(batch_size) {
   let p = 0.2;
   return geometricDistribution(1, batch_size, p);
 }
@@ -78,6 +77,7 @@ export const renderData = function (params, content) {
   let R_theta_A = params.R_theta_A;
   let mu_B = params.mu_B;
   let mu_A = params.mu_A;
+  let batch_size = params.batch_size;
 
   let T = {};
   var count = 0;
@@ -123,7 +123,7 @@ export const renderData = function (params, content) {
         stockId: 1,
         method: type == "B" ? 0 : 1, // BUY = 0, SELL = 1
         price: Number(lowest[0].substring(2, 10)),
-        quantity: getBatches(),
+        quantity: getBatches(batch_size),
         priceType: 1, // MARKET = 0, LIMIT = 1
         timeRestriction: 0, // ROD = 0, IOC = 1, FOK = 2
       });
@@ -137,7 +137,7 @@ export const renderData = function (params, content) {
         stockId: 1,
         method: type == "B" ? 0 : 1, // BUY = 0, SELL = 1
         price: 0,
-        quantity: getBatches(),
+        quantity: getBatches(batch_size),
         priceType: 0, // MARKET = 0, LIMIT = 1
         timeRestriction: 0, // ROD = 0, IOC = 1, FOK = 2
       });
@@ -165,7 +165,7 @@ export const renderData = function (params, content) {
 
           sendCancelApi({
             id: random.id,
-            quantity: getBatches(),
+            quantity: getBatches(batch_size),
           });
         }
       });
