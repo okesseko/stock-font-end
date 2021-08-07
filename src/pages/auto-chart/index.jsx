@@ -137,7 +137,7 @@ const AutoChart = () => {
                 id: 1,
               },
             });
-
+            setBarData({});
             setButtonStatus("stop");
           }}
         >
