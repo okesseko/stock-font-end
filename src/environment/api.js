@@ -12,4 +12,5 @@ export const api = {
   deleteOrder: { url: "api/order", method: "DELETE" },
   getDisplay: { url: "api/display", method: "GET" },
   getTransaction: { url: "api/transaction", method: "GET" },
+  resetStock: { url: "api/stock/reset", method: "PUT" },
 };
