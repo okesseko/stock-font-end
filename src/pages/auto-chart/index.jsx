@@ -35,10 +35,10 @@ const AutoChart = () => {
       }
       case "allfive": {
         fiveTickRange.forEach((obj) => {
-          if (obj.buyQuantity) {
+          if (obj.buyQuantity !== undefined) {
             xAxis.push(obj.price);
             series.push(-obj.buyQuantity);
-          } else if (obj.sellQuantity) {
+          } else if (obj.sellQuantity !== undefined) {
             xAxis.push(obj.price);
             series.push(obj.sellQuantity);
           }
@@ -47,7 +47,7 @@ const AutoChart = () => {
       }
       case "buyfive": {
         fiveTickRange.forEach((obj) => {
-          if (obj.buyQuantity) {
+          if (obj.buyQuantity !== undefined) {
             xAxis.push(obj.price);
             series.push(-obj.buyQuantity);
           }
@@ -56,7 +56,7 @@ const AutoChart = () => {
       }
       case "sellfive": {
         fiveTickRange.forEach((obj) => {
-          if (obj.sellQuantity) {
+          if (obj.sellQuantity !== undefined) {
             xAxis.push(obj.price);
             series.push(obj.sellQuantity);
           }
