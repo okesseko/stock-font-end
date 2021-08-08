@@ -35,7 +35,6 @@ export default function Settings({ buttonStatus = "stop" }) {
   }, []);
 
   useEffect(() => {
-    console.log(buttonStatus);
     if (nextTime && buttonStatus !== "stop") {
       setTimeout(() => {
         setNextTime(() => renderData(setting, displayData.current));
