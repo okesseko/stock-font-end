@@ -13,10 +13,16 @@ const AutoChart = () => {
   barRef.current = barData;
   function showValue(originData) {
     let xAxis = [],
-      series = [];
+      series = [],
+      tickRange = originData.tickRange.sort((a, b) => a.price - b.price),
+      fiveTickRange = originData.fiveTickRange.sort(
+        (a, b) => a.price - b.price
+      );
+
+    console.log(tickRange, fiveTickRange, "set");
     switch (showType) {
       case "all": {
-        originData.tickRange.reverse().forEach((obj) => {
+        tickRange.forEach((obj) => {
           if (obj.price < originData.matchPrice) {
             xAxis.push(obj.price);
             series.push(-obj.buyQuantity);
@@ -28,7 +34,7 @@ const AutoChart = () => {
         break;
       }
       case "allfive": {
-        originData.fiveTickRange.reverse().forEach((obj) => {
+        fiveTickRange.forEach((obj) => {
           if (obj.buyQuantity) {
             xAxis.push(obj.price);
             series.push(-obj.buyQuantity);
@@ -40,7 +46,7 @@ const AutoChart = () => {
         break;
       }
       case "buyfive": {
-        originData.fiveTickRange.reverse().forEach((obj) => {
+        fiveTickRange.forEach((obj) => {
           if (obj.buyQuantity) {
             xAxis.push(obj.price);
             series.push(-obj.buyQuantity);
@@ -49,7 +55,7 @@ const AutoChart = () => {
         break;
       }
       case "sellfive": {
-        originData.fiveTickRange.reverse().forEach((obj) => {
+        fiveTickRange.forEach((obj) => {
           if (obj.sellQuantity) {
             xAxis.push(obj.price);
             series.push(obj.sellQuantity);
@@ -75,7 +81,7 @@ const AutoChart = () => {
         },
       }).then((res) => {
         const data = res.data;
-        console.log(data, "qwe");
+        // console.log(data, "qwe");
         setBarData(() => showValue(data));
       });
     }
