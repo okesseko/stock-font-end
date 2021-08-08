@@ -28,8 +28,7 @@ function geometricDistribution(min, max, prob) {
   }
 }
 
-function getBatches() {
-  let batch_size = 10;
+function getBatches(batch_size) {
   let p = 0.2;
   return geometricDistribution(1, batch_size, p);
 }
@@ -78,30 +77,30 @@ export const renderData = function (params, content) {
   let R_theta_A = params.R_theta_A;
   let mu_B = params.mu_B;
   let mu_A = params.mu_A;
-  let final_price = 100;
-  let timer;
+  let batch_size = params.batch_size;
 
-  // console.log("datas", content);
-
-  // console.log("default_lambda_B", default_lambda_B);
   let T = {};
   var count = 0;
   content.tickRange.forEach(function (data) {
-    let lambda_B = default_lambda_B * Math.pow(R_B, count);
-    let theta_B = default_theta_B * Math.pow(R_theta_B, count);
-    let lambda_A = default_lambda_A * Math.pow(R_A, count);
-    let theta_A = default_theta_A * Math.pow(R_theta_A, count);
-
     if (data.price < content.firstOrderSellPrice) {
-      T["LB" + data.price] = nextExponential(lambda_B);
+      let lambda_B = default_lambda_B * Math.pow(R_B, count);
+      let theta_B = default_theta_B * Math.pow(R_theta_B, count);
+        T["LB" + data.price] = nextExponential(lambda_B);
       T["CB" + data.price] = nextExponential(theta_B);
+      count++;
     }
+  });
 
+  count = 0;
+  const newTickRange = content.tickRange.reverse()
+  newTickRange.forEach(function (data) {
     if (data.price > content.firstOrderBuyPrice) {
+      let lambda_A = default_lambda_A * Math.pow(R_A, count);
+      let theta_A = default_theta_A * Math.pow(R_theta_A, count);
       T["LA" + data.price] = nextExponential(lambda_A);
       T["CA" + data.price] = nextExponential(theta_A);
+      count++;
     }
-    count++;
   });
 
   T["MB"] = nextExponential(mu_B);
@@ -124,7 +123,7 @@ export const renderData = function (params, content) {
         stockId: 1,
         method: type == "B" ? 0 : 1, // BUY = 0, SELL = 1
         price: Number(lowest[0].substring(2, 10)),
-        quantity: getBatches(),
+        quantity: getBatches(batch_size),
         priceType: 1, // MARKET = 0, LIMIT = 1
         timeRestriction: 0, // ROD = 0, IOC = 1, FOK = 2
       });
@@ -138,7 +137,7 @@ export const renderData = function (params, content) {
         stockId: 1,
         method: type == "B" ? 0 : 1, // BUY = 0, SELL = 1
         price: 0,
-        quantity: getBatches(),
+        quantity: getBatches(batch_size),
         priceType: 0, // MARKET = 0, LIMIT = 1
         timeRestriction: 0, // ROD = 0, IOC = 1, FOK = 2
       });
@@ -166,7 +165,7 @@ export const renderData = function (params, content) {
 
           sendCancelApi({
             id: random.id,
-            quantity: getBatches(),
+            quantity: getBatches(batch_size),
           });
         }
       });
