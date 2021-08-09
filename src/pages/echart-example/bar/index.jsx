@@ -47,7 +47,7 @@ const BarChart = ({ data, splitNumber = 5 }) => {
     ],
     series: [
       {
-        name: "成交量",
+        name: "委託量",
         type: "bar",
         data: data.series,
         itemStyle: {

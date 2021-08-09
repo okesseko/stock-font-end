@@ -62,7 +62,7 @@ const PriceTable = () => {
           ),
         },
         {
-          title: "生成時間",
+          title: "成交時間",
           dataIndex: "createdTime",
         },
       ]}

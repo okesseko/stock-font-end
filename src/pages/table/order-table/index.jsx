@@ -75,7 +75,7 @@ const OrderTable = () => {
           ),
         },
         {
-          title: "生成時間",
+          title: "委託時間",
           dataIndex: "createdTime",
         },
       ]}

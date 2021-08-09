@@ -105,7 +105,7 @@ const AutoChart = () => {
         onChange={(value) => setShowType(value)}
         options={[
           {
-            label: "全部",
+            label: "顯示全部",
             value: "all",
           },
           {
