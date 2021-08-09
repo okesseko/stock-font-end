@@ -92,7 +92,8 @@ export const renderData = function (params, content) {
   });
 
   count = 0;
-  const newTickRange = content.tickRange.reverse()
+  let newTickRange = JSON.parse(JSON.stringify(content.tickRange))
+  newTickRange = newTickRange.sort((a, b) => a.price - b.price)
   newTickRange.forEach(function (data) {
     if (data.price > content.firstOrderBuyPrice) {
       let lambda_A = default_lambda_A * Math.pow(R_A, count);
