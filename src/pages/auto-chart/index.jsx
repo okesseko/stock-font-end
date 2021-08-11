@@ -6,60 +6,10 @@ import { Button, Input, Select } from "antd";
 
 const AutoChart = () => {
   const chartRecord = useRef();
-  const [barData, setBarData] = useState({});
   const [originData, setOriginData] = useState({});
   const [buttonStatus, setButtonStatus] = useState("stop");
   const [showType, setShowType] = useState("all");
   const [frequency, setFrequency] = useState(1);
-  function showValue(originData) {
-    console.log(showType);
-    let xAxis = [],
-      buySeries = [],
-      sellSeries = [],
-      tickRange = originData.tickRange.sort((a, b) => a.price - b.price),
-      fiveTickRange = originData.fiveTickRange.sort(
-        (a, b) => a.price - b.price
-      );
-    switch (showType) {
-      case "all": {
-        tickRange.forEach((obj) => {
-          xAxis.push(obj.price);
-          sellSeries.push(obj.sellQuantity || 0);
-          buySeries.push(obj.buyQuantity ? -obj.buyQuantity : 0);
-        });
-        break;
-      }
-      case "allfive": {
-        fiveTickRange.forEach((obj) => {
-          xAxis.push(obj.price);
-          sellSeries.push(obj.sellQuantity || 0);
-          buySeries.push(obj.buyQuantity ? -obj.buyQuantity : 0);
-        });
-        break;
-      }
-      case "buyfive": {
-        fiveTickRange.forEach((obj) => {
-          if (obj.buyQuantity !== undefined) {
-            xAxis.push(obj.price);
-            buySeries.push(-obj.buyQuantity);
-          }
-        });
-        break;
-      }
-      case "sellfive": {
-        fiveTickRange.forEach((obj) => {
-          if (obj.sellQuantity !== undefined) {
-            xAxis.push(obj.price);
-            sellSeries.push(obj.sellQuantity);
-          }
-        });
-        break;
-      }
-      default:
-        break;
-    }
-    return { xAxis, buySeries, sellSeries };
-  }
 
   useEffect(() => {
     clearInterval(chartRecord.current);
@@ -74,7 +24,6 @@ const AutoChart = () => {
       }).then((res) => {
         const data = res.data;
         setOriginData(() => data);
-        setBarData(() => showValue(data));
       });
     }
     if (buttonStatus === "start") {
@@ -87,36 +36,9 @@ const AutoChart = () => {
     };
   }, [buttonStatus, frequency]);
 
-  useEffect(() => {
-    function renderData() {
-      console.log("ren");
-      defaultAxios({
-        url: api.getDisplay.url,
-        method: api.getDisplay.method,
-        params: {
-          isGetLatest: true,
-        },
-      }).then((res) => {
-        const data = res.data;
-        setOriginData(() => data);
-        setBarData(() => showValue(data));
-      });
-    }
-    if (Object.keys(originData).length) {
-      clearInterval(chartRecord.current);
-      if (buttonStatus === "stop") {
-        setBarData(showValue(originData));
-      } else {
-        chartRecord.current = setInterval(() => {
-          renderData();
-        }, frequency * 1000);
-      }
-    }
-  }, [showType]);
-
   return (
     <div>
-      <BarChart data={barData} />
+      <BarChart originData={originData} showType={showType} />
       <div className="flex justify-around my-6 items-center">
         <div>
           圖表模式
@@ -169,7 +91,7 @@ const AutoChart = () => {
                 id: 1,
               },
             });
-            setBarData({});
+            setOriginData({});
             setButtonStatus("stop");
           }}
         >

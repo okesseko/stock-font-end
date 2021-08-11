@@ -6,91 +6,13 @@ import dayjs from "dayjs";
 
 const ReplayChart = () => {
   const chartRecord = useRef();
-  const [barData, setBarData] = useState({});
+  const [originData, setOriginData] = useState({});
   const [restData, setResetdata] = useState([]);
   const [restDataIndex, setResetdataIndex] = useState(0);
   const [buttonStatus, setButtonStatus] = useState("stop");
   const [showType, setShowType] = useState("all");
   const [frequency, setFrequency] = useState(1);
   const [startTime, setStartTime] = useState();
-  function showValue(originData) {
-    let xAxis = [],
-      buySeries = [],
-      sellSeries = [],
-      useAbleData = [];
-    originData.forEach((deta) => {
-      const index = useAbleData.findIndex((key) => key.price === deta.price);
-      if (index === -1) {
-        useAbleData.push({
-          price: deta.price,
-          [deta.method ? "sell" : "buy"]: deta.quantity,
-        });
-      } else {
-        const { price, sell = 0, buy = 0 } = useAbleData[index];
-        console.log(index, useAbleData[index], deta.method);
-        useAbleData[index] = {
-          price,
-          sell: sell + (deta.method ? deta.quantity : 0),
-          buy: buy + (!deta.method ? deta.quantity : 0),
-        };
-      }
-    });
-    useAbleData = useAbleData.sort((a, b) => a.price - b.price);
-    useAbleData.forEach((deta) => {
-      xAxis.push(deta.price);
-      sellSeries.push(deta.sell || 0);
-      buySeries.push(deta.buy ? -deta.buy : 0);
-    });
-    // console.log(xAxis, buySeries, sellSeries, "all");
-    return { xAxis, buySeries, sellSeries };
-    // switch (showType) {
-    //   case "all": {
-    //     tickRange.forEach((obj) => {
-    //       if (obj.price < originData.matchPrice) {
-    //         xAxis.push(obj.price);
-    //         series.push(-obj.buyQuantity);
-    //       } else if (obj.price > originData.matchPrice) {
-    //         xAxis.push(obj.price);
-    //         series.push(obj.sellQuantity);
-    //       }
-    //     });
-    //     break;
-    //   }
-    //   case "allfive": {
-    //     fiveTickRange.forEach((obj) => {
-    //       if (obj.buyQuantity !== undefined) {
-    //         xAxis.push(obj.price);
-    //         series.push(-obj.buyQuantity);
-    //       } else if (obj.sellQuantity !== undefined) {
-    //         xAxis.push(obj.price);
-    //         series.push(obj.sellQuantity);
-    //       }
-    //     });
-    //     break;
-    //   }
-    //   case "buyfive": {
-    //     fiveTickRange.forEach((obj) => {
-    //       if (obj.buyQuantity !== undefined) {
-    //         xAxis.push(obj.price);
-    //         series.push(-obj.buyQuantity);
-    //       }
-    //     });
-    //     break;
-    //   }
-    //   case "sellfive": {
-    //     fiveTickRange.forEach((obj) => {
-    //       if (obj.sellQuantity !== undefined) {
-    //         xAxis.push(obj.price);
-    //         series.push(obj.sellQuantity);
-    //       }
-    //     });
-    //     break;
-    //   }
-    //   default:
-    //     break;
-    // }
-    // return { xAxis, series };
-  }
 
   useEffect(() => {
     if (buttonStatus === "select") {
@@ -114,14 +36,44 @@ const ReplayChart = () => {
       clearInterval(chartRecord.current);
     }
   }, [buttonStatus]);
+
   useEffect(() => {
     if (restDataIndex === restData.length) {
       clearInterval(chartRecord.current);
     } else {
-      setBarData(showValue(restData.slice(0, restDataIndex)));
+      const nextStep = restData[restDataIndex];
+      defaultAxios({
+        url: api.postOrder.url,
+        method: api.postOrder.method,
+        data: {
+          investorId: nextStep.investorId,
+          stockId: nextStep.stockId,
+          method: nextStep.method, // BUY = 0, SELL = 1
+          price: nextStep.price,
+          quantity: nextStep.quantity,
+          priceType: nextStep.priceType, // MARKET = 0, LIMIT = 1
+          timeRestriction: nextStep.timeRestriction, // ROD = 0, IOC = 1, FOK = 2
+        },
+      }).then(() => {
+        defaultAxios({
+          url: api.getDisplay.url,
+          method: api.getDisplay.method,
+          params: {
+            isGetLatest: true,
+            // createdTime: JSON.stringify({
+            //   min: startTime,
+            //   max: nextStep.createdTime,
+            // }),
+          },
+        }).then((res) => {
+          const data = res.data;
+          setOriginData(data);
+          console.log(data, "return");
+        });
+      });
     }
-    // setBarData(() => showValue(restData.splice(0, restDataIndex)));
   }, [restDataIndex]);
+
   useEffect(() => {
     if (buttonStatus === "start") {
       clearInterval(chartRecord.current);
@@ -132,30 +84,38 @@ const ReplayChart = () => {
   }, [frequency]);
   return (
     <div>
-      <BarChart data={barData} />
-      <Select
-        value={showType}
-        style={{ width: 120, marginLeft: "20px" }}
-        onChange={(value) => setShowType(value)}
-        options={[
-          {
-            label: "全部",
-            value: "all",
-          },
-          {
-            label: "買賣五檔",
-            value: "allfive",
-          },
-          {
-            label: "買五檔",
-            value: "buyfive",
-          },
-          {
-            label: "賣五檔",
-            value: "sellfive",
-          },
-        ]}
-      ></Select>
+      <BarChart originData={originData} showType={showType} />
+      <div className="flex justify-around my-6 items-center">
+        <div>
+          圖表模式
+          <Select
+            value={showType}
+            style={{ width: 120, marginLeft: "20px" }}
+            onChange={(value) => {
+              setShowType(value);
+            }}
+            options={[
+              {
+                label: "全部",
+                value: "all",
+              },
+              {
+                label: "買賣五檔",
+                value: "allfive",
+              },
+              {
+                label: "買五檔",
+                value: "buyfive",
+              },
+              {
+                label: "賣五檔",
+                value: "sellfive",
+              },
+            ]}
+          />
+        </div>
+        目前狀態: {buttonStatus}
+      </div>
       <div className="flex justify-around my-6 items-end">
         <DatePicker
           showTime
@@ -203,20 +163,6 @@ const ReplayChart = () => {
         <Button
           disabled={buttonStatus === "start" || !restData.length}
           onClick={() => {
-            const nextStep = restData[restDataIndex];
-            defaultAxios({
-              url: api.postOrder.url,
-              method: api.postOrder.method,
-              data: {
-                investorId: nextStep.investorId,
-                stockId: nextStep.stockId,
-                method: nextStep.method, // BUY = 0, SELL = 1
-                price: nextStep.price,
-                quantity: nextStep.quantity,
-                priceType: nextStep.priceType, // MARKET = 0, LIMIT = 1
-                timeRestriction: nextStep.timeRestriction, // ROD = 0, IOC = 1, FOK = 2
-              },
-            });
             setResetdataIndex(restDataIndex + 1);
           }}
         >
