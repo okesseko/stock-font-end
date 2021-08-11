@@ -13,7 +13,10 @@ const RouterLink = () => {
         <NavLink to="/echart-example">echart example</NavLink>
       </li>
       <li className="py-5 text-xl border-b border-black">
-        <NavLink to="/auto-chart">auto chart</NavLink>
+        <NavLink to="/auto-chart">LOB 圖表</NavLink>
+      </li>
+      <li className="py-5 text-xl border-b border-black">
+        <NavLink to="/replay-chart">重播紀錄</NavLink>
       </li>
       <li className="py-5 text-xl border-b border-black">
         <NavLink to="/oreder-table">委託紀錄表單</NavLink>

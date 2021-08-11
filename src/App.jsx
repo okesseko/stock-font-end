@@ -5,6 +5,7 @@ import AutoChart from "./pages/auto-chart";
 import RouterLink from "./component/router-link";
 import OrderTable from "./pages/table/order-table";
 import PriceTable from "./pages/table/price-table";
+import ReplayChart from "./pages/replay";
 import "antd/dist/antd.css";
 const App = () => {
   return (
@@ -16,10 +17,10 @@ const App = () => {
             <Route path="/" exact component={Main} />
             <Route path="/echart-example" component={EchartExample} />
             <Route path="/auto-chart" component={AutoChart} />
+            <Route path="/replay-chart" component={ReplayChart} />
             <Route path="/oreder-table" component={OrderTable} />
             <Route path="/price-table" component={PriceTable} />
-            <Route path="/404" component={() => <div>page not find</div>} />
-            <Redirect from="*" to="/404" />
+            <Redirect from="*" to="/" />
           </Switch>
         </div>
       </div>
