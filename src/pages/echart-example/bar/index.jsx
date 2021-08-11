@@ -3,16 +3,18 @@ import ReactECharts from "echarts-for-react";
 import { data } from "../mock-data";
 
 const BarChart = ({ data, splitNumber = 5 }) => {
-  const [yAxis, setYAxis] = useState({
-    min: 0,
-    max: 0,
-  });
+  const [yAxisMax, setYAxisMax] = useState(10);
   useEffect(() => {
-    if (data?.series?.length) {
-      setYAxis({
-        max: Math.ceil(Math.max(...data.series)),
-        min: Math.ceil(Math.min(...data.series)),
+    if (data?.buySeries?.length) {
+      let max = 10;
+      data.buySeries.forEach((deta) => {
+        if (Math.abs(deta) > max) max = Math.abs(deta);
       });
+      data.sellSeries.forEach((deta) => {
+        if (Math.abs(deta) > max) max = Math.abs(deta);
+      });
+
+      setYAxisMax(max);
     }
   }, [data]);
   const options = {
@@ -37,7 +39,9 @@ const BarChart = ({ data, splitNumber = 5 }) => {
     yAxis: [
       {
         type: "value",
-        splitNumber: splitNumber,
+        splitNumber: 10,
+        max: yAxisMax,
+        min: -yAxisMax,
         axisLabel: {
           formatter: (value) => {
             return Math.abs(value);
@@ -49,12 +53,14 @@ const BarChart = ({ data, splitNumber = 5 }) => {
       {
         name: "委託量",
         type: "bar",
-        data: data.series,
-        itemStyle: {
-          color: function (p) {
-            return p.value < 0 ? "red" : "green";
-          },
-        },
+        data: data.buySeries,
+        itemStyle: { color: "red" },
+      },
+      {
+        name: "委託量",
+        type: "bar",
+        data: data.sellSeries,
+        itemStyle: { color: "green" },
       },
     ],
   };

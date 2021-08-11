@@ -5,43 +5,35 @@ import { defaultAxios, api } from "../../environment/api";
 import { Button, Input, Select } from "antd";
 
 const AutoChart = () => {
+  const chartRecord = useRef();
   const [barData, setBarData] = useState({});
-  const [buttonStatus, setButtonStatus] = useState();
+  const [originData, setOriginData] = useState({});
+  const [buttonStatus, setButtonStatus] = useState("stop");
   const [showType, setShowType] = useState("all");
   const [frequency, setFrequency] = useState(1);
-  const barRef = useRef();
-  barRef.current = barData;
   function showValue(originData) {
+    console.log(showType);
     let xAxis = [],
-      series = [],
+      buySeries = [],
+      sellSeries = [],
       tickRange = originData.tickRange.sort((a, b) => a.price - b.price),
       fiveTickRange = originData.fiveTickRange.sort(
         (a, b) => a.price - b.price
       );
-
-    console.log(tickRange, fiveTickRange, "set");
     switch (showType) {
       case "all": {
         tickRange.forEach((obj) => {
-          if (obj.price < originData.matchPrice) {
-            xAxis.push(obj.price);
-            series.push(-obj.buyQuantity);
-          } else if (obj.price > originData.matchPrice) {
-            xAxis.push(obj.price);
-            series.push(obj.sellQuantity);
-          }
+          xAxis.push(obj.price);
+          sellSeries.push(obj.sellQuantity || 0);
+          buySeries.push(obj.buyQuantity ? -obj.buyQuantity : 0);
         });
         break;
       }
       case "allfive": {
         fiveTickRange.forEach((obj) => {
-          if (obj.buyQuantity !== undefined) {
-            xAxis.push(obj.price);
-            series.push(-obj.buyQuantity);
-          } else if (obj.sellQuantity !== undefined) {
-            xAxis.push(obj.price);
-            series.push(obj.sellQuantity);
-          }
+          xAxis.push(obj.price);
+          sellSeries.push(obj.sellQuantity || 0);
+          buySeries.push(obj.buyQuantity ? -obj.buyQuantity : 0);
         });
         break;
       }
@@ -49,7 +41,7 @@ const AutoChart = () => {
         fiveTickRange.forEach((obj) => {
           if (obj.buyQuantity !== undefined) {
             xAxis.push(obj.price);
-            series.push(-obj.buyQuantity);
+            buySeries.push(-obj.buyQuantity);
           }
         });
         break;
@@ -58,7 +50,7 @@ const AutoChart = () => {
         fiveTickRange.forEach((obj) => {
           if (obj.sellQuantity !== undefined) {
             xAxis.push(obj.price);
-            series.push(obj.sellQuantity);
+            sellSeries.push(obj.sellQuantity);
           }
         });
         break;
@@ -66,13 +58,13 @@ const AutoChart = () => {
       default:
         break;
     }
-    return { xAxis, series };
+    return { xAxis, buySeries, sellSeries };
   }
 
   useEffect(() => {
-    let barLoop;
-    clearInterval(barLoop);
+    clearInterval(chartRecord.current);
     function renderData() {
+      console.log("ren");
       defaultAxios({
         url: api.getDisplay.url,
         method: api.getDisplay.method,
@@ -81,47 +73,81 @@ const AutoChart = () => {
         },
       }).then((res) => {
         const data = res.data;
-        // console.log(data, "qwe");
+        setOriginData(() => data);
         setBarData(() => showValue(data));
       });
     }
     if (buttonStatus === "start") {
-      barLoop = setInterval(() => {
+      chartRecord.current = setInterval(() => {
         renderData();
       }, frequency * 1000);
     }
-
     return () => {
-      clearInterval(barLoop);
+      clearInterval(chartRecord.current);
     };
-  }, [buttonStatus, showType, frequency]);
+  }, [buttonStatus, frequency]);
+
+  useEffect(() => {
+    function renderData() {
+      console.log("ren");
+      defaultAxios({
+        url: api.getDisplay.url,
+        method: api.getDisplay.method,
+        params: {
+          isGetLatest: true,
+        },
+      }).then((res) => {
+        const data = res.data;
+        setOriginData(() => data);
+        setBarData(() => showValue(data));
+      });
+    }
+    if (Object.keys(originData).length) {
+      clearInterval(chartRecord.current);
+      if (buttonStatus === "stop") {
+        setBarData(showValue(originData));
+      } else {
+        chartRecord.current = setInterval(() => {
+          renderData();
+        }, frequency * 1000);
+      }
+    }
+  }, [showType]);
 
   return (
     <div>
       <BarChart data={barData} />
-      <Select
-        value={showType}
-        style={{ width: 120, marginLeft: "20px" }}
-        onChange={(value) => setShowType(value)}
-        options={[
-          {
-            label: "顯示全部",
-            value: "all",
-          },
-          {
-            label: "買賣五檔",
-            value: "allfive",
-          },
-          {
-            label: "買五檔",
-            value: "buyfive",
-          },
-          {
-            label: "賣五檔",
-            value: "sellfive",
-          },
-        ]}
-      ></Select>
+      <div className="flex justify-around my-6 items-center">
+        <div>
+          圖表模式
+          <Select
+            value={showType}
+            style={{ width: 120, marginLeft: "20px" }}
+            onChange={(value) => {
+              setShowType(value);
+            }}
+            options={[
+              {
+                label: "全部",
+                value: "all",
+              },
+              {
+                label: "買賣五檔",
+                value: "allfive",
+              },
+              {
+                label: "買五檔",
+                value: "buyfive",
+              },
+              {
+                label: "賣五檔",
+                value: "sellfive",
+              },
+            ]}
+          />
+        </div>
+        目前狀態: {buttonStatus}
+      </div>
       <div className="flex justify-around my-6 items-center">
         <Button type="primary" onClick={() => setButtonStatus("start")}>
           開始模擬
