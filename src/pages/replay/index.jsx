@@ -174,11 +174,11 @@ const ReplayChart = () => {
         {!!restData.length && (
           <Table
             columns={[
-              {
-                title: "訂單 ID",
-                dataIndex: "orderId",
-                render: (data) => <span>{data || "NULL"}</span>,
-              },
+              // {
+              //   title: "訂單 ID",
+              //   dataIndex: "orderId",
+              //   render: (data) => <span>{data || "NULL"}</span>,
+              // },
               {
                 title: "投資 ID",
                 dataIndex: "investorId",
@@ -214,11 +214,11 @@ const ReplayChart = () => {
                 dataIndex: "priceType",
                 render: (data) => <span>{data ? "LIMIT" : "MARKET"}</span>,
               },
-              {
-                title: "狀態",
-                dataIndex: "status",
-                render: (data) => <span>{data ? "FULL" : "PARTIAL"}</span>,
-              },
+              // {
+              //   title: "狀態",
+              //   dataIndex: "status",
+              //   render: (data) => <span>{data ? "FAIL" : "SUCCESS"}</span>,
+              // },
               {
                 title: "時間限制",
                 dataIndex: "timeRestriction",
