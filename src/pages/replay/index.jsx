@@ -8,7 +8,7 @@ const ReplayChart = () => {
   const chartRecord = useRef();
   const [originData, setOriginData] = useState({});
   const [restData, setResetdata] = useState([]);
-  const [restDataIndex, setResetdataIndex] = useState(0);
+  const [restDataIndex, setResetdataIndex] = useState(-1);
   const [buttonStatus, setButtonStatus] = useState("stop");
   const [showType, setShowType] = useState("all");
   const [frequency, setFrequency] = useState(1);
