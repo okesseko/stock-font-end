@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const defaultAxios = axios.create({
-  baseURL: "http://220.141.189.242:8080/",
+  baseURL: "http://zj-lin.tw:8080/",
 });
 
 // api
