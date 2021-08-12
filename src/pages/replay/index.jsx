@@ -22,6 +22,7 @@ const ReplayChart = () => {
         data: {
           id: 1,
           createdTime: startTime,
+          isReset: false,
         },
       }).then((res) => {
         console.log(res.data.orders);
@@ -47,22 +48,10 @@ const ReplayChart = () => {
           url: api.postOrder.url,
           method: api.postOrder.method,
           data: nextStep,
-        }).then(() => {
-          defaultAxios({
-            url: api.getDisplay.url,
-            method: api.getDisplay.method,
-            params: {
-              isGetLatest: true,
-              // createdTime: JSON.stringify({
-              //   min: startTime,
-              //   max: nextStep.createdTime,
-              // }),
-            },
-          }).then((res) => {
-            const data = res.data;
-            setOriginData(data);
-            console.log(data, "return");
-          });
+        }).then((res) => {
+          const data = res.data;
+          setOriginData(data);
+          console.log(data, "return");
         });
     }
   }, [restDataIndex]);
@@ -218,10 +207,6 @@ const ReplayChart = () => {
                 render: (data) => (
                   <span>{data ? "IOC" : data === 2 ? "FOK" : "ROD"}</span>
                 ),
-              },
-              {
-                title: "生成時間",
-                dataIndex: "createdTime",
               },
             ]}
             pagination={false}

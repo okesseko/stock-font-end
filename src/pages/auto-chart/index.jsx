@@ -89,6 +89,7 @@ const AutoChart = () => {
               method: api.resetStock.method,
               data: {
                 id: 1,
+                isReset: true,
               },
             });
             setOriginData({});
