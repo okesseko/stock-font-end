@@ -42,35 +42,28 @@ const ReplayChart = () => {
       clearInterval(chartRecord.current);
     } else {
       const nextStep = restData[restDataIndex];
-      defaultAxios({
-        url: api.postOrder.url,
-        method: api.postOrder.method,
-        data: {
-          investorId: nextStep.investorId,
-          stockId: nextStep.stockId,
-          method: nextStep.method, // BUY = 0, SELL = 1
-          price: nextStep.price,
-          quantity: nextStep.quantity,
-          priceType: nextStep.priceType, // MARKET = 0, LIMIT = 1
-          timeRestriction: nextStep.timeRestriction, // ROD = 0, IOC = 1, FOK = 2
-        },
-      }).then(() => {
+      if (nextStep)
         defaultAxios({
-          url: api.getDisplay.url,
-          method: api.getDisplay.method,
-          params: {
-            isGetLatest: true,
-            // createdTime: JSON.stringify({
-            //   min: startTime,
-            //   max: nextStep.createdTime,
-            // }),
-          },
-        }).then((res) => {
-          const data = res.data;
-          setOriginData(data);
-          console.log(data, "return");
+          url: api.postOrder.url,
+          method: api.postOrder.method,
+          data: nextStep,
+        }).then(() => {
+          defaultAxios({
+            url: api.getDisplay.url,
+            method: api.getDisplay.method,
+            params: {
+              isGetLatest: true,
+              // createdTime: JSON.stringify({
+              //   min: startTime,
+              //   max: nextStep.createdTime,
+              // }),
+            },
+          }).then((res) => {
+            const data = res.data;
+            setOriginData(data);
+            console.log(data, "return");
+          });
         });
-      });
     }
   }, [restDataIndex]);
 
@@ -232,7 +225,7 @@ const ReplayChart = () => {
               },
             ]}
             pagination={false}
-            dataSource={[restData[restDataIndex]]}
+            dataSource={[restData[restDataIndex + 1]]}
             sticky
           />
         )}
