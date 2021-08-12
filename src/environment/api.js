@@ -11,6 +11,7 @@ export const api = {
   postOrder: { url: "api/order", method: "POST" },
   deleteOrder: { url: "api/order", method: "DELETE" },
   getDisplay: { url: "api/display", method: "GET" },
+  getDisplayChart: { url: "api/display/chart", method: "GET" },
   getTransaction: { url: "api/transaction", method: "GET" },
   resetStock: { url: "api/stock/reset", method: "PUT" },
 };
