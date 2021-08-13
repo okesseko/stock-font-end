@@ -31,7 +31,9 @@ const ReplayChart = () => {
     } else if (buttonStatus === "start") {
       clearInterval(chartRecord.current);
       chartRecord.current = setInterval(() => {
-        setResetdataIndex((index) => index + 1);
+        setResetdataIndex((index) => {
+          return index + 1 < restData.length ? index + 1 : index;
+        });
       }, 1000 * frequency);
     } else if (buttonStatus === "stop") {
       clearInterval(chartRecord.current);
@@ -50,7 +52,7 @@ const ReplayChart = () => {
           data: nextStep,
         }).then((res) => {
           const data = res.data;
-          setOriginData(data);
+          if (data) setOriginData(data);
           console.log(data, "return");
         });
     }
@@ -60,7 +62,9 @@ const ReplayChart = () => {
     if (buttonStatus === "start") {
       clearInterval(chartRecord.current);
       chartRecord.current = setInterval(() => {
-        setResetdataIndex((index) => index + 1);
+        setResetdataIndex((index) => {
+          return index + 1 < restData.length ? index + 1 : index;
+        });
       }, 1000 * frequency);
     }
   }, [frequency]);
@@ -145,14 +149,15 @@ const ReplayChart = () => {
         <Button
           disabled={buttonStatus === "start" || !restData.length}
           onClick={() => {
-            setResetdataIndex(restDataIndex + 1);
+            if (restDataIndex + 1 < restData.length)
+              setResetdataIndex(restDataIndex + 1);
           }}
         >
           手動下一步
         </Button>
       </div>
       <div>
-        下步狀態({restDataIndex} / {restData.length} )
+        下步狀態({restDataIndex} / {restData.length - 1} )
         {!!restData.length && (
           <Table
             columns={[
@@ -161,27 +166,23 @@ const ReplayChart = () => {
               //   dataIndex: "orderId",
               //   render: (data) => <span>{data || "NULL"}</span>,
               // },
+              // {
+              //   title: "投資 ID",
+              //   dataIndex: "investorId",
+              // },
+              // {
+              //   title: "股票 ID",
+              //   dataIndex: "stockId",
+              // },
               {
-                title: "投資 ID",
-                dataIndex: "investorId",
-              },
-              {
-                title: "股票 ID",
-                dataIndex: "stockId",
+                title: "價格類型",
+                dataIndex: "priceType",
+                render: (data) => <span>{data ? "LIMIT" : "MARKET"}</span>,
               },
               {
                 title: "類型",
                 dataIndex: "method",
                 render: (data) => <span>{data ? "sell" : "buy"}</span>,
-              },
-              {
-                title: "副類型",
-                dataIndex: "subMethod",
-                render: (data) => (
-                  <span>
-                    {data ? "UPDATE" : data === null ? "NULL" : "CANCEL"}
-                  </span>
-                ),
               },
               {
                 title: "價格",
@@ -191,11 +192,17 @@ const ReplayChart = () => {
                 title: "數量",
                 dataIndex: "quantity",
               },
+
               {
-                title: "價格類型",
-                dataIndex: "priceType",
-                render: (data) => <span>{data ? "LIMIT" : "MARKET"}</span>,
+                title: "副類型",
+                dataIndex: "subMethod",
+                render: (data) => (
+                  <span>
+                    {data ? "UPDATE" : data === null ? "NULL" : "CANCEL"}
+                  </span>
+                ),
               },
+
               // {
               //   title: "狀態",
               //   dataIndex: "status",
