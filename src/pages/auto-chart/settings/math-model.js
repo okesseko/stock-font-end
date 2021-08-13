@@ -89,20 +89,20 @@ export const renderData = function (params, content) {
   let sellLeftQueue = [];
   let sellRightQueue = [];
   content.tickRange.forEach(function (data) {
-    if (data.price < firstOrderSellPrice) {
+    if (data.price < firstOrderBuyPrice) {
       buyLeftQueue.push(data.price);
     }
-    if (data.price < firstOrderBuyPrice) {
+    if (data.price < firstOrderSellPrice) {
       sellLeftQueue.push(data.price);
     }
   });
   let newTickRange = JSON.parse(JSON.stringify(content.tickRange))
   newTickRange = newTickRange.sort((a, b) => a.price - b.price)
   newTickRange.forEach(function (data) {
-    if (data.price > firstOrderSellPrice) {
+    if (data.price > firstOrderBuyPrice) {
       buyRightQueue.push(data.price);
     }
-    if (data.price > firstOrderBuyPrice) {
+    if (data.price > firstOrderSellPrice) {
       sellRightQueue.push(data.price);
     }
   });
