@@ -81,29 +81,65 @@ export const renderData = function (params, content) {
 
   let T = {};
   var count = 0;
+
+  const firstOrderSellPrice = (content.firstOrderSellPrice == null) ? content.matchPrice : content.firstOrderSellPrice;
+  const firstOrderBuyPrice = (content.firstOrderBuyPrice == null) ? content.matchPrice : content.firstOrderBuyPrice;
+  let buyLeftQueue = [];
+  let buyRightQueue = [];
+  let sellLeftQueue = [];
+  let sellRightQueue = [];
   content.tickRange.forEach(function (data) {
-    if (data.price < content.firstOrderSellPrice) {
-      let lambda_B = default_lambda_B * Math.pow(R_B, count);
-      let theta_B = default_theta_B * Math.pow(R_theta_B, count);
-        T["LB" + data.price] = nextExponential(lambda_B);
-      T["CB" + data.price] = nextExponential(theta_B);
-      count++;
+    if (data.price < firstOrderSellPrice) {
+      buyLeftQueue.push(data.price);
+    }
+    if (data.price < firstOrderBuyPrice) {
+      sellLeftQueue.push(data.price);
+    }
+  });
+  let newTickRange = JSON.parse(JSON.stringify(content.tickRange))
+  newTickRange = newTickRange.sort((a, b) => a.price - b.price)
+  newTickRange.forEach(function (data) {
+    if (data.price > firstOrderSellPrice) {
+      buyRightQueue.push(data.price);
+    }
+    if (data.price > firstOrderBuyPrice) {
+      sellRightQueue.push(data.price);
     }
   });
 
   count = 0;
-  let newTickRange = JSON.parse(JSON.stringify(content.tickRange))
-  newTickRange = newTickRange.sort((a, b) => a.price - b.price)
-  newTickRange.forEach(function (data) {
-    if (data.price > content.firstOrderBuyPrice) {
-      let lambda_A = default_lambda_A * Math.pow(R_A, count);
-      let theta_A = default_theta_A * Math.pow(R_theta_A, count);
-      T["LA" + data.price] = nextExponential(lambda_A);
-      T["CA" + data.price] = nextExponential(theta_A);
-      count++;
-    }
-  });
-
+  buyLeftQueue.forEach(function(price) {
+    let lambda_B = default_lambda_B * Math.pow(R_B, count);
+    let theta_B = default_theta_B * Math.pow(R_theta_B, count);
+    T["LB" + price] = nextExponential(lambda_B);
+    T["CB" + price] = nextExponential(theta_B);
+    count++;
+  })
+  count = 0;
+  buyRightQueue.forEach(function(price) {
+    let lambda_B = default_lambda_B * Math.pow(R_B, count);
+    let theta_B = default_theta_B * Math.pow(R_theta_B, count);
+    T["LB" + price] = nextExponential(lambda_B);
+    T["CB" + price] = nextExponential(theta_B);
+    count++;
+  })
+  count = 0;
+  sellLeftQueue.forEach(function(price) {
+    let lambda_A = default_lambda_A * Math.pow(R_A, count);
+    let theta_A = default_theta_A * Math.pow(R_theta_A, count);
+    T["LA" + price] = nextExponential(lambda_A);
+    T["CA" + price] = nextExponential(theta_A);
+    count++;
+  })
+  count = 0;
+  sellRightQueue.forEach(function(price) {
+    let lambda_A = default_lambda_A * Math.pow(R_A, count);
+    let theta_A = default_theta_A * Math.pow(R_theta_A, count);
+    T["LA" + price] = nextExponential(lambda_A);
+    T["CA" + price] = nextExponential(theta_A);
+    count++;
+  })
+  
   T["MB"] = nextExponential(mu_B);
   T["MS"] = nextExponential(mu_A);
 
