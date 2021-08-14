@@ -27,6 +27,8 @@ const ReplayChart = () => {
       }).then((res) => {
         console.log(res.data.orders);
         setResetdata(res.data.orders);
+        setOriginData({});
+        setResetdataIndex(-1);
       });
     } else if (buttonStatus === "start") {
       clearInterval(chartRecord.current);
@@ -149,6 +151,7 @@ const ReplayChart = () => {
         <Button
           disabled={buttonStatus === "start" || !restData.length}
           onClick={() => {
+            setButtonStatus("next");
             if (restDataIndex + 1 < restData.length)
               setResetdataIndex(restDataIndex + 1);
           }}
