@@ -7,8 +7,7 @@ const BarChart = ({ originData = {}, showType }) => {
   const [data, setData] = useState({});
   function showValue() {
     let xAxis = [],
-      buySeries = [],
-      sellSeries = [],
+      series = [],
       tickRange = (originData.tickRange || []).sort(
         (a, b) => a.price - b.price
       ),
@@ -19,16 +18,37 @@ const BarChart = ({ originData = {}, showType }) => {
       case "all": {
         tickRange.forEach((obj) => {
           xAxis.push(obj.price);
-          sellSeries.push(obj.sellQuantity || 0);
-          buySeries.push(obj.buyQuantity ? -obj.buyQuantity : 0);
+          series.push(
+            obj.sellQuantity
+              ? obj.sellQuantity
+              : obj.buyQuantity
+              ? -obj.buyQuantity
+              : 0
+          );
         });
         break;
       }
       case "allfive": {
-        fiveTickRange.forEach((obj) => {
+        fiveTickRange.forEach((obj, index) => {
           xAxis.push(obj.price);
-          sellSeries.push(obj.sellQuantity || 0);
-          buySeries.push(obj.buyQuantity ? -obj.buyQuantity : 0);
+          series.push(
+            obj.sellQuantity
+              ? obj.sellQuantity
+              : obj.buyQuantity
+              ? -obj.buyQuantity
+              : 0
+          );
+          if (index === 4) {
+            console.log("dec");
+            let b1 = fiveTickRange[index].price,
+              a1 = fiveTickRange[index + 1].price;
+            while (a1 - b1 > 0.5) {
+              console.log("decyes", b1, a1);
+              b1 += 0.5;
+              xAxis.push(b1);
+              series.push("0");
+            }
+          }
         });
         break;
       }
@@ -36,7 +56,7 @@ const BarChart = ({ originData = {}, showType }) => {
         fiveTickRange.forEach((obj) => {
           if (obj.buyQuantity !== undefined) {
             xAxis.push(obj.price);
-            buySeries.push(-obj.buyQuantity);
+            series.push(-obj.buyQuantity);
           }
         });
         break;
@@ -45,7 +65,7 @@ const BarChart = ({ originData = {}, showType }) => {
         fiveTickRange.forEach((obj) => {
           if (obj.sellQuantity !== undefined) {
             xAxis.push(obj.price);
-            sellSeries.push(obj.sellQuantity);
+            series.push(obj.sellQuantity);
           }
         });
         break;
@@ -53,7 +73,7 @@ const BarChart = ({ originData = {}, showType }) => {
       default:
         break;
     }
-    return { xAxis, buySeries, sellSeries };
+    return { xAxis, series };
   }
 
   useEffect(() => {
@@ -61,12 +81,9 @@ const BarChart = ({ originData = {}, showType }) => {
   }, [originData, showType]);
 
   useEffect(() => {
-    if (data?.buySeries?.length) {
+    if (data?.series?.length) {
       let max = 10;
-      data.buySeries.forEach((deta) => {
-        if (Math.abs(deta) > max) max = Math.abs(deta);
-      });
-      data.sellSeries.forEach((deta) => {
+      data.series.forEach((deta) => {
         if (Math.abs(deta) > max) max = Math.abs(deta);
       });
       setYAxisMax(max);
@@ -79,22 +96,14 @@ const BarChart = ({ originData = {}, showType }) => {
         type: "shadow",
       },
       formatter: (param) => {
-        console.log(param);
+        if (typeof param[0].data === "string") return "";
         return (
           "Price: " +
           param[0].name +
           "<br/>" +
-          param[0].marker +
-          "  " +
           param[0].seriesName +
           " : " +
-          param[0].data +
-          "<br/>" +
-          param[1].marker +
-          "  " +
-          param[1].seriesName +
-          " : " +
-          -param[1].data
+          Math.abs(param[0].data)
         );
       },
     },
@@ -125,17 +134,24 @@ const BarChart = ({ originData = {}, showType }) => {
     ],
     series: [
       {
-        name: "委託量(sell)",
+        name: "委託量",
         type: "bar",
-        data: data.sellSeries,
-        itemStyle: { color: "green" },
+        data: data.series,
+        itemStyle: {
+          color: (param) => {
+            return param.data > 0 ? "green" : "red";
+          },
+        },
+        markPoint: {
+          data: [{ value: "0" }],
+        },
       },
-      {
-        name: "委託量(buy)",
-        type: "bar",
-        data: data.buySeries,
-        itemStyle: { color: "red" },
-      },
+      // {
+      //   name: "委託量(buy)",
+      //   type: "bar",
+      //   data: data.buySeries,
+      //   itemStyle: { color: "red" },
+      // },
     ],
   };
   return <ReactECharts option={options} />;
