@@ -1,4 +1,5 @@
 import { Table } from "antd";
+import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import { api, defaultAxios } from "../../../environment/api";
 
@@ -77,6 +78,10 @@ const OrderTable = () => {
         {
           title: "委託時間",
           dataIndex: "createdTime",
+          width: 200,
+          render: (data) => (
+            <span>{dayjs(data).format("YYYY/MM/DD HH:mm:ss")}</span>
+          ),
         },
       ]}
       dataSource={orederData}

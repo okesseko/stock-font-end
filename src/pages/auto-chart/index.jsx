@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Settings from "./settings";
 import BarChart from "../echart-example/bar";
+import BarLineChart from "../echart-example/bar-line";
 import { defaultAxios, api } from "../../environment/api";
 import { Button, Input, Select } from "antd";
 
@@ -10,11 +11,16 @@ const AutoChart = () => {
   const [buttonStatus, setButtonStatus] = useState("stop");
   const [showType, setShowType] = useState("all");
   const [frequency, setFrequency] = useState(1);
-
+  const [timeChart, setTimeChart] = useState({
+    xAxis: [],
+    price: [],
+    quantity: [],
+    buy: [],
+    sell: [],
+  });
   useEffect(() => {
     clearInterval(chartRecord.current);
     function renderData() {
-      console.log("ren");
       defaultAxios({
         url: api.getDisplay.url,
         method: api.getDisplay.method,
@@ -24,6 +30,36 @@ const AutoChart = () => {
       }).then((res) => {
         const data = res.data;
         setOriginData(() => data);
+      });
+      defaultAxios({
+        url: api.getDisplayChart.url,
+        method: api.getDisplayChart.method,
+        params: {
+          stockId: 1,
+          dateFormat: 0,
+        },
+      }).then((res) => {
+        const xAxis = [],
+          price = [],
+          quantity = [],
+          buy = [],
+          sell = [];
+        res.data.forEach((deta) => {
+          xAxis.push(deta.createdTime);
+          price.push(deta.close);
+          quantity.push(deta.quantity);
+          buy.push(deta.firstOrderBuy);
+          sell.push(deta.firstOrderSell);
+        });
+        setTimeChart({
+          xAxis,
+          price,
+          quantity,
+          buy,
+          sell,
+        });
+
+        console.log(res.data);
       });
     }
     if (buttonStatus === "start") {
@@ -70,6 +106,7 @@ const AutoChart = () => {
         </div>
         目前狀態: {buttonStatus}
       </div>
+      <BarLineChart data={timeChart} />
       <div className="flex justify-around my-6 items-center">
         <Button type="primary" onClick={() => setButtonStatus("start")}>
           開始模擬
@@ -89,6 +126,7 @@ const AutoChart = () => {
               method: api.resetStock.method,
               data: {
                 id: 1,
+                isReset: true,
               },
             });
             setOriginData({});
