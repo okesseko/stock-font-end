@@ -61,6 +61,18 @@ const BarLineChart = ({ data = { xAxis: [], price: [], quantity: [] } }) => {
         data: data.price,
       },
       {
+        name: "最佳買價",
+        type: "line",
+        step: "end",
+        data: data.buy,
+      },
+      {
+        name: "最佳賣價",
+        type: "line",
+        step: "end",
+        data: data.sell,
+      },
+      {
         name: "成交量",
         type: "bar",
         yAxisIndex: 1,

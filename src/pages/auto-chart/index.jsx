@@ -15,6 +15,8 @@ const AutoChart = () => {
     xAxis: [],
     price: [],
     quantity: [],
+    buy: [],
+    sell: [],
   });
   useEffect(() => {
     clearInterval(chartRecord.current);
@@ -39,16 +41,22 @@ const AutoChart = () => {
       }).then((res) => {
         const xAxis = [],
           price = [],
-          quantity = [];
+          quantity = [],
+          buy = [],
+          sell = [];
         res.data.forEach((deta) => {
           xAxis.push(deta.createdTime);
           price.push(deta.close);
           quantity.push(deta.quantity);
+          buy.push(deta.firstOrderBuy);
+          sell.push(deta.firstOrderSell);
         });
         setTimeChart({
           xAxis,
           price,
           quantity,
+          buy,
+          sell,
         });
 
         console.log(res.data);
