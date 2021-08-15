@@ -5,9 +5,11 @@ import { data } from "../mock-data";
 const BarChart = ({ originData = {}, showType }) => {
   const [yAxisMax, setYAxisMax] = useState(10);
   const [data, setData] = useState({});
+  const [center, setCenter] = useState(0);
   function showValue() {
     let xAxis = [],
       series = [],
+      centerBuffer = 0,
       tickRange = (originData.tickRange || []).sort(
         (a, b) => a.price - b.price
       ),
@@ -45,6 +47,7 @@ const BarChart = ({ originData = {}, showType }) => {
             while (a1 - b1 > 0.5) {
               console.log("decyes", b1, a1);
               b1 += 0.5;
+              centerBuffer++;
               xAxis.push(b1);
               series.push("0");
             }
@@ -73,6 +76,7 @@ const BarChart = ({ originData = {}, showType }) => {
       default:
         break;
     }
+    setCenter(centerBuffer);
     return { xAxis, series };
   }
 
@@ -143,7 +147,15 @@ const BarChart = ({ originData = {}, showType }) => {
           },
         },
         markPoint: {
-          data: [{ value: "0" }],
+          symbol: "rect",
+          symbolSize: 40,
+          itemStyle: {
+            color: "rgba(0,0,0,0.2)",
+          },
+          data: new Array(center).fill(0).map((e, index) => {
+            console.log(index,e,'dec')
+            return { xAxis: index + 5, yAxis: 0, symbolSize:[50,300] };
+          }),
         },
       },
       // {
