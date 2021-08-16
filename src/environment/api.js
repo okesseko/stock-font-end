@@ -14,4 +14,8 @@ export const api = {
   getDisplayChart: { url: "api/display/chart", method: "GET" },
   getTransaction: { url: "api/transaction", method: "GET" },
   resetStock: { url: "api/stock/reset", method: "PUT" },
+  getVirtualOrder: { url: "api/virtualOrder", method: "GET" },
+  postVirtualOrder: { url: "api/virtualOrder", method: "POST" },
+  resetVirtualOrder: { url: "api/virtualOrder", method: "PUT" },
+  getVirtualOrderContainer: { url: "api/virtualOrder/container", method: "GET" },
 };
