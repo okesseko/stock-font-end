@@ -14,4 +14,12 @@ export const api = {
   getDisplayChart: { url: "api/display/chart", method: "GET" },
   getTransaction: { url: "api/transaction", method: "GET" },
   resetStock: { url: "api/stock/reset", method: "PUT" },
+
+  getContainer: { url: "api/virtualOrder/container", method: "GET" },
+  postContainer: { url: "api/virtualOrder/container", method: "POST" },
+  putContainer: { url: "api/virtualOrder/container", method: "PUT" },
+  deleteContainer: {
+    url: "api/virtualOrder/container",
+    method: "DELETE",
+  },
 };
