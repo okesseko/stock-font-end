@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { defaultAxios, api } from "../../environment/api";
-import { Table, Button } from "antd";
+import { Table, Button, Row, Col, Select, Input, Typography } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import Create from "./create";
 import dayjs from "dayjs";
-import { data } from "../echart-example/mock-data";
+const { Search } = Input;
+const { Title } = Typography;
 const Case = () => {
   const [orederData, setOrderData] = useState([]);
   const [page, setPage] = useState(1);
@@ -14,10 +15,15 @@ const Case = () => {
   const [reset, setReset] = useState(0);
   const [editValue, setEditValue] = useState();
   const [checked, setChecked] = useState([]);
+  const [searchCondition, setSearchCondition] = useState({});
   useEffect(() => {
     defaultAxios({
       url: api.getContainer.url,
       method: api.getContainer.method,
+      params: {
+        ...searchCondition,
+        page: { page, pageSize },
+      },
     }).then((res) => {
       console.log(res.data);
       setOrderData(res.data.content);
@@ -39,6 +45,51 @@ const Case = () => {
         reset={setReset}
         defaultValue={editValue}
       />
+      <Title level={5}>條件搜尋</Title>
+      <Row
+        className="mb-4 border border-gray-200 p-4"
+        justify="space-around"
+        align="bottom"
+      >
+        <Col span={6}>
+          情境名稱
+          <Input
+            placeholder="輸入名稱"
+            size="middle"
+            onChange={(e) => {
+              setSearchCondition({
+                ...searchCondition,
+                name: e.target.value,
+              });
+            }}
+          />
+        </Col>
+        <Col span={6}>
+          股票名稱
+          <Select
+            placeholder="選擇特定股票"
+            size="middle"
+            className="w-full"
+            options={[{ value: 1, label: "1號股票" }]}
+            onChange={(e) => {
+              console.log(e);
+              setSearchCondition({
+                ...searchCondition,
+                stockId: e,
+              });
+            }}
+          />
+        </Col>
+        <Col span={2}>
+          <Button
+            onClick={() => {
+              setReset(Math.random());
+            }}
+          >
+            搜尋
+          </Button>
+        </Col>
+      </Row>
       <div className="flex justify-end my-5">
         <Button
           disabled={!checked.length}
@@ -76,12 +127,12 @@ const Case = () => {
           ...rowSelection,
         }}
         columns={[
-          {
-            title: "id",
-            dataIndex: "id",
-            render: (data) => <span>{data || "NULL"}</span>,
-            sorter: (a, b) => a.id - b.id,
-          },
+          // {
+          //   title: "id",
+          //   dataIndex: "id",
+          //   render: (data) => <span>{data || "NULL"}</span>,
+          //   sorter: (a, b) => a.id - b.id,
+          // },
           {
             title: "股票 ID",
             dataIndex: "stockId",
