@@ -14,4 +14,6 @@ export const api = {
   getDisplayChart: { url: "api/display/chart", method: "GET" },
   getTransaction: { url: "api/transaction", method: "GET" },
   resetStock: { url: "api/stock/reset", method: "PUT" },
+  getFrequentData: { url: "api/frequentData", method: "GET" },
+  downloadFrequentData: { url: "api/frequentData/download", method: "GET" },
 };
