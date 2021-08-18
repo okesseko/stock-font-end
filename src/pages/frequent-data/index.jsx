@@ -50,7 +50,7 @@ const FrequentData = function () {
                 createdTime: JSON.stringify({ max: endTime, min: startTime }),
                 stockId,
               },
-            });
+            }).then(({ data }) => console.log(data));
           }}
         >
           GET JSON
@@ -67,6 +67,16 @@ const FrequentData = function () {
                 }),
                 stockId,
               },
+            }).then(({ data, headers }) => {
+              const fileName = headers["content-disposition"]
+                .match(/".+"/)[0]
+                .replace(/"/g, "");
+              const url = window.URL.createObjectURL(new Blob([data]));
+              const link = document.createElement("a");
+              link.href = url;
+              link.setAttribute("download", fileName);
+              document.body.appendChild(link);
+              link.click();
             });
           }}
         >
