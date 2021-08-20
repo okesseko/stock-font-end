@@ -18,4 +18,12 @@ export const api = {
   postVirtualOrder: { url: "api/virtualOrder", method: "POST" },
   resetVirtualOrder: { url: "api/virtualOrder", method: "PUT" },
   getVirtualOrderContainer: { url: "api/virtualOrder/container", method: "GET" },
+
+  getContainer: { url: "api/virtualOrder/container", method: "GET" },
+  postContainer: { url: "api/virtualOrder/container", method: "POST" },
+  putContainer: { url: "api/virtualOrder/container", method: "PUT" },
+  deleteContainer: {
+    url: "api/virtualOrder/container",
+    method: "DELETE",
+  },
 };

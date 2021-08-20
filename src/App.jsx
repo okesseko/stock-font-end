@@ -7,6 +7,7 @@ import OrderTable from "./pages/table/order-table";
 import PriceTable from "./pages/table/price-table";
 import QuickOrder from "./pages/quick-order";
 import ReplayChart from "./pages/replay";
+import Case from "./pages/case";
 import "antd/dist/antd.css";
 const App = () => {
   return (
@@ -22,6 +23,7 @@ const App = () => {
             <Route path="/oreder-table" component={OrderTable} />
             <Route path="/price-table" component={PriceTable} />
             <Route path="/quick-order" component={QuickOrder} />
+            <Route path="/case" component={Case} />
             <Redirect from="*" to="/" />
           </Switch>
         </div>
