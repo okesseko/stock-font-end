@@ -1,5 +1,5 @@
-import React from "react";
 import { NavLink } from "react-router-dom";
+import React from "react";
 
 const RouterLink = () => {
   return (
@@ -23,6 +23,12 @@ const RouterLink = () => {
       </li>
       <li className="py-5 text-xl border-b border-black">
         <NavLink to="/price-table">成交紀錄表單</NavLink>
+      </li>
+      <li className="py-5 text-xl border-b border-black">
+        <NavLink to="/quick-order">閃電下單</NavLink>
+      </li>
+      <li className="py-5 text-xl border-b border-black">
+        <NavLink to="/case">情境管理</NavLink>
       </li>
       <li className="py-5 text-xl border-b border-black">
         <NavLink to="/frequent-data">高頻資料</NavLink>
