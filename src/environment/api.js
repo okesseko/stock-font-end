@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const defaultAxios = axios.create({
-  baseURL: "http://220.141.191.40:8080/",
+  baseURL: "http://118.161.4.13:8080/",
 });
 
 // api
@@ -26,4 +26,6 @@ export const api = {
     url: "api/virtualOrder/container",
     method: "DELETE",
   },
+  getFrequentData: { url: "api/frequentData", method: "GET" },
+  downloadFrequentData: { url: "api/frequentData/download", method: "GET" },
 };
