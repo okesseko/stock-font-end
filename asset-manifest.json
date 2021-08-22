@@ -1,23 +1,23 @@
 {
   "files": {
-    "main.css": "/stock-font-end/static/css/main.a3a6d9dd.chunk.css",
-    "main.js": "/stock-font-end/static/js/main.ec45f4e6.chunk.js",
-    "main.js.map": "/stock-font-end/static/js/main.ec45f4e6.chunk.js.map",
+    "main.css": "/stock-font-end/static/css/main.8819149d.chunk.css",
+    "main.js": "/stock-font-end/static/js/main.6dd44815.chunk.js",
+    "main.js.map": "/stock-font-end/static/js/main.6dd44815.chunk.js.map",
     "runtime-main.js": "/stock-font-end/static/js/runtime-main.894a8e19.js",
     "runtime-main.js.map": "/stock-font-end/static/js/runtime-main.894a8e19.js.map",
     "static/css/2.d99984a5.chunk.css": "/stock-font-end/static/css/2.d99984a5.chunk.css",
-    "static/js/2.f8833f79.chunk.js": "/stock-font-end/static/js/2.f8833f79.chunk.js",
-    "static/js/2.f8833f79.chunk.js.map": "/stock-font-end/static/js/2.f8833f79.chunk.js.map",
+    "static/js/2.60a5b9b7.chunk.js": "/stock-font-end/static/js/2.60a5b9b7.chunk.js",
+    "static/js/2.60a5b9b7.chunk.js.map": "/stock-font-end/static/js/2.60a5b9b7.chunk.js.map",
     "index.html": "/stock-font-end/index.html",
     "static/css/2.d99984a5.chunk.css.map": "/stock-font-end/static/css/2.d99984a5.chunk.css.map",
-    "static/css/main.a3a6d9dd.chunk.css.map": "/stock-font-end/static/css/main.a3a6d9dd.chunk.css.map",
-    "static/js/2.f8833f79.chunk.js.LICENSE.txt": "/stock-font-end/static/js/2.f8833f79.chunk.js.LICENSE.txt"
+    "static/css/main.8819149d.chunk.css.map": "/stock-font-end/static/css/main.8819149d.chunk.css.map",
+    "static/js/2.60a5b9b7.chunk.js.LICENSE.txt": "/stock-font-end/static/js/2.60a5b9b7.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.894a8e19.js",
     "static/css/2.d99984a5.chunk.css",
-    "static/js/2.f8833f79.chunk.js",
-    "static/css/main.a3a6d9dd.chunk.css",
-    "static/js/main.ec45f4e6.chunk.js"
+    "static/js/2.60a5b9b7.chunk.js",
+    "static/css/main.8819149d.chunk.css",
+    "static/js/main.6dd44815.chunk.js"
   ]
 }
