@@ -20,16 +20,26 @@ const App = () => {
         <RouterLink />
         <div className="flex-1 my-10 ">
           <Switch>
-            <Route path="/" exact component={Main} />
-            <Route path="/echart-example" component={EchartExample} />
-            <Route path="/auto-chart" component={AutoChart} />
-            <Route path="/replay-chart" component={ReplayChart} />
-            <Route path="/oreder-table" component={OrderTable} />
-            <Route path="/price-table" component={PriceTable} />
-            <Route path="/quick-order" component={QuickOrder} />
-            <Route path="/case" component={Case} />
-            <Route path="/frequent-data" component={FrequentData} />;
-            <Redirect from="*" to="/" />
+            <Route path="/stock-font-end/" exact component={Main} />
+            <Route
+              path="/stock-font-end/echart-example"
+              component={EchartExample}
+            />
+            <Route path="/stock-font-end/auto-chart" component={AutoChart} />
+            <Route
+              path="/stock-font-end/replay-chart"
+              component={ReplayChart}
+            />
+            <Route path="/stock-font-end/oreder-table" component={OrderTable} />
+            <Route path="/stock-font-end/price-table" component={PriceTable} />
+            <Route path="/stock-font-end/quick-order" component={QuickOrder} />
+            <Route path="/stock-font-end/case" component={Case} />
+            <Route
+              path="/stock-font-end/frequent-data"
+              component={FrequentData}
+            />
+            ;
+            <Redirect from="*" to="/stock-font-end/" />
           </Switch>
         </div>
       </div>
