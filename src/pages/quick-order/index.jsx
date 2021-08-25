@@ -6,12 +6,21 @@ import { Button, InputNumber, Select } from "antd";
 
 const QuickOrder = () => {
 	const [containerData, setContainerData] = useState([]);
+	const [fiveTickrangeData, setFiveTickRangeData] = useState([]);
 	const [rangeData, setRangeData] = useState([]);
+	const [matchPrice, setMatchPrice] = useState();
 	const [quantity, setQuantity] = useState(1);
 	const [page, setPage] = useState(1);
 	const [pageSize, setPageSize] = useState(20);
 	const [totalSize, setTotalSize] = useState(0);
 	const [showType, setShowType] = useState("請選擇情境");
+	function matchFiveTick(data, price, type) {
+		if (type == 'buyQuantity') {
+			return data.find((item) => { return item.price == price && item.buyQuantity != null })
+		} else if (type == 'sellQuantity') {
+			return data.find((item) => { return item.price == price && item.sellQuantity != null })
+		}
+	}
 	function sendOrder(data) {
 		if (showType == "請選擇情境") {
 			defaultAxios({
@@ -27,7 +36,7 @@ const QuickOrder = () => {
 					timeRestriction: data.timeRestriction, // ROD = 0, IOC = 1, FOK = 2
 				},
 			}).then((res) => {
-				refreshDefaultDisplay();
+				refreshDisplay();
 			});
 		} else {
 			defaultAxios({
@@ -42,33 +51,37 @@ const QuickOrder = () => {
 					virtualOrderContainerId: showType,
 				},
 			}).then((res) => {
-				refreshDisplay(showType);
+				refreshDisplay();
 			});
 		}
 	}
 
-	function refreshDefaultDisplay() {
-		defaultAxios({
-			url: api.getDisplay.url,
-			method: api.getDisplay.method,
-			params: {
-				isGetLatest: true,
-			},
-		}).then((res) => {
-			setRangeData(res.data.tickRange);
-		});
-	}
-
-	function refreshDisplay(id) {
-		defaultAxios({
-			url: api.getVirtualOrder.url + '/' + id,
-			method: api.getVirtualOrder.method,
-			params: {
-				isGetLatest: true,
-			},
-		}).then((res) => {
-			setRangeData(res.data.display.tickRange);
-		});
+	function refreshDisplay() {
+		if (showType == "請選擇情境") {
+			defaultAxios({
+				url: api.getDisplay.url,
+				method: api.getDisplay.method,
+				params: {
+					isGetLatest: true,
+				},
+			}).then((res) => {
+				console.log(res.data)
+				setFiveTickRangeData(res.data.fiveTickRange);
+				setRangeData(res.data.tickRange);
+				setMatchPrice(res.data.matchPrice);
+			});
+		} else {
+			defaultAxios({
+				url: api.getVirtualOrder.url + '/' + showType,
+				method: api.getVirtualOrder.method,
+				params: {
+					isGetLatest: true,
+				},
+			}).then((res) => {
+				setRangeData(res.data.display.tickRange);
+				setMatchPrice(res.data.display.matchPrice);
+			});
+		}
 	}
 
 	useEffect(() => {
@@ -90,7 +103,10 @@ const QuickOrder = () => {
 			setTotalSize(res.data.totalSize);
 		});
 
-		refreshDefaultDisplay();
+		setInterval(() => {
+			console.log(1);
+			refreshDisplay();
+		}, 1000)
 	}, [page, pageSize]);
 
 	return (
@@ -135,7 +151,7 @@ const QuickOrder = () => {
 			{rangeData.map(
 				(range, key) => (
 					<div key={key} className="flex mb-1 items-center">
-						<Button className="w-full" style={{ background: 'lightpink', borderColor: 'lightpink' }}
+						<Button className="w-full" style={{ background: (matchFiveTick(fiveTickrangeData, range.price, 'buyQuantity')) ? 'lightcoral' : 'lightpink', borderColor: 'lightpink' }}
 							onClick={() => {
 								sendOrder({
 									method: 0,
@@ -146,12 +162,12 @@ const QuickOrder = () => {
 								})
 							}}
 						>
-							{range.buyQuantity}
+							{(range.buyQuantity > 0) ? range.buyQuantity : ' '}
 						</Button>
-						<div className="bg-yellow-200 text-center w-1/4 mx-1 h-full py-1.5">
+						<div className={((matchPrice == range.price) ? 'bg-yellow-400' : 'bg-yellow-200' ) + ' text-center w-1/4 mx-1 h-full py-1.5'}>
 							{range.price}
 						</div>
-						<Button className="w-full" style={{ background: 'lightgreen', borderColor: 'lightgreen' }}
+						<Button className="w-full" style={{ background: (matchFiveTick(fiveTickrangeData, range.price, 'sellQuantity')) ? 'lightseagreen' : 'lightgreen', borderColor: 'lightgreen' }}
 							onClick={() => {
 								sendOrder({
 									method: 1,
@@ -162,7 +178,7 @@ const QuickOrder = () => {
 								})
 							}}
 						>
-							{range.sellQuantity}
+							{(range.sellQuantity > 0) ? range.sellQuantity : ' '}
 						</Button>
 					</div>
 				)
