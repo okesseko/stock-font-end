@@ -14,6 +14,8 @@ const QuickOrder = () => {
 	const [pageSize, setPageSize] = useState(20);
 	const [totalSize, setTotalSize] = useState(0);
 	const [showType, setShowType] = useState("請選擇情境");
+	const [timeRestriction, setTimeRestriction] = useState("ROD");
+	
 	function matchFiveTick(data, price, type) {
 		if (type == 'buyQuantity') {
 			return data.find((item) => { return item.price == price && item.buyQuantity != null })
@@ -33,7 +35,7 @@ const QuickOrder = () => {
 					price: data.price,
 					quantity: data.quantity,
 					priceType: data.priceType, // MARKET = 0, LIMIT = 1
-					timeRestriction: data.timeRestriction, // ROD = 0, IOC = 1, FOK = 2
+					timeRestriction: timeRestriction, // ROD = 0, IOC = 1, FOK = 2
 				},
 			}).then((res) => {
 				refreshDisplay();
@@ -47,7 +49,7 @@ const QuickOrder = () => {
 					price: data.price,
 					quantity: data.quantity,
 					priceType: data.priceType, // MARKET = 0, LIMIT = 1
-					timeRestriction: data.timeRestriction, // ROD = 0, IOC = 1, FOK = 2
+					timeRestriction: timeRestriction, // ROD = 0, IOC = 1, FOK = 2
 					virtualOrderContainerId: showType,
 				},
 			}).then((res) => {
@@ -129,6 +131,28 @@ const QuickOrder = () => {
 					}}
 				/>
 
+				<Select
+					value={timeRestriction}
+					style={{ width: 120, marginBottom: '10px', marginRight: '10px' }}
+					onChange={(value) => {
+						setTimeRestriction(value);
+					}}
+					options={[
+						{							
+							label: 'ROD',
+							value: 0,
+						},
+						{
+							label: 'IOC',
+							value: 1,
+						},
+						{
+							label: 'FOK',
+							value: 2,
+						},
+					]}
+				/>
+				
 				<Button
 					type="primary"
 					danger
@@ -158,7 +182,6 @@ const QuickOrder = () => {
 									price: range.price,
 									quantity: quantity,
 									priceType: 1,
-									timeRestriction: 0,
 								})
 							}}
 						>
@@ -174,7 +197,6 @@ const QuickOrder = () => {
 									price: range.price,
 									quantity: quantity,
 									priceType: 1,
-									timeRestriction: 0,
 								})
 							}}
 						>
