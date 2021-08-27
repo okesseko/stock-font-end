@@ -1,7 +1,8 @@
 import axios from "axios";
 
 export const defaultAxios = axios.create({
-  baseURL: "http://118.161.4.13:8080/",
+  // baseURL: "http://118.161.4.13:8080/",
+  baseURL: "http://localhost:8080/",
 });
 
 // api
@@ -17,7 +18,10 @@ export const api = {
   getVirtualOrder: { url: "api/virtualOrder", method: "GET" },
   postVirtualOrder: { url: "api/virtualOrder", method: "POST" },
   resetVirtualOrder: { url: "api/virtualOrder", method: "PUT" },
-  getVirtualOrderContainer: { url: "api/virtualOrder/container", method: "GET" },
+  getVirtualOrderContainer: {
+    url: "api/virtualOrder/container",
+    method: "GET",
+  },
 
   getContainer: { url: "api/virtualOrder/container", method: "GET" },
   postContainer: { url: "api/virtualOrder/container", method: "POST" },
@@ -28,4 +32,6 @@ export const api = {
   },
   getFrequentData: { url: "api/frequentData", method: "GET" },
   downloadFrequentData: { url: "api/frequentData/download", method: "GET" },
+  getGroup: { url: "api/group", method: "GET" },
+  getStock: { url: "api/stock", method: "GET" },
 };
