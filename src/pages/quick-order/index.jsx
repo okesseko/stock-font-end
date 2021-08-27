@@ -6,6 +6,8 @@ import { Button, InputNumber, Select } from "antd";
 
 const QuickOrder = () => {
 	const [containerData, setContainerData] = useState([]);
+	const [A1, setA1] = useState(0);
+	const [B1, setB1] = useState(0);
 	const [fiveTickrangeData, setFiveTickRangeData] = useState([]);
 	const [rangeData, setRangeData] = useState([]);
 	const [matchPrice, setMatchPrice] = useState();
@@ -14,15 +16,16 @@ const QuickOrder = () => {
 	const [pageSize, setPageSize] = useState(20);
 	const [totalSize, setTotalSize] = useState(0);
 	const [showType, setShowType] = useState("請選擇情境");
-	const [timeRestriction, setTimeRestriction] = useState("ROD");
+	const [timeRestriction, setTimeRestriction] = useState(0);
 	
-	function matchFiveTick(data, price, type) {
+	function matchFiveTick(price, type) {
 		if (type == 'buyQuantity') {
-			return data.find((item) => { return item.price == price && item.buyQuantity != null })
+			return price == B1;
 		} else if (type == 'sellQuantity') {
-			return data.find((item) => { return item.price == price && item.sellQuantity != null })
+			return price == A1;
 		}
 	}
+	
 	function sendOrder(data) {
 		if (showType == "請選擇情境") {
 			defaultAxios({
@@ -58,6 +61,43 @@ const QuickOrder = () => {
 		}
 	}
 
+	function sendMarketOrder(data) {
+		defaultAxios({
+			url: api.postOrder.url,
+			method: api.postOrder.method,
+			data: {
+				investorId: 1,
+				stockId: 1,
+				method: data.method, // BUY = 0, SELL = 1
+				price: data.price,
+				quantity: data.quantity,
+				priceType: data.priceType, // MARKET = 0, LIMIT = 1
+				timeRestriction: timeRestriction, // ROD = 0, IOC = 1, FOK = 2
+			},
+		}).then((res) => {
+			refreshDisplay();
+		});
+	}
+
+	function cancelOrder(data) {
+		defaultAxios({
+			url: api.postOrder.url,
+			method: api.postOrder.method,
+			data: {
+				investorId: 1,
+				stockId: 1,
+				method: data.method, // BUY = 0, SELL = 1
+				price: data.price,
+				quantity: data.quantity,
+				priceType: data.priceType, // MARKET = 0, LIMIT = 1
+				timeRestriction: timeRestriction, // ROD = 0, IOC = 1, FOK = 2
+				subMethod: 0,
+			},
+		}).then((res) => {
+			refreshDisplay();
+		});
+	}
+
 	function refreshDisplay() {
 		if (showType == "請選擇情境") {
 			defaultAxios({
@@ -71,6 +111,21 @@ const QuickOrder = () => {
 				setFiveTickRangeData(res.data.fiveTickRange);
 				setRangeData(res.data.tickRange);
 				setMatchPrice(res.data.matchPrice);
+
+				const fiveTickRangeData = res.data.fiveTickRange;
+				let newFiveTickRangeData = JSON.parse(JSON.stringify(fiveTickRangeData))
+				newFiveTickRangeData = newFiveTickRangeData.sort((a, b) => a.price - b.price)
+
+				fiveTickRangeData.forEach(function (item) {
+					if (item.sellQuantity > 0) {
+						setA1(item.price);
+					}
+				})
+				newFiveTickRangeData.forEach(function (item) {
+					if (item.buyQuantity > 0) {
+						setB1(item.price);
+					}
+				})
 			});
 		} else {
 			defaultAxios({
@@ -172,10 +227,75 @@ const QuickOrder = () => {
 					重製情境
 				</Button>
 			</div>
+
+
+			<div className="flex mb-1 items-center">
+				<Button className="w-full" style={{ background: 'lightpink', borderColor: 'lightpink' }}
+					onClick={() => {
+						sendMarketOrder({
+							method: 0,
+							price: 0,
+							quantity: quantity,
+							priceType: 0,
+						})
+					}}
+				>
+					&nbsp;
+				</Button>
+				<div className={'bg-blue-300 text-center w-1/4 mx-1 h-full py-1.5'}>
+					市價
+				</div>
+				<Button className="w-full py-3" style={{ background: 'lightgreen', borderColor: 'lightgreen' }}
+					onClick={() => {
+						sendMarketOrder({
+							method: 1,
+							price: 0,
+							quantity: quantity,
+							priceType: 0,
+						})
+					}}
+				>
+					&nbsp;
+				</Button>
+			</div>
+			<hr className="my-2" />
+			<div className="flex mb-1 items-center">
+				<Button className="w-1/2 mr-1" style={{ background: 'none', border: 'none' }}
+				>
+					取消單
+				</Button>
+				<Button className="w-1/2" style={{ background: 'none', border: 'none' }}
+				>
+					限價單
+				</Button>
+				<div className={'text-center w-1/4 mx-1 h-full py-1.5'}>
+					&nbsp;
+				</div>
+				<Button className="w-1/2 mr-1" style={{ background: 'none', border: 'none' }}
+				>
+					限價單
+				</Button>
+				<Button className="w-1/2" style={{ background: 'none', border: 'none' }}
+				>
+					取消單
+				</Button>
+			</div>
 			{rangeData.map(
 				(range, key) => (
 					<div key={key} className="flex mb-1 items-center">
-						<Button className="w-full" style={{ background: (matchFiveTick(fiveTickrangeData, range.price, 'buyQuantity')) ? 'lightcoral' : 'lightpink', borderColor: 'lightpink' }}
+						<Button className="w-1/2 mr-1" style={{ background: '#ffb6c180', borderColor: 'lightpink' }}	
+							onClick={() => {
+								cancelOrder({
+									method: 0,
+									price: range.price,
+									quantity: quantity,
+									priceType: 1,
+								})
+							}}
+						>
+							&nbsp;
+						</Button>
+						<Button className="w-1/2" style={{ background: (matchFiveTick(range.price, 'buyQuantity')) ? 'lightcoral' : 'lightpink', borderColor: 'lightpink' }}
 							onClick={() => {
 								sendOrder({
 									method: 0,
@@ -190,7 +310,7 @@ const QuickOrder = () => {
 						<div className={((matchPrice == range.price) ? 'bg-yellow-400' : 'bg-yellow-200' ) + ' text-center w-1/4 mx-1 h-full py-1.5'}>
 							{range.price}
 						</div>
-						<Button className="w-full" style={{ background: (matchFiveTick(fiveTickrangeData, range.price, 'sellQuantity')) ? 'lightseagreen' : 'lightgreen', borderColor: 'lightgreen' }}
+						<Button className="w-1/2 mr-1" style={{ background: (matchFiveTick(range.price, 'sellQuantity')) ? 'lightseagreen' : 'lightgreen', borderColor: 'lightgreen' }}
 							onClick={() => {
 								sendOrder({
 									method: 1,
@@ -201,6 +321,18 @@ const QuickOrder = () => {
 							}}
 						>
 							{(range.sellQuantity > 0) ? range.sellQuantity : ' '}
+						</Button>
+						<Button className="w-1/2" style={{ background: '#90ee9080', borderColor: 'lightgreen' }}
+							onClick={() => {
+								cancelOrder({
+									method: 1,
+									price: range.price,
+									quantity: quantity,
+									priceType: 1,
+								})
+							}}
+						>
+							&nbsp;
 						</Button>
 					</div>
 				)
