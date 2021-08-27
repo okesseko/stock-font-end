@@ -32,4 +32,6 @@ export const api = {
   },
   getFrequentData: { url: "api/frequentData", method: "GET" },
   downloadFrequentData: { url: "api/frequentData/download", method: "GET" },
+  getGroup: { url: "api/group", method: "GET" },
+  getStock: { url: "api/stock", method: "GET" },
 };
