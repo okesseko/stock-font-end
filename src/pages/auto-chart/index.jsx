@@ -4,6 +4,7 @@ import BarChart from "../echart-example/bar";
 import BarLineChart from "../echart-example/bar-line";
 import { defaultAxios, api } from "../../environment/api";
 import { Button, Input, Select, Typography, Table } from "antd";
+import { Switch } from "react-router-dom";
 
 const { Title } = Typography;
 const AutoChart = () => {
@@ -34,20 +35,22 @@ const AutoChart = () => {
       const data = res.data;
       setOriginData(() => data);
     });
+
     defaultAxios({
       url: api.getDisplayChart.url,
       method: api.getDisplayChart.method,
       params: {
         stockId: 1,
-        dateFormat: 0,
+        dateFormat: frequency === 60 ? 0 : 3,
       },
     }).then((res) => {
+      const getData = res.data.length - 50 < 0 ? 0 : res.data.length - 100;
       const xAxis = [],
         price = [],
         quantity = [],
         buy = [],
         sell = [];
-      res.data.forEach((deta) => {
+      res.data.slice(getData, res.data.length).forEach((deta) => {
         xAxis.push(deta.createdTime);
         price.push(deta.close);
         quantity.push(deta.quantity);
@@ -77,6 +80,7 @@ const AutoChart = () => {
       if (getData) renderData();
     });
     setOriginData({});
+    setTimeChart({});
     setButtonStatus("stop");
   }
 
@@ -91,6 +95,7 @@ const AutoChart = () => {
       clearInterval(chartRecord.current);
     };
   }, [buttonStatus, frequency]);
+
   useEffect(() => {
     defaultAxios({
       url: api.getVirtualOrderContainer.url,
@@ -104,6 +109,7 @@ const AutoChart = () => {
       );
     });
   }, []);
+  
   return (
     <div>
       <BarChart originData={originData} showType={showType} />
@@ -159,15 +165,19 @@ const AutoChart = () => {
           重製模擬
         </Button>
         <div>
-          圖表更新頻率(s)
-          <Input
-            type="number"
-            max={10}
-            min={0.1}
+          圖表更新頻率
+          <Select
+            className="w-20"
             value={frequency}
-            step={0.1}
-            onChange={(e) => {
-              setFrequency(e.target.value);
+            options={[
+              { value: 60, label: "1m" },
+              { value: 10, label: "10s" },
+              { value: 5, label: "5s" },
+              { value: 1, label: "1s" },
+              { value: 0.5, label: "0.5s" },
+            ]}
+            onChange={(val) => {
+              setFrequency(val);
             }}
           />
         </div>
