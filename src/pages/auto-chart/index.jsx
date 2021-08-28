@@ -3,12 +3,13 @@ import Settings from "./settings";
 import BarChart from "../echart-example/bar";
 import BarLineChart from "../echart-example/bar-line";
 import { defaultAxios, api } from "../../environment/api";
-import { Button, Input, Select, Typography, Table } from "antd";
-import { Switch } from "react-router-dom";
+import { Button, Select, Typography, Table } from "antd";
 
 const { Title } = Typography;
+
 const AutoChart = () => {
   const chartRecord = useRef();
+  const playCase = useRef();
   const selectCaseId = useRef(null);
   const [originData, setOriginData] = useState({});
   const [buttonStatus, setButtonStatus] = useState("stop");
@@ -25,32 +26,32 @@ const AutoChart = () => {
   const [caseOrder, setCaseOrder] = useState([]);
 
   function renderData() {
-    defaultAxios({
-      url: api.getDisplay.url,
-      method: api.getDisplay.method,
-      params: {
-        isGetLatest: true,
-      },
-    }).then((res) => {
-      const data = res.data;
-      setOriginData(() => data);
-    });
-
-    defaultAxios({
-      url: api.getDisplayChart.url,
-      method: api.getDisplayChart.method,
-      params: {
-        stockId: 1,
-        dateFormat: frequency === 60 ? 0 : 3,
-      },
-    }).then((res) => {
-      const getData = res.data.length - 50 < 0 ? 0 : res.data.length - 100;
+    Promise.all([
+      defaultAxios({
+        url: api.getDisplay.url,
+        method: api.getDisplay.method,
+        params: {
+          isGetLatest: true,
+        },
+      }),
+      defaultAxios({
+        url: api.getDisplayChart.url,
+        method: api.getDisplayChart.method,
+        params: {
+          stockId: 1,
+          dateFormat: frequency === 60 ? 0 : 3,
+        },
+      }),
+    ]).then((val) => {
+      setOriginData(() => val[0].data);
+      const getData =
+        val[1].data.length - 50 < 0 ? 0 : val[1].data.length - 100;
       const xAxis = [],
         price = [],
         quantity = [],
         buy = [],
         sell = [];
-      res.data.slice(getData, res.data.length).forEach((deta) => {
+      val[1].data.slice(getData, val[1].data.length).forEach((deta) => {
         xAxis.push(deta.createdTime);
         price.push(deta.close);
         quantity.push(deta.quantity);
@@ -64,8 +65,6 @@ const AutoChart = () => {
         buy,
         sell,
       });
-
-      console.log(res.data);
     });
   }
   function resetStock(getData = false) {
@@ -109,7 +108,7 @@ const AutoChart = () => {
       );
     });
   }, []);
-  
+
   return (
     <div>
       <BarChart originData={originData} showType={showType} />
@@ -167,7 +166,7 @@ const AutoChart = () => {
         <div>
           圖表更新頻率
           <Select
-            className="w-20"
+            className="w-20 ml-2"
             value={frequency}
             options={[
               { value: 60, label: "1m" },
@@ -230,6 +229,7 @@ const AutoChart = () => {
             type="primary"
             danger
             onClick={() => {
+              console.log(caseOrder);
               if (caseOrder.length) {
                 defaultAxios({
                   url: api.postOrder.url,
@@ -248,8 +248,48 @@ const AutoChart = () => {
           >
             單步執行情境
           </Button>
+          <Button
+            disabled={playCase.current}
+            onClick={() => {
+              if (caseOrder.length)
+                playCase.current = setInterval(() => {
+                  setCaseOrder((_case) => {
+                    console.log(_case, "csa");
+                    if (_case.length) {
+                      defaultAxios({
+                        url: api.postOrder.url,
+                        method: api.postOrder.method,
+                        data: {
+                          investorId: 1,
+                          stockId: 1,
+                          ..._case[0],
+                        },
+                      }).then(() => {
+                        renderData();
+                      });
+                    } else {
+                      clearInterval(playCase.current);
+                      playCase.current = null;
+                    }
+                    return _case.slice(1);
+                  });
+                }, 1000);
+            }}
+          >
+            自動執行 1s
+          </Button>
+          <Button
+            disabled={!playCase.current}
+            onClick={() => {
+              clearInterval(playCase.current);
+              playCase.current = null;
+            }}
+          >
+            暫停自動執行
+          </Button>
         </div>
         <Table
+          rowKey="id"
           className="h-full "
           scroll={{ y: 240 }}
           columns={[

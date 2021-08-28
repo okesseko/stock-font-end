@@ -137,14 +137,17 @@ const ReplayChart = () => {
         </Button>
         <div>
           幾秒一單
-          <Input
-            type="number"
-            max={10}
-            min={1}
+          <Select
+            className="w-20"
             value={frequency}
-            step={1}
-            onChange={(e) => {
-              setFrequency(e.target.value);
+            options={[
+              { value: 10, label: "10s" },
+              { value: 5, label: "5s" },
+              { value: 2, label: "2s" },
+              { value: 1, label: "1s" },
+            ]}
+            onChange={(val) => {
+              setFrequency(val);
             }}
           />
         </div>
