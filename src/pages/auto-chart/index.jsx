@@ -9,8 +9,8 @@ const { Title } = Typography;
 
 const AutoChart = () => {
   const chartRecord = useRef();
-  const playCase = useRef();
-  const selectCaseId = useRef(null);
+  const playCase = useRef(null);
+  const selectCaseId = useRef();
   const [originData, setOriginData] = useState({});
   const [buttonStatus, setButtonStatus] = useState("stop");
   const [showType, setShowType] = useState("all");
@@ -24,7 +24,6 @@ const AutoChart = () => {
   });
   const [caseData, setCaseData] = useState([]);
   const [caseOrder, setCaseOrder] = useState([]);
-
   function renderData() {
     Promise.all([
       defaultAxios({
@@ -200,7 +199,6 @@ const AutoChart = () => {
                     virtualOrderContainerId: caseId,
                   },
                 }).then((res) => {
-                  console.log(res.data.content);
                   setCaseOrder(res.data.content);
                 });
               }}
@@ -229,15 +227,15 @@ const AutoChart = () => {
             type="primary"
             danger
             onClick={() => {
-              console.log(caseOrder);
               if (caseOrder.length) {
+                const { createdTime, id, ...other } = caseOrder[0];
                 defaultAxios({
                   url: api.postOrder.url,
                   method: api.postOrder.method,
                   data: {
                     investorId: 1,
                     stockId: 1,
-                    ...caseOrder[0],
+                    ...other,
                   },
                 }).then(() => {
                   setCaseOrder(caseOrder.slice(1));
@@ -249,20 +247,20 @@ const AutoChart = () => {
             單步執行情境
           </Button>
           <Button
-            disabled={playCase.current}
+            disabled={!caseOrder.length}
             onClick={() => {
-              if (caseOrder.length)
+              if (caseOrder.length && !playCase.current)
                 playCase.current = setInterval(() => {
                   setCaseOrder((_case) => {
-                    console.log(_case, "csa");
                     if (_case.length) {
+                      const { createdTime, id, ...other } = _case[0];
                       defaultAxios({
                         url: api.postOrder.url,
                         method: api.postOrder.method,
                         data: {
                           investorId: 1,
                           stockId: 1,
-                          ..._case[0],
+                          ...other,
                         },
                       }).then(() => {
                         renderData();
@@ -279,7 +277,7 @@ const AutoChart = () => {
             自動執行 1s
           </Button>
           <Button
-            disabled={!playCase.current}
+            disabled={!(caseOrder.length && playCase.current)}
             onClick={() => {
               clearInterval(playCase.current);
               playCase.current = null;
@@ -311,7 +309,6 @@ const AutoChart = () => {
               title: "數量",
               dataIndex: "quantity",
             },
-
             {
               title: "副類型",
               dataIndex: "subMethod",
