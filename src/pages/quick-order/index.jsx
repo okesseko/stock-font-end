@@ -287,7 +287,7 @@ const QuickOrder = () => {
 						});
 					}}
 				>
-					重製情境
+					Reset
 				</Button>
 			</div>
 
