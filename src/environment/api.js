@@ -1,14 +1,22 @@
 import axios from "axios";
 
 export const defaultAxios = axios.create({
-  baseURL: "http://220.141.223.220:8080/",
+  baseURL: "http://220.141.197.74:8080/",
 });
+
+export function settingToken(token) {
+  defaultAxios.defaults.headers.common["Authorization"] = token;
+}
 
 // api
 
 export const api = {
+  login: { url: "api/investor/login", method: "POST" },
+  logout: { url: "api/investor/logout", method: "POST" },
+
   getOrder: { url: "api/order", method: "GET" },
   postOrder: { url: "api/order", method: "POST" },
+  postRealOrder: { url: "api/order/realData", method: "POST" },
   deleteOrder: { url: "api/order", method: "DELETE" },
   getDisplay: { url: "api/display", method: "GET" },
   getDisplayChart: { url: "api/display/chart", method: "GET" },
