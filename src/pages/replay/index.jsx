@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import BarChart from "../echart-example/bar";
 import { defaultAxios, api } from "../../environment/api";
 import { Button, Input, Select, DatePicker, Table } from "antd";
+import fakeData from '../../fake'
 import dayjs from "dayjs";
 
 const ReplayChart = () => {
@@ -30,6 +31,10 @@ const ReplayChart = () => {
         setOriginData({});
         setResetdataIndex(-1);
       });
+    } else if (buttonStatus === "real") {
+      setResetdata(fakeData);
+      setOriginData({});
+      setResetdataIndex(-1);
     } else if (buttonStatus === "start") {
       clearInterval(chartRecord.current);
       chartRecord.current = setInterval(() => {
@@ -49,8 +54,8 @@ const ReplayChart = () => {
       const nextStep = restData[restDataIndex];
       if (nextStep)
         defaultAxios({
-          url: api.postOrder.url,
-          method: api.postOrder.method,
+          url: api.postRealOrder.url,
+          method: api.postRealOrder.method,
           data: nextStep,
         }).then((res) => {
           const data = res.data;
@@ -123,6 +128,12 @@ const ReplayChart = () => {
         </Button>
         <Button
           type="primary"
+          onClick={() => setButtonStatus("real")}
+        >
+          使用證交所資料
+        </Button>
+        <Button
+          type="primary"
           danger
           disabled={!restData.length}
           onClick={() => setButtonStatus("start")}
@@ -166,20 +177,8 @@ const ReplayChart = () => {
         下步狀態({restDataIndex} / {restData.length - 1} )
         {!!restData.length && (
           <Table
+            rowKey="id"
             columns={[
-              // {
-              //   title: "訂單 ID",
-              //   dataIndex: "orderId",
-              //   render: (data) => <span>{data || "NULL"}</span>,
-              // },
-              // {
-              //   title: "投資 ID",
-              //   dataIndex: "investorId",
-              // },
-              // {
-              //   title: "股票 ID",
-              //   dataIndex: "stockId",
-              // },
               {
                 title: "價格類型",
                 dataIndex: "priceType",
