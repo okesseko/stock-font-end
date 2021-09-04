@@ -68,7 +68,7 @@ const BarLineChart = ({ data = { xAxis: [], price: [], quantity: [] } }) => {
         step: "end",
         data: data.buy,
         itemStyle: {
-          color: "green",
+          color: "red",
         },
       },
       {
@@ -77,7 +77,7 @@ const BarLineChart = ({ data = { xAxis: [], price: [], quantity: [] } }) => {
         step: "end",
         data: data.sell,
         itemStyle: {
-          color: "red",
+          color: "green",
         },
       },
       {
