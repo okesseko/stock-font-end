@@ -61,7 +61,7 @@ const QuickOrder = () => {
 					virtualOrderContainerId: showType,
 				},
 			}).then((res) => {
-				refreshDisplay(showType);
+				setData(res.data);
 			});
 		}
 	}
@@ -97,11 +97,12 @@ const QuickOrder = () => {
 					virtualOrderContainerId: showType,
 				},
 			}).then((res) => {
-				refreshDisplay(showType);
+				setData(res.data);
 			});
 		}
 	}
 
+	// 取消單
 	function cancelOrder(data) {
 		if (showType == "請選擇情境") {
 			defaultAxios({
@@ -134,7 +135,7 @@ const QuickOrder = () => {
 					virtualOrderContainerId: showType,
 				},
 			}).then((res) => {
-				refreshDisplay(showType);
+				setData(res.data);
 			});
 		}
 	}
@@ -148,24 +149,7 @@ const QuickOrder = () => {
 					isGetLatest: true,
 				},
 			}).then((res) => {
-				console.log(res.data)
-				setFiveTickRangeData(res.data.fiveTickRange);
-				setRangeData(res.data.tickRange);
-				setMatchPrice(res.data.matchPrice);
-
-				let newFiveTickRangeData = JSON.parse(JSON.stringify(fiveTickRangeData))
-				newFiveTickRangeData = newFiveTickRangeData.sort((a, b) => a.price - b.price)
-
-				fiveTickRangeData.forEach(function (item) {
-					if (item.sellQuantity > 0) {
-						setA1(item.price);
-					}
-				})
-				newFiveTickRangeData.forEach(function (item) {
-					if (item.buyQuantity > 0) {
-						setB1(item.price);
-					}
-				})
+				setData(res.data);
 			});
 		} else {
 			defaultAxios({
@@ -175,25 +159,29 @@ const QuickOrder = () => {
 					isGetLatest: true,
 				},
 			}).then((res) => {
-				setFiveTickRangeData(res.data.display.fiveTickRange);
-				setRangeData(res.data.display.tickRange);
-				setMatchPrice(res.data.display.matchPrice);
-
-				let newFiveTickRangeData = JSON.parse(JSON.stringify(fiveTickRangeData))
-				newFiveTickRangeData = newFiveTickRangeData.sort((a, b) => a.price - b.price)
-
-				fiveTickRangeData.forEach(function (item) {
-					if (item.sellQuantity > 0) {
-						setA1(item.price);
-					}
-				})
-				newFiveTickRangeData.forEach(function (item) {
-					if (item.buyQuantity > 0) {
-						setB1(item.price);
-					}
-				})
+				setData(res.data.display);
 			});
 		}
+	}
+
+	function setData(data) {
+		setFiveTickRangeData(data.fiveTickRange);
+		setRangeData(data.tickRange);
+		setMatchPrice(data.matchPrice);
+
+		let newFiveTickRangeData = JSON.parse(JSON.stringify(fiveTickRangeData))
+		newFiveTickRangeData = newFiveTickRangeData.sort((a, b) => a.price - b.price)
+
+		fiveTickRangeData.forEach(function (item) {
+			if (item.sellQuantity > 0) {
+				setA1(item.price);
+			}
+		})
+		newFiveTickRangeData.forEach(function (item) {
+			if (item.buyQuantity > 0) {
+				setB1(item.price);
+			}
+		})
 	}
 
 	useEffect(() => {
@@ -217,11 +205,10 @@ const QuickOrder = () => {
 
 		if (isRunning) {
 			timer = setInterval(() => {
-				console.log(1);
 				refreshDisplay(showType);
 			}, 1000)
 		} else {
-			refreshDisplay(showType);
+			// refreshDisplay(showType);
 		}
 
 		return () => clearInterval(timer)
@@ -287,7 +274,7 @@ const QuickOrder = () => {
 						});
 					}}
 				>
-					重製情境
+					Reset
 				</Button>
 			</div>
 
