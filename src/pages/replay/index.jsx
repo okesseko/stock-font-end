@@ -54,8 +54,8 @@ const ReplayChart = () => {
       const nextStep = restData[restDataIndex];
       if (nextStep)
         defaultAxios({
-          url: api.postRealOrder.url,
-          method: api.postRealOrder.method,
+          url: api.postOrder.url,
+          method: api.postOrder.method,
           data: nextStep,
         }).then((res) => {
           const data = res.data;
@@ -126,12 +126,12 @@ const ReplayChart = () => {
         >
           選擇時間
         </Button>
-        <Button
+        {/* <Button
           type="primary"
           onClick={() => setButtonStatus("real")}
         >
           使用證交所資料
-        </Button>
+        </Button> */}
         <Button
           type="primary"
           danger

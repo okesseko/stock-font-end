@@ -143,7 +143,7 @@ const BarChart = ({ originData = {}, showType }) => {
         data: data.series,
         itemStyle: {
           color: (param) => {
-            return param.data > 0 ? "green" : "red";
+            return param.data < 0 ? "green" : "red";
           },
         },
         markPoint: {
