@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const defaultAxios = axios.create({
-  baseURL: "http://220.141.197.74:8080/",
+  baseURL: "http://118.161.14.131:8080/",
 });
 
 export function settingToken(token) {
