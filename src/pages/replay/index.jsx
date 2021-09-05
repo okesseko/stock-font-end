@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import BarChart from "../echart-example/bar";
 import { defaultAxios, api } from "../../environment/api";
 import { Button, Input, Select, DatePicker, Table } from "antd";
+import fakeData from '../../fake'
 import dayjs from "dayjs";
 
 const ReplayChart = () => {
@@ -30,6 +31,10 @@ const ReplayChart = () => {
         setOriginData({});
         setResetdataIndex(-1);
       });
+    } else if (buttonStatus === "real") {
+      setResetdata(fakeData);
+      setOriginData({});
+      setResetdataIndex(-1);
     } else if (buttonStatus === "start") {
       clearInterval(chartRecord.current);
       chartRecord.current = setInterval(() => {
@@ -121,6 +126,12 @@ const ReplayChart = () => {
         >
           選擇時間
         </Button>
+        {/* <Button
+          type="primary"
+          onClick={() => setButtonStatus("real")}
+        >
+          使用證交所資料
+        </Button> */}
         <Button
           type="primary"
           danger
@@ -137,14 +148,17 @@ const ReplayChart = () => {
         </Button>
         <div>
           幾秒一單
-          <Input
-            type="number"
-            max={10}
-            min={1}
+          <Select
+            className="w-20"
             value={frequency}
-            step={1}
-            onChange={(e) => {
-              setFrequency(e.target.value);
+            options={[
+              { value: 10, label: "10s" },
+              { value: 5, label: "5s" },
+              { value: 2, label: "2s" },
+              { value: 1, label: "1s" },
+            ]}
+            onChange={(val) => {
+              setFrequency(val);
             }}
           />
         </div>
@@ -163,20 +177,8 @@ const ReplayChart = () => {
         下步狀態({restDataIndex} / {restData.length - 1} )
         {!!restData.length && (
           <Table
+            rowKey="id"
             columns={[
-              // {
-              //   title: "訂單 ID",
-              //   dataIndex: "orderId",
-              //   render: (data) => <span>{data || "NULL"}</span>,
-              // },
-              // {
-              //   title: "投資 ID",
-              //   dataIndex: "investorId",
-              // },
-              // {
-              //   title: "股票 ID",
-              //   dataIndex: "stockId",
-              // },
               {
                 title: "價格類型",
                 dataIndex: "priceType",

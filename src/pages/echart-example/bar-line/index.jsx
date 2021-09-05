@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactECharts from "echarts-for-react";
 import { data } from "../mock-data";
 
 const BarLineChart = ({ data = { xAxis: [], price: [], quantity: [] } }) => {
+  const [dataZoom, setDataZoom] = useState({ start: 0, end: 100 });
   const options = {
     tooltip: {
       trigger: "axis",
@@ -18,14 +19,10 @@ const BarLineChart = ({ data = { xAxis: [], price: [], quantity: [] } }) => {
       right: "4%",
       containLabel: true,
     },
-    // toolbox: {
-    //   show: true,
-    //   feature: {
-    //     dataView: { readOnly: false },
-    //     restore: {},
-    //     saveAsImage: {},
-    //   },
-    // },
+    legend: {
+      data: ["成交價", "最佳買價", "最佳賣價", "成交量"],
+    },
+    // backgroundColor: "black",
     xAxis: [
       {
         type: "category",
@@ -49,8 +46,10 @@ const BarLineChart = ({ data = { xAxis: [], price: [], quantity: [] } }) => {
       {
         show: true,
         realtime: true,
-        start: 0,
-        end: 100,
+        // ...dataZoom,
+        onChange: (val) => {
+          console.log(val);
+        },
       },
     ],
     series: [
@@ -59,24 +58,36 @@ const BarLineChart = ({ data = { xAxis: [], price: [], quantity: [] } }) => {
         type: "line",
         step: "end",
         data: data.price,
+        itemStyle: {
+          color: "black",
+        },
       },
       {
         name: "最佳買價",
         type: "line",
         step: "end",
         data: data.buy,
+        itemStyle: {
+          color: "red",
+        },
       },
       {
         name: "最佳賣價",
         type: "line",
         step: "end",
         data: data.sell,
+        itemStyle: {
+          color: "green",
+        },
       },
       {
         name: "成交量",
         type: "bar",
         yAxisIndex: 1,
         data: data.quantity,
+        itemStyle: {
+          color: "yellow",
+        },
       },
     ],
   };

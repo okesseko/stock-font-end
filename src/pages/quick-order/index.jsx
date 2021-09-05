@@ -5,10 +5,13 @@ import { api, defaultAxios } from "../../environment/api";
 import { Button, InputNumber, Select } from "antd";
 
 const QuickOrder = () => {
+	let timer;
+	const [stockId, setStockId] = useState(1);
+	const [isRunning, setIsRunning] = useState(true);
 	const [containerData, setContainerData] = useState([]);
 	const [A1, setA1] = useState(0);
 	const [B1, setB1] = useState(0);
-	const [fiveTickrangeData, setFiveTickRangeData] = useState([]);
+	const [fiveTickRangeData, setFiveTickRangeData] = useState([]);
 	const [rangeData, setRangeData] = useState([]);
 	const [matchPrice, setMatchPrice] = useState();
 	const [quantity, setQuantity] = useState(1);
@@ -18,6 +21,7 @@ const QuickOrder = () => {
 	const [showType, setShowType] = useState("請選擇情境");
 	const [timeRestriction, setTimeRestriction] = useState(0);
 	
+	// 標記A1、B1
 	function matchFiveTick(price, type) {
 		if (type == 'buyQuantity') {
 			return price == B1;
@@ -26,6 +30,7 @@ const QuickOrder = () => {
 		}
 	}
 	
+	// 限價單
 	function sendOrder(data) {
 		if (showType == "請選擇情境") {
 			defaultAxios({
@@ -41,7 +46,7 @@ const QuickOrder = () => {
 					timeRestriction: timeRestriction, // ROD = 0, IOC = 1, FOK = 2
 				},
 			}).then((res) => {
-				refreshDisplay();
+				refreshDisplay(showType);
 			});
 		} else {
 			defaultAxios({
@@ -56,49 +61,86 @@ const QuickOrder = () => {
 					virtualOrderContainerId: showType,
 				},
 			}).then((res) => {
-				refreshDisplay();
+				setData(res.data);
 			});
 		}
 	}
 
+	// 市價單
 	function sendMarketOrder(data) {
-		defaultAxios({
-			url: api.postOrder.url,
-			method: api.postOrder.method,
-			data: {
-				investorId: 1,
-				stockId: 1,
-				method: data.method, // BUY = 0, SELL = 1
-				price: data.price,
-				quantity: data.quantity,
-				priceType: data.priceType, // MARKET = 0, LIMIT = 1
-				timeRestriction: timeRestriction, // ROD = 0, IOC = 1, FOK = 2
-			},
-		}).then((res) => {
-			refreshDisplay();
-		});
+		if (showType == "請選擇情境") {
+			defaultAxios({
+				url: api.postOrder.url,
+				method: api.postOrder.method,
+				data: {
+					investorId: 1,
+					stockId: 1,
+					method: data.method, // BUY = 0, SELL = 1
+					price: data.price,
+					quantity: data.quantity,
+					priceType: data.priceType, // MARKET = 0, LIMIT = 1
+					timeRestriction: timeRestriction, // ROD = 0, IOC = 1, FOK = 2
+				},
+			}).then((res) => {
+				refreshDisplay(showType);
+			});
+		} else {
+			defaultAxios({
+				url: api.postVirtualOrder.url,
+				method: api.postVirtualOrder.method,
+				data: {
+					method: data.method, // BUY = 0, SELL = 1
+					price: data.price,
+					quantity: data.quantity,
+					priceType: data.priceType, // MARKET = 0, LIMIT = 1
+					timeRestriction: timeRestriction, // ROD = 0, IOC = 1, FOK = 2
+					virtualOrderContainerId: showType,
+				},
+			}).then((res) => {
+				setData(res.data);
+			});
+		}
 	}
 
+	// 取消單
 	function cancelOrder(data) {
-		defaultAxios({
-			url: api.postOrder.url,
-			method: api.postOrder.method,
-			data: {
-				investorId: 1,
-				stockId: 1,
-				method: data.method, // BUY = 0, SELL = 1
-				price: data.price,
-				quantity: data.quantity,
-				priceType: data.priceType, // MARKET = 0, LIMIT = 1
-				timeRestriction: timeRestriction, // ROD = 0, IOC = 1, FOK = 2
-				subMethod: 0,
-			},
-		}).then((res) => {
-			refreshDisplay();
-		});
+		if (showType == "請選擇情境") {
+			defaultAxios({
+				url: api.postOrder.url,
+				method: api.postOrder.method,
+				data: {
+					investorId: 1,
+					stockId: 1,
+					method: data.method, // BUY = 0, SELL = 1
+					price: data.price,
+					quantity: data.quantity,
+					priceType: data.priceType, // MARKET = 0, LIMIT = 1
+					timeRestriction: timeRestriction, // ROD = 0, IOC = 1, FOK = 2
+					subMethod: 0,
+				},
+			}).then((res) => {
+				refreshDisplay(showType);
+			});
+		} else {
+			defaultAxios({
+				url: api.postVirtualOrder.url,
+				method: api.postVirtualOrder.method,
+				data: {
+					method: data.method, // BUY = 0, SELL = 1
+					price: data.price,
+					quantity: data.quantity,
+					priceType: data.priceType, // MARKET = 0, LIMIT = 1
+					timeRestriction: timeRestriction, // ROD = 0, IOC = 1, FOK = 2
+					subMethod: 0,
+					virtualOrderContainerId: showType,
+				},
+			}).then((res) => {
+				setData(res.data);
+			});
+		}
 	}
 
-	function refreshDisplay() {
+	function refreshDisplay(showType) {
 		if (showType == "請選擇情境") {
 			defaultAxios({
 				url: api.getDisplay.url,
@@ -107,25 +149,7 @@ const QuickOrder = () => {
 					isGetLatest: true,
 				},
 			}).then((res) => {
-				console.log(res.data)
-				setFiveTickRangeData(res.data.fiveTickRange);
-				setRangeData(res.data.tickRange);
-				setMatchPrice(res.data.matchPrice);
-
-				const fiveTickRangeData = res.data.fiveTickRange;
-				let newFiveTickRangeData = JSON.parse(JSON.stringify(fiveTickRangeData))
-				newFiveTickRangeData = newFiveTickRangeData.sort((a, b) => a.price - b.price)
-
-				fiveTickRangeData.forEach(function (item) {
-					if (item.sellQuantity > 0) {
-						setA1(item.price);
-					}
-				})
-				newFiveTickRangeData.forEach(function (item) {
-					if (item.buyQuantity > 0) {
-						setB1(item.price);
-					}
-				})
+				setData(res.data);
 			});
 		} else {
 			defaultAxios({
@@ -135,10 +159,29 @@ const QuickOrder = () => {
 					isGetLatest: true,
 				},
 			}).then((res) => {
-				setRangeData(res.data.display.tickRange);
-				setMatchPrice(res.data.display.matchPrice);
+				setData(res.data.display);
 			});
 		}
+	}
+
+	function setData(data) {
+		setFiveTickRangeData(data.fiveTickRange);
+		setRangeData(data.tickRange);
+		setMatchPrice(data.matchPrice);
+
+		let newFiveTickRangeData = JSON.parse(JSON.stringify(fiveTickRangeData))
+		newFiveTickRangeData = newFiveTickRangeData.sort((a, b) => a.price - b.price)
+
+		fiveTickRangeData.forEach(function (item) {
+			if (item.sellQuantity > 0) {
+				setA1(item.price);
+			}
+		})
+		newFiveTickRangeData.forEach(function (item) {
+			if (item.buyQuantity > 0) {
+				setB1(item.price);
+			}
+		})
 	}
 
 	useEffect(() => {
@@ -160,11 +203,16 @@ const QuickOrder = () => {
 			setTotalSize(res.data.totalSize);
 		});
 
-		setInterval(() => {
-			console.log(1);
-			refreshDisplay();
-		}, 1000)
-	}, [page, pageSize]);
+		if (isRunning) {
+			timer = setInterval(() => {
+				refreshDisplay(showType);
+			}, 1000)
+		} else {
+			// refreshDisplay(showType);
+		}
+
+		return () => clearInterval(timer)
+	}, [isRunning]);
 
 	return (
 		<div className="w-10/12 mx-auto">
@@ -173,6 +221,8 @@ const QuickOrder = () => {
 					value={showType}
 					style={{ width: 120, marginBottom: '10px', marginRight: '10px' }}
 					onChange={(value) => {
+						setIsRunning(false);
+						clearInterval(timer);
 						setShowType(value);
 						refreshDisplay(value);
 					}}
@@ -224,7 +274,7 @@ const QuickOrder = () => {
 						});
 					}}
 				>
-					重製情境
+					Reset
 				</Button>
 			</div>
 

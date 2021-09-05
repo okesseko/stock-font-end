@@ -11,35 +11,75 @@ import OrderTable from "./pages/table/order-table";
 import PriceTable from "./pages/table/price-table";
 import QuickOrder from "./pages/quick-order";
 import ReplayChart from "./pages/replay";
+import Login from "./pages/login";
 import RouterLink from "./component/router-link";
+import { useEffect, useState } from "react";
+import { settingToken } from "./environment/api";
 
 const App = () => {
+  const [auth, setAuth] = useState(false);
+  const [token, setToken] = useState("");
+  const GuardedRoute = ({ component: Component, ...rest }) => (
+    <Route
+      {...rest}
+      render={(props) =>
+        auth ? (
+          <Component {...props} />
+        ) : (
+          <Redirect to="/stock-font-end/login/" />
+        )
+      }
+    />
+  );
+  useEffect(() => {
+    setAuth(!!token);
+    settingToken(token);
+  }, [token]);
   return (
     <BrowserRouter>
       <div className="flex ">
-        <RouterLink />
+        {auth && <RouterLink setToken={setToken} />}
         <div className="flex-1 my-10 ">
           <Switch>
-            <Route path="/stock-font-end/" exact component={Main} />
             <Route
+              path="/stock-font-end/login/"
+              component={() => <Login setToken={setToken} />}
+            />
+            <GuardedRoute path="/stock-font-end/" exact component={Main} />
+            <GuardedRoute
               path="/stock-font-end/echart-example"
               component={EchartExample}
             />
-            <Route path="/stock-font-end/auto-chart" component={AutoChart} />
-            <Route
+            <GuardedRoute
+              path="/stock-font-end/auto-chart"
+              component={AutoChart}
+            />
+            <GuardedRoute
               path="/stock-font-end/replay-chart"
               component={ReplayChart}
             />
-            <Route path="/stock-font-end/oreder-table" component={OrderTable} />
-            <Route path="/stock-font-end/price-table" component={PriceTable} />
-            <Route path="/stock-font-end/quick-order" component={QuickOrder} />
-            <Route path="/stock-font-end/case" component={Case} />
-            <Route
+            <GuardedRoute
+              path="/stock-font-end/oreder-table"
+              component={OrderTable}
+            />
+            <GuardedRoute
+              path="/stock-font-end/price-table"
+              component={PriceTable}
+            />
+            <GuardedRoute
+              path="/stock-font-end/quick-order"
+              component={QuickOrder}
+            />
+            <GuardedRoute path="/stock-font-end/case" component={Case} />
+            <GuardedRoute
               path="/stock-font-end/frequent-data"
               component={FrequentData}
             />
             ;
-            <Redirect from="*" to="/stock-font-end/" />
+            <Redirect
+              from="*"
+              to={auth ? "/stock-font-end/" : "/stock-font-end/login"}
+            />
           </Switch>
         </div>
       </div>

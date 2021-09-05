@@ -3,12 +3,14 @@ import Settings from "./settings";
 import BarChart from "../echart-example/bar";
 import BarLineChart from "../echart-example/bar-line";
 import { defaultAxios, api } from "../../environment/api";
-import { Button, Input, Select, Typography, Table } from "antd";
+import { Button, Select, Typography, Table } from "antd";
 
 const { Title } = Typography;
+
 const AutoChart = () => {
   const chartRecord = useRef();
-  const selectCaseId = useRef(null);
+  const playCase = useRef(null);
+  const selectCaseId = useRef();
   const [originData, setOriginData] = useState({});
   const [buttonStatus, setButtonStatus] = useState("stop");
   const [showType, setShowType] = useState("all");
@@ -22,32 +24,33 @@ const AutoChart = () => {
   });
   const [caseData, setCaseData] = useState([]);
   const [caseOrder, setCaseOrder] = useState([]);
-
   function renderData() {
-    defaultAxios({
-      url: api.getDisplay.url,
-      method: api.getDisplay.method,
-      params: {
-        isGetLatest: true,
-      },
-    }).then((res) => {
-      const data = res.data;
-      setOriginData(() => data);
-    });
-    defaultAxios({
-      url: api.getDisplayChart.url,
-      method: api.getDisplayChart.method,
-      params: {
-        stockId: 1,
-        dateFormat: 0,
-      },
-    }).then((res) => {
+    Promise.all([
+      defaultAxios({
+        url: api.getDisplay.url,
+        method: api.getDisplay.method,
+        params: {
+          isGetLatest: true,
+        },
+      }),
+      defaultAxios({
+        url: api.getDisplayChart.url,
+        method: api.getDisplayChart.method,
+        params: {
+          stockId: 1,
+          dateFormat: frequency === 60 ? 0 : 3,
+        },
+      }),
+    ]).then((val) => {
+      setOriginData(() => val[0].data);
+      const getData =
+        val[1].data.length - 50 < 0 ? 0 : val[1].data.length - 100;
       const xAxis = [],
         price = [],
         quantity = [],
         buy = [],
         sell = [];
-      res.data.forEach((deta) => {
+      val[1].data.slice(getData, val[1].data.length).forEach((deta) => {
         xAxis.push(deta.createdTime);
         price.push(deta.close);
         quantity.push(deta.quantity);
@@ -61,8 +64,6 @@ const AutoChart = () => {
         buy,
         sell,
       });
-
-      console.log(res.data);
     });
   }
   function resetStock(getData = false) {
@@ -77,6 +78,7 @@ const AutoChart = () => {
       if (getData) renderData();
     });
     setOriginData({});
+    setTimeChart({});
     setButtonStatus("stop");
   }
 
@@ -91,6 +93,7 @@ const AutoChart = () => {
       clearInterval(chartRecord.current);
     };
   }, [buttonStatus, frequency]);
+
   useEffect(() => {
     defaultAxios({
       url: api.getVirtualOrderContainer.url,
@@ -104,6 +107,7 @@ const AutoChart = () => {
       );
     });
   }, []);
+
   return (
     <div>
       <BarChart originData={originData} showType={showType} />
@@ -159,15 +163,19 @@ const AutoChart = () => {
           重製模擬
         </Button>
         <div>
-          圖表更新頻率(s)
-          <Input
-            type="number"
-            max={10}
-            min={0.1}
+          圖表更新頻率
+          <Select
+            className="w-20 ml-2"
             value={frequency}
-            step={0.1}
-            onChange={(e) => {
-              setFrequency(e.target.value);
+            options={[
+              { value: 60, label: "1m" },
+              { value: 10, label: "10s" },
+              { value: 5, label: "5s" },
+              { value: 1, label: "1s" },
+              { value: 0.5, label: "0.5s" },
+            ]}
+            onChange={(val) => {
+              setFrequency(val);
             }}
           />
         </div>
@@ -191,7 +199,6 @@ const AutoChart = () => {
                     virtualOrderContainerId: caseId,
                   },
                 }).then((res) => {
-                  console.log(res.data.content);
                   setCaseOrder(res.data.content);
                 });
               }}
@@ -221,13 +228,14 @@ const AutoChart = () => {
             danger
             onClick={() => {
               if (caseOrder.length) {
+                const { createdTime, id, ...other } = caseOrder[0];
                 defaultAxios({
                   url: api.postOrder.url,
                   method: api.postOrder.method,
                   data: {
                     investorId: 1,
                     stockId: 1,
-                    ...caseOrder[0],
+                    ...other,
                   },
                 }).then(() => {
                   setCaseOrder(caseOrder.slice(1));
@@ -238,8 +246,48 @@ const AutoChart = () => {
           >
             單步執行情境
           </Button>
+          <Button
+            disabled={!caseOrder.length}
+            onClick={() => {
+              if (caseOrder.length && !playCase.current)
+                playCase.current = setInterval(() => {
+                  setCaseOrder((_case) => {
+                    if (_case.length) {
+                      const { createdTime, id, ...other } = _case[0];
+                      defaultAxios({
+                        url: api.postOrder.url,
+                        method: api.postOrder.method,
+                        data: {
+                          investorId: 1,
+                          stockId: 1,
+                          ...other,
+                        },
+                      }).then(() => {
+                        renderData();
+                      });
+                    } else {
+                      clearInterval(playCase.current);
+                      playCase.current = null;
+                    }
+                    return _case.slice(1);
+                  });
+                }, 1000);
+            }}
+          >
+            自動執行 1s
+          </Button>
+          <Button
+            disabled={!(caseOrder.length && playCase.current)}
+            onClick={() => {
+              clearInterval(playCase.current);
+              playCase.current = null;
+            }}
+          >
+            暫停自動執行
+          </Button>
         </div>
         <Table
+          rowKey="id"
           className="h-full "
           scroll={{ y: 240 }}
           columns={[
@@ -261,7 +309,6 @@ const AutoChart = () => {
               title: "數量",
               dataIndex: "quantity",
             },
-
             {
               title: "副類型",
               dataIndex: "subMethod",
