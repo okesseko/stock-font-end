@@ -43,14 +43,14 @@ const AutoChart = () => {
       }),
     ]).then((val) => {
       setOriginData(() => val[0].data);
-      const getData =
-        val[1].data.length - 50 < 0 ? 0 : val[1].data.length - 100;
+      // const getData =
+      //   val[1].data.length - 50 < 0 ? 0 : val[1].data.length - 100;
       const xAxis = [],
         price = [],
         quantity = [],
         buy = [],
         sell = [];
-      val[1].data.slice(getData, val[1].data.length).forEach((deta) => {
+      val[1].data.slice(0, val[1].data.length).forEach((deta) => {
         xAxis.push(deta.createdTime);
         price.push(deta.close);
         quantity.push(deta.quantity);

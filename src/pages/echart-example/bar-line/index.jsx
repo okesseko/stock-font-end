@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import ReactECharts from "echarts-for-react";
 import { data } from "../mock-data";
+import { Select } from "antd";
 
 const BarLineChart = ({ data = { xAxis: [], price: [], quantity: [] } }) => {
-  const [dataZoom, setDataZoom] = useState({ start: 0, end: 100 });
+  console.log(data.xAxis.length, "len");
+  const [dataZoom, setDataZoom] = useState(10);
   const options = {
     tooltip: {
       trigger: "axis",
@@ -46,7 +48,8 @@ const BarLineChart = ({ data = { xAxis: [], price: [], quantity: [] } }) => {
       {
         show: true,
         realtime: true,
-        // ...dataZoom,
+        startValue: dataZoom ? data.xAxis.length - dataZoom : 0,
+        endValue: data.xAxis.length - 1,
         onChange: (val) => {
           console.log(val);
         },
@@ -92,7 +95,25 @@ const BarLineChart = ({ data = { xAxis: [], price: [], quantity: [] } }) => {
     ],
   };
 
-  return <ReactECharts option={options} />;
+  return (
+    <>
+      <div className="flex flex-col justify-end p-4">
+        分時走勢圖顯示筆數
+        <Select
+        className="w-40"
+          value={dataZoom}
+          options={[
+            { label: "顯示10筆", value: 10 },
+            { label: "顯示50筆", value: 50 },
+            { label: "顯示100筆", value: 100 },
+            { label: "顯示全部筆", value: 0 },
+          ]}
+          onChange={(val) => setDataZoom(val)}
+        />
+      </div>
+      <ReactECharts option={options} />
+    </>
+  );
 };
 
 export default BarLineChart;
