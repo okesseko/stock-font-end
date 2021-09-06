@@ -1,6 +1,9 @@
 import { Table } from "antd";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
+// import ReactDOM from 'react-dom';
+// import CSVReader from 'react-csv-reader';
+import ReadFile from './read-file';
 import { api, defaultAxios } from "../../environment/api";
 import { Button, InputNumber, Select } from "antd";
 
@@ -216,6 +219,10 @@ const QuickOrder = () => {
 
 	return (
 		<div className="w-10/12 mx-auto">
+			<div>
+				<ReadFile />
+				<hr className="mb-5" />
+			</div>
 			<div>
 				<Select
 					value={showType}
