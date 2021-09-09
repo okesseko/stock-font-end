@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import BarChart from "../echart-example/bar";
 import { defaultAxios, api } from "../../environment/api";
-import { Button, Input, Select, DatePicker, Table } from "antd";
+import { Button, Select, DatePicker, Table } from "antd";
 import BarLineChart from "../echart-example/bar-line";
 import fakeData from "../../fake";
 import dayjs from "dayjs";
@@ -9,6 +9,7 @@ import dayjs from "dayjs";
 const ReplayChart = () => {
   const chartRecord = useRef();
   const getChartRender = useRef();
+  const [replayStockId, setReplayStockId] = useState();
   const [originData, setOriginData] = useState({});
   const [restData, setResetdata] = useState([]);
   const [restDataIndex, setResetdataIndex] = useState(-1);
@@ -24,13 +25,35 @@ const ReplayChart = () => {
     buy: [],
     sell: [],
   });
+
+  const selectCaseId = useRef();
+  const [caseData, setCaseData] = useState([]);
+  const [caseOrder, setCaseOrder] = useState([]);
+
+  useEffect(() => {
+    defaultAxios({
+      url: api.getVirtualOrderContainer.url,
+      method: api.getVirtualOrderContainer.method,
+      params: {
+        stockId: 1,
+      },
+    }).then((res) => {
+      setCaseData(
+        res.data.content.map((content) => ({
+          label: content.name,
+          value: content.id,
+        }))
+      );
+    });
+  }, []);
+
   function renderData() {
     Promise.all([
       defaultAxios({
         url: api.getDisplay.url,
         method: api.getDisplay.method,
         params: {
-          stockId: restData[0].stockId,
+          stockId: replayStockId,
           isGetLatest: true,
         },
       }),
@@ -38,7 +61,7 @@ const ReplayChart = () => {
         url: api.getDisplayChart.url,
         method: api.getDisplayChart.method,
         params: {
-          stockId: restData[0].stockId,
+          stockId: replayStockId,
           dateFormat: 3,
         },
       }),
@@ -80,6 +103,7 @@ const ReplayChart = () => {
         },
       }).then((res) => {
         setResetdata(res.data.orders);
+        setReplayStockId(res.data.display.stockId);
         setOriginData({});
         setTimeChart({
           xAxis: [],
@@ -97,6 +121,7 @@ const ReplayChart = () => {
       setResetdataIndex(-1);
     } else if (buttonStatus === "start") {
       clearInterval(chartRecord.current);
+      console.log(1);
       clearInterval(getChartRender.current);
       chartRecord.current = setInterval(() => {
         setResetdataIndex((index) => {
@@ -107,6 +132,7 @@ const ReplayChart = () => {
     } else if (buttonStatus === "stop") {
       console.log("qweqweq");
       clearInterval(chartRecord.current);
+      console.log(2);
       clearInterval(getChartRender.current);
     }
   }, [buttonStatus]);
@@ -128,7 +154,9 @@ const ReplayChart = () => {
       });
     }
     if (restDataIndex === restData.length - 1) {
-      setButtonStatus("stop");
+      setTimeout(() => {
+        setButtonStatus("stop");
+      }, 1000 * chartRender);
     }
   }, [restDataIndex]);
 
@@ -144,6 +172,7 @@ const ReplayChart = () => {
   }, [frequency]);
   useEffect(() => {
     if (buttonStatus === "start") {
+      console.log(3);
       clearInterval(getChartRender.current);
       getChartRender.current = setInterval(renderData, 1000 * chartRender);
     }
@@ -189,22 +218,6 @@ const ReplayChart = () => {
         return <BarLineChart data={timeChart} />;
       }, [timeChart])}
       <div className="flex justify-around my-6 items-end">
-        <DatePicker
-          showTime
-          placeholder="選擇重播開始時間"
-          disabledDate={(current) => current && current > dayjs()}
-          onChange={(time) => {
-            if (time) setStartTime(dayjs(time).toISOString());
-            else setStartTime(time);
-          }}
-        />
-        <Button
-          type="primary"
-          disabled={!startTime}
-          onClick={() => setButtonStatus("select")}
-        >
-          選擇時間
-        </Button>
         {/* <Button
           type="primary"
           onClick={() => setButtonStatus("real")}
@@ -253,59 +266,120 @@ const ReplayChart = () => {
           手動下一步
         </Button>
       </div>
+      <div style={{ padding: "10px" }}>
+        <div className="my-4 flex justify-around  items-end">
+          <div className="w-1/6">
+            選擇時間
+            <DatePicker
+              showTime
+              placeholder="選擇重播開始時間"
+              disabledDate={(current) => current && current > dayjs()}
+              onChange={(time) => {
+                if (time) setStartTime(dayjs(time).toISOString());
+                else setStartTime(time);
+              }}
+            />
+          </div>
+          <Button
+            type="primary"
+            disabled={!startTime}
+            onClick={() => setButtonStatus("select")}
+          >
+            載入重播
+          </Button>
+          <div className="w-1/6">
+            選擇情境
+            <Select
+              className="w-full"
+              options={caseData}
+              onChange={(caseId) => {
+                selectCaseId.current = caseId;
+                defaultAxios({
+                  url: api.getVirtualOrder.url,
+                  method: api.getVirtualOrder.method,
+                  params: {
+                    virtualOrderContainerId: caseId,
+                  },
+                }).then((res) => {
+                  setCaseOrder(res.data.content);
+                });
+              }}
+            />
+          </div>
+
+          <Button
+            type="primary"
+            danger
+            disabled={!(caseOrder.length && replayStockId)}
+            onClick={() => {
+              const baseTime = Date.parse(startTime);
+              let accumulatedDelay = 0;
+              const transferedCaseOrder = caseOrder.map(
+                ({ delay, id, ...order }) => {
+                  accumulatedDelay += delay || 1;
+                  const createdTime = new Date(
+                    baseTime + accumulatedDelay
+                  ).toISOString();
+                  return {
+                    ...order,
+                    createdTime,
+                    investorId: null,
+                    stockId: replayStockId,
+                  };
+                }
+              );
+              setResetdata(transferedCaseOrder);
+            }}
+          >
+            匯入情境
+          </Button>
+        </div>
+      </div>
       <div>
         下步狀態({restDataIndex} / {restData.length - 1} )
-        {!!restData.length && (
-          <Table
-            rowKey="id"
-            columns={[
-              {
-                title: "價格類型",
-                dataIndex: "priceType",
-                render: (data) => <span>{data ? "LIMIT" : "MARKET"}</span>,
-              },
-              {
-                title: "類型",
-                dataIndex: "method",
-                render: (data) => <span>{data ? "sell" : "buy"}</span>,
-              },
-              {
-                title: "價格",
-                dataIndex: "price",
-              },
-              {
-                title: "數量",
-                dataIndex: "quantity",
-              },
+        <Table
+          rowKey="id"
+          columns={[
+            {
+              title: "價格類型",
+              dataIndex: "priceType",
+              render: (data) => <span>{data ? "LIMIT" : "MARKET"}</span>,
+            },
+            {
+              title: "類型",
+              dataIndex: "method",
+              render: (data) => <span>{data ? "sell" : "buy"}</span>,
+            },
+            {
+              title: "價格",
+              dataIndex: "price",
+            },
+            {
+              title: "數量",
+              dataIndex: "quantity",
+            },
 
-              {
-                title: "副類型",
-                dataIndex: "subMethod",
-                render: (data) => (
-                  <span>
-                    {data ? "UPDATE" : data === null ? "NULL" : "CANCEL"}
-                  </span>
-                ),
-              },
-
-              // {
-              //   title: "狀態",
-              //   dataIndex: "status",
-              //   render: (data) => <span>{data ? "FAIL" : "SUCCESS"}</span>,
-              // },
-              {
-                title: "時間限制",
-                dataIndex: "timeRestriction",
-                render: (data) => (
-                  <span>{data ? "IOC" : data === 2 ? "FOK" : "ROD"}</span>
-                ),
-              },
-            ]}
-            pagination={false}
-            dataSource={[restData[restDataIndex + 1]]}
-            sticky
-          />
-        )}
+            {
+              title: "副類型",
+              dataIndex: "subMethod",
+              render: (data) => (
+                <span>
+                  {data ? "UPDATE" : data === null ? "NULL" : "CANCEL"}
+                </span>
+              ),
+            },
+            {
+              title: "時間限制",
+              dataIndex: "timeRestriction",
+              render: (data) => (
+                <span>{data ? "IOC" : data === 2 ? "FOK" : "ROD"}</span>
+              ),
+            },
+          ]}
+          pagination={false}
+          dataSource={[restData[restDataIndex + 1]]}
+          sticky
+        />
       </div>
     </div>
   );
