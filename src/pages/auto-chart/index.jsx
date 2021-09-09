@@ -42,6 +42,7 @@ const AutoChart = () => {
         },
       }),
     ]).then((val) => {
+      console.log(val[1].data, "123");
       setOriginData(() => val[0].data);
       // const getData =
       //   val[1].data.length - 50 < 0 ? 0 : val[1].data.length - 100;
@@ -78,7 +79,13 @@ const AutoChart = () => {
       if (getData) renderData();
     });
     setOriginData({});
-    setTimeChart({});
+    setTimeChart({
+      xAxis: [],
+      price: [],
+      quantity: [],
+      buy: [],
+      sell: [],
+    });
     setButtonStatus("stop");
   }
 

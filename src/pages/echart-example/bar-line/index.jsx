@@ -4,7 +4,6 @@ import { data } from "../mock-data";
 import { Select } from "antd";
 
 const BarLineChart = ({ data = { xAxis: [], price: [], quantity: [] } }) => {
-  console.log(data.xAxis.length, "len");
   const [dataZoom, setDataZoom] = useState(10);
   const options = {
     tooltip: {

@@ -2,19 +2,72 @@ import React, { useEffect, useRef, useState } from "react";
 import BarChart from "../echart-example/bar";
 import { defaultAxios, api } from "../../environment/api";
 import { Button, Input, Select, DatePicker, Table } from "antd";
-import fakeData from '../../fake'
+import BarLineChart from "../echart-example/bar-line";
+import fakeData from "../../fake";
 import dayjs from "dayjs";
 
 const ReplayChart = () => {
   const chartRecord = useRef();
+  const getChartRender = useRef();
   const [originData, setOriginData] = useState({});
   const [restData, setResetdata] = useState([]);
   const [restDataIndex, setResetdataIndex] = useState(-1);
   const [buttonStatus, setButtonStatus] = useState("stop");
   const [showType, setShowType] = useState("all");
-  const [frequency, setFrequency] = useState(1);
+  const [frequency, setFrequency] = useState(1000);
+  const [chartRender, setChartRender] = useState(1);
   const [startTime, setStartTime] = useState();
-
+  const [timeChart, setTimeChart] = useState({
+    xAxis: [],
+    price: [],
+    quantity: [],
+    buy: [],
+    sell: [],
+  });
+  function renderData() {
+    Promise.all([
+      defaultAxios({
+        url: api.getDisplay.url,
+        method: api.getDisplay.method,
+        params: {
+          stockId: restData[0].stockId,
+          isGetLatest: true,
+        },
+      }),
+      defaultAxios({
+        url: api.getDisplayChart.url,
+        method: api.getDisplayChart.method,
+        params: {
+          stockId: restData[0].stockId,
+          dateFormat: 3,
+        },
+      }),
+    ]).then((val) => {
+      setOriginData(() => val[0].data);
+      console.log(val);
+      // const getData =
+      //   val[1].data.length - 50 < 0 ? 0 : val[1].data.length - 100;
+      const xAxis = [],
+        price = [],
+        quantity = [],
+        buy = [],
+        sell = [];
+      val[1].data.slice(0, val[1].data.length).forEach((deta) => {
+        xAxis.push(deta.createdTime);
+        price.push(deta.close);
+        quantity.push(deta.quantity);
+        buy.push(deta.firstOrderBuy);
+        sell.push(deta.firstOrderSell);
+      });
+      setTimeChart({
+        xAxis,
+        price,
+        quantity,
+        buy,
+        sell,
+      });
+    });
+  }
   useEffect(() => {
     if (buttonStatus === "select") {
       defaultAxios({
@@ -26,9 +79,16 @@ const ReplayChart = () => {
           isReset: false,
         },
       }).then((res) => {
-        console.log(res.data.orders);
         setResetdata(res.data.orders);
         setOriginData({});
+        setTimeChart({
+          xAxis: [],
+          price: [],
+          quantity: [],
+          buy: [],
+          sell: [],
+        });
+        setFrequency(1000);
         setResetdataIndex(-1);
       });
     } else if (buttonStatus === "real") {
@@ -37,44 +97,63 @@ const ReplayChart = () => {
       setResetdataIndex(-1);
     } else if (buttonStatus === "start") {
       clearInterval(chartRecord.current);
-      chartRecord.current = setInterval(() => {
-        setResetdataIndex((index) => {
-          return index + 1 < restData.length ? index + 1 : index;
-        });
-      }, 1000 * frequency);
+      clearInterval(getChartRender.current);
+      chartRecord.current = setInterval(
+        () => {
+          setResetdataIndex((index) => {
+            return index + 1 < restData.length ? index + 1 : index;
+          });
+        },
+        frequency < 100 ? 100 : frequency
+      );
+      getChartRender.current = setInterval(renderData, 1000 * chartRender);
     } else if (buttonStatus === "stop") {
+      console.log("qweqweq");
       clearInterval(chartRecord.current);
+      clearInterval(getChartRender.current);
     }
   }, [buttonStatus]);
 
   useEffect(() => {
-    if (restDataIndex === restData.length) {
-      clearInterval(chartRecord.current);
-    } else {
-      const nextStep = restData[restDataIndex];
-      if (nextStep)
-        defaultAxios({
-          url: api.postOrder.url,
-          method: api.postOrder.method,
-          data: nextStep,
-        }).then((res) => {
-          const data = res.data;
-          if (data) setOriginData(data);
-          console.log(data, "return");
-        });
+    const nowStep = restData[restDataIndex];
+    const nextStep = restData[restDataIndex + 1];
+    if (nowStep && nextStep) {
+      setFrequency(
+        dayjs(nextStep.createdTime).diff(nowStep.createdTime, "millisecond")
+      );
+    }
+    if (nowStep) {
+      console.log("order");
+      defaultAxios({
+        url: api.postOrder.url,
+        method: api.postOrder.method,
+        data: nowStep,
+      });
+    }
+    if (restDataIndex === restData.length - 1) {
+      setButtonStatus("stop");
     }
   }, [restDataIndex]);
 
   useEffect(() => {
     if (buttonStatus === "start") {
       clearInterval(chartRecord.current);
-      chartRecord.current = setInterval(() => {
-        setResetdataIndex((index) => {
-          return index + 1 < restData.length ? index + 1 : index;
-        });
-      }, 1000 * frequency);
+      chartRecord.current = setInterval(
+        () => {
+          setResetdataIndex((index) => {
+            return index + 1;
+          });
+        },
+        frequency < 100 ? 100 : frequency
+      );
     }
   }, [frequency]);
+  useEffect(() => {
+    if (buttonStatus === "start") {
+      clearInterval(getChartRender.current);
+      getChartRender.current = setInterval(renderData, 1000 * chartRender);
+    }
+  }, [chartRender]);
   return (
     <div>
       <BarChart originData={originData} showType={showType} />
@@ -109,6 +188,7 @@ const ReplayChart = () => {
         </div>
         目前狀態: {buttonStatus}
       </div>
+      <BarLineChart data={timeChart} />
       <div className="flex justify-around my-6 items-end">
         <DatePicker
           showTime
@@ -147,10 +227,10 @@ const ReplayChart = () => {
           暫停重播
         </Button>
         <div>
-          幾秒一單
+          多久刷新圖表
           <Select
             className="w-20"
-            value={frequency}
+            value={chartRender}
             options={[
               { value: 10, label: "10s" },
               { value: 5, label: "5s" },
@@ -158,7 +238,7 @@ const ReplayChart = () => {
               { value: 1, label: "1s" },
             ]}
             onChange={(val) => {
-              setFrequency(val);
+              setChartRender(val);
             }}
           />
         </div>
