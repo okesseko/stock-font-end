@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import BarChart from "../echart-example/bar";
 import { defaultAxios, api } from "../../environment/api";
 import { Button, Input, Select, DatePicker, Table } from "antd";
@@ -98,14 +98,11 @@ const ReplayChart = () => {
     } else if (buttonStatus === "start") {
       clearInterval(chartRecord.current);
       clearInterval(getChartRender.current);
-      chartRecord.current = setInterval(
-        () => {
-          setResetdataIndex((index) => {
-            return index + 1 < restData.length ? index + 1 : index;
-          });
-        },
-        frequency < 100 ? 100 : frequency
-      );
+      chartRecord.current = setInterval(() => {
+        setResetdataIndex((index) => {
+          return index + 1 < restData.length ? index + 1 : index;
+        });
+      }, frequency);
       getChartRender.current = setInterval(renderData, 1000 * chartRender);
     } else if (buttonStatus === "stop") {
       console.log("qweqweq");
@@ -138,14 +135,11 @@ const ReplayChart = () => {
   useEffect(() => {
     if (buttonStatus === "start") {
       clearInterval(chartRecord.current);
-      chartRecord.current = setInterval(
-        () => {
-          setResetdataIndex((index) => {
-            return index + 1;
-          });
-        },
-        frequency < 100 ? 100 : frequency
-      );
+      chartRecord.current = setInterval(() => {
+        setResetdataIndex((index) => {
+          return index + 1;
+        });
+      }, frequency);
     }
   }, [frequency]);
   useEffect(() => {
@@ -154,9 +148,12 @@ const ReplayChart = () => {
       getChartRender.current = setInterval(renderData, 1000 * chartRender);
     }
   }, [chartRender]);
+
   return (
     <div>
-      <BarChart originData={originData} showType={showType} />
+      {useMemo(() => {
+        return <BarChart originData={originData} showType={showType} />;
+      }, [originData, showType])}
       <div className="flex justify-around my-6 items-center">
         <div>
           圖表模式
@@ -188,7 +185,9 @@ const ReplayChart = () => {
         </div>
         目前狀態: {buttonStatus}
       </div>
-      <BarLineChart data={timeChart} />
+      {useMemo(() => {
+        return <BarLineChart data={timeChart} />;
+      }, [timeChart])}
       <div className="flex justify-around my-6 items-end">
         <DatePicker
           showTime
@@ -245,6 +244,7 @@ const ReplayChart = () => {
         <Button
           disabled={buttonStatus === "start" || !restData.length}
           onClick={() => {
+            renderData();
             setButtonStatus("next");
             if (restDataIndex + 1 < restData.length)
               setResetdataIndex(restDataIndex + 1);

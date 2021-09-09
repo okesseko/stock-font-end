@@ -74,6 +74,7 @@ const AutoChart = () => {
       data: {
         id: 1,
         isReset: true,
+        virtualOrderContainerId: selectCaseId.current,
       },
     }).then(() => {
       if (getData) renderData();
@@ -215,16 +216,7 @@ const AutoChart = () => {
             type="primary"
             onClick={() => {
               if (selectCaseId.current !== null) {
-                defaultAxios({
-                  url: api.putStock.url,
-                  method: api.putStock.method,
-                  data: {
-                    id: 1,
-                    virtualOrderContainerId: selectCaseId.current,
-                  },
-                }).then(() => {
-                  resetStock(true);
-                });
+                resetStock(true);
               }
             }}
           >
