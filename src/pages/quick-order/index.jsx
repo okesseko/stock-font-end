@@ -11,11 +11,6 @@ const QuickOrder = () => {
   const [stockId, setStockId] = useState(undefined);
   const [isRunning, setIsRunning] = useState(true);
   const [containerData, setContainerData] = useState([]);
-  const [A1, setA1] = useState(0);
-  const [B1, setB1] = useState(0);
-  const [fiveTickRangeData, setFiveTickRangeData] = useState([]);
-  const [rangeData, setRangeData] = useState([]);
-  const [matchPrice, setMatchPrice] = useState();
   const [quantity, setQuantity] = useState(1);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
@@ -23,12 +18,16 @@ const QuickOrder = () => {
   const [showType, setShowType] = useState("請選擇情境");
   const [timeRestriction, setTimeRestriction] = useState(0);
 
+  const [display, setDisplay] = useState();
+
   // 標記A1、B1
   function matchFiveTick(price, type) {
-    if (type == "buyQuantity") {
-      return price == B1;
-    } else if (type == "sellQuantity") {
-      return price == A1;
+    if (display) {
+      if (type == "buyQuantity") {
+        return price == display.B1;
+      } else if (type == "sellQuantity") {
+        return price == display.A1;
+      }
     }
   }
 
@@ -168,26 +167,24 @@ const QuickOrder = () => {
     }
   }
 
+  console.log(1);
   function setData(data) {
-    setFiveTickRangeData(data.fiveTickRange);
-    setRangeData(data.tickRange);
-    setMatchPrice(data.matchPrice);
-
-    let newFiveTickRangeData = JSON.parse(JSON.stringify(fiveTickRangeData));
+    let newFiveTickRangeData = JSON.parse(JSON.stringify(data.fiveTickRange));
     newFiveTickRangeData = newFiveTickRangeData.sort(
       (a, b) => a.price - b.price
     );
 
-    fiveTickRangeData.forEach(function (item) {
+    data.fiveTickRange.forEach(function (item) {
       if (item.sellQuantity > 0) {
-        setA1(item.price);
+        data.A1 = item.price;
       }
     });
     newFiveTickRangeData.forEach(function (item) {
       if (item.buyQuantity > 0) {
-        setB1(item.price);
+        data.B1 = item.price;
       }
     });
+    setDisplay(data);
   }
 
   useEffect(() => {
@@ -367,85 +364,86 @@ const QuickOrder = () => {
             取消單
           </Button>
         </div>
-        {rangeData.map((range, key) => (
-          <div key={key} className="flex mb-1 items-center">
-            <Button
-              className="w-1/2 mr-1"
-              style={{ background: "#ffb6c180", borderColor: "lightpink" }}
-              onClick={() => {
-                cancelOrder({
-                  method: 0,
-                  price: range.price,
-                  quantity: quantity,
-                  priceType: 1,
-                });
-              }}
-            >
-              &nbsp;
-            </Button>
-            <Button
-              className="w-1/2"
-              style={{
-                background: matchFiveTick(range.price, "buyQuantity")
-                  ? "lightcoral"
-                  : "lightpink",
-                borderColor: "lightpink",
-              }}
-              onClick={() => {
-                sendOrder({
-                  method: 0,
-                  price: range.price,
-                  quantity: quantity,
-                  priceType: 1,
-                });
-              }}
-            >
-              {range.buyQuantity > 0 ? range.buyQuantity : " "}
-            </Button>
-            <div
-              className={
-                (matchPrice == range.price
-                  ? "bg-yellow-400"
-                  : "bg-yellow-200") + " text-center w-1/4 mx-1 h-full py-1.5"
-              }
-            >
-              {range.price}
+        {display &&
+          display.tickRange.map((range, key) => (
+            <div key={key} className="flex mb-1 items-center">
+              <Button
+                className="w-1/2 mr-1"
+                style={{ background: "#ffb6c180", borderColor: "lightpink" }}
+                onClick={() => {
+                  cancelOrder({
+                    method: 0,
+                    price: range.price,
+                    quantity: quantity,
+                    priceType: 1,
+                  });
+                }}
+              >
+                &nbsp;
+              </Button>
+              <Button
+                className="w-1/2"
+                style={{
+                  background: matchFiveTick(range.price, "buyQuantity")
+                    ? "lightcoral"
+                    : "lightpink",
+                  borderColor: "lightpink",
+                }}
+                onClick={() => {
+                  sendOrder({
+                    method: 0,
+                    price: range.price,
+                    quantity: quantity,
+                    priceType: 1,
+                  });
+                }}
+              >
+                {range.buyQuantity > 0 ? range.buyQuantity : " "}
+              </Button>
+              <div
+                className={
+                  (display && display.matchPrice == range.price
+                    ? "bg-yellow-400"
+                    : "bg-yellow-200") + " text-center w-1/4 mx-1 h-full py-1.5"
+                }
+              >
+                {range.price}
+              </div>
+              <Button
+                className="w-1/2 mr-1"
+                style={{
+                  background: matchFiveTick(range.price, "sellQuantity")
+                    ? "lightseagreen"
+                    : "lightgreen",
+                  borderColor: "lightgreen",
+                }}
+                onClick={() => {
+                  sendOrder({
+                    method: 1,
+                    price: range.price,
+                    quantity: quantity,
+                    priceType: 1,
+                  });
+                }}
+              >
+                {range.sellQuantity > 0 ? range.sellQuantity : " "}
+              </Button>
+              <Button
+                className="w-1/2"
+                style={{ background: "#90ee9080", borderColor: "lightgreen" }}
+                onClick={() => {
+                  cancelOrder({
+                    method: 1,
+                    price: range.price,
+                    quantity: quantity,
+                    priceType: 1,
+                  });
+                }}
+              >
+                &nbsp;
+              </Button>
             </div>
-            <Button
-              className="w-1/2 mr-1"
-              style={{
-                background: matchFiveTick(range.price, "sellQuantity")
-                  ? "lightseagreen"
-                  : "lightgreen",
-                borderColor: "lightgreen",
-              }}
-              onClick={() => {
-                sendOrder({
-                  method: 1,
-                  price: range.price,
-                  quantity: quantity,
-                  priceType: 1,
-                });
-              }}
-            >
-              {range.sellQuantity > 0 ? range.sellQuantity : " "}
-            </Button>
-            <Button
-              className="w-1/2"
-              style={{ background: "#90ee9080", borderColor: "lightgreen" }}
-              onClick={() => {
-                cancelOrder({
-                  method: 1,
-                  price: range.price,
-                  quantity: quantity,
-                  priceType: 1,
-                });
-              }}
-            >
-              &nbsp;
-            </Button>
-          </div>
-        ))}
+          ))}
       </div>
     </div>
   );
