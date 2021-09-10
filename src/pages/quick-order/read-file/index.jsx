@@ -29,6 +29,7 @@ export default class ReadFile extends Component {
           priceType: Number(obj.data[3]), // MARKET = 0, LIMIT = 1
           timeRestriction: Number(obj.data[4]), // ROD = 0, IOC = 1, FOK = 2
           virtualOrderContainerId: Number(obj.data[6]),
+          delay: Number(obj.data[7]),
         };
   
         if (obj.data[5] == "0") {
@@ -39,6 +40,7 @@ export default class ReadFile extends Component {
             priceType: Number(obj.data[3]), // MARKET = 0, LIMIT = 1
             timeRestriction: Number(obj.data[4]), // ROD = 0, IOC = 1, FOK = 2
             virtualOrderContainerId: Number(obj.data[6]),
+            delay: Number(obj.data[7]),
             subMethod: Number(obj.data[5]),
           };
         }
