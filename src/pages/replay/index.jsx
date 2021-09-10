@@ -5,10 +5,12 @@ import { Button, Select, DatePicker, Table } from "antd";
 import BarLineChart from "../echart-example/bar-line";
 import fakeData from "../../fake";
 import dayjs from "dayjs";
+import { StockSelector } from "../../component/stock-selector";
 
 const ReplayChart = () => {
   const chartRecord = useRef();
   const getChartRender = useRef();
+  const [stockId, setStockId] = useState();
   const [replayStockId, setReplayStockId] = useState();
   const [originData, setOriginData] = useState({});
   const [restData, setResetdata] = useState([]);
@@ -29,13 +31,14 @@ const ReplayChart = () => {
   const selectCaseId = useRef();
   const [caseData, setCaseData] = useState([]);
   const [caseOrder, setCaseOrder] = useState([]);
+  const [isResetButtonLoading, setIsResetButtonLoading] = useState(false);
 
   useEffect(() => {
     defaultAxios({
       url: api.getVirtualOrderContainer.url,
       method: api.getVirtualOrderContainer.method,
       params: {
-        stockId: 1,
+        stockId,
       },
     }).then((res) => {
       setCaseData(
@@ -45,7 +48,7 @@ const ReplayChart = () => {
         }))
       );
     });
-  }, []);
+  }, [stockId]);
 
   function renderData() {
     Promise.all([
@@ -93,11 +96,12 @@ const ReplayChart = () => {
   }
   useEffect(() => {
     if (buttonStatus === "select") {
+      setIsResetButtonLoading(true);
       defaultAxios({
         url: api.resetStock.url,
         method: api.resetStock.method,
         data: {
-          id: 1,
+          id: stockId,
           createdTime: startTime,
           isReset: false,
         },
@@ -114,6 +118,7 @@ const ReplayChart = () => {
         });
         setFrequency(1000);
         setResetdataIndex(-1);
+        setIsResetButtonLoading(false);
       });
     } else if (buttonStatus === "real") {
       setResetdata(fakeData);
@@ -269,8 +274,18 @@ const ReplayChart = () => {
       <div style={{ padding: "10px" }}>
         <div className="my-4 flex justify-around  items-end">
           <div className="w-1/6">
+            選擇股票
+            <StockSelector
+              style={{ width: "100%" }}
+              onChange={(e) => {
+                setStockId(e);
+              }}
+            />
+          </div>
+          <div className="w-1/6">
             選擇時間
             <DatePicker
+              style={{ width: "100%" }}
               showTime
               placeholder="選擇重播開始時間"
               disabledDate={(current) => current && current > dayjs()}
@@ -282,8 +297,9 @@ const ReplayChart = () => {
           </div>
           <Button
             type="primary"
-            disabled={!startTime}
+            disabled={!startTime || !stockId}
             onClick={() => setButtonStatus("select")}
+            loading={isResetButtonLoading}
           >
             載入重播
           </Button>
@@ -344,19 +360,23 @@ const ReplayChart = () => {
               title: "價格類型",
               dataIndex: "priceType",
               render: (data) => <span>{data ? "LIMIT" : "MARKET"}</span>,
+              key: Math.random(),
             },
             {
               title: "類型",
               dataIndex: "method",
               render: (data) => <span>{data ? "sell" : "buy"}</span>,
+              key: Math.random(),
             },
             {
               title: "價格",
               dataIndex: "price",
+              key: Math.random(),
             },
             {
               title: "數量",
               dataIndex: "quantity",
+              key: Math.random(),
             },
 
             {

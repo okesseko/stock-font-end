@@ -4,6 +4,7 @@ import { Table, Button, Row, Col, Select, Input, Typography } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import Create from "./create";
 import dayjs from "dayjs";
+import { StockSelector } from "../../component/stock-selector";
 const { Search } = Input;
 const { Title } = Typography;
 const Case = () => {
@@ -66,17 +67,10 @@ const Case = () => {
         </Col>
         <Col span={6}>
           股票名稱
-          <Select
-            placeholder="選擇特定股票"
-            size="middle"
-            className="w-full"
-            options={[{ value: 1, label: "1號股票" }]}
+          <StockSelector
+            style={{ width: "100%" }}
             onChange={(e) => {
-              console.log(e);
-              setSearchCondition({
-                ...searchCondition,
-                stockId: e,
-              });
+              setSearchCondition({ ...searchCondition, stockId: e });
             }}
           />
         </Col>

@@ -3,17 +3,23 @@ import Settings from "./settings";
 import BarChart from "../echart-example/bar";
 import BarLineChart from "../echart-example/bar-line";
 import { defaultAxios, api } from "../../environment/api";
-import { Button, Select, Typography, Table } from "antd";
+import { Button, Select, Typography } from "antd";
+import { StockSelector } from "../../component/stock-selector";
 
 const { Title } = Typography;
+const { Option } = Select;
 
 const AutoChart = () => {
   const chartRecord = useRef();
   const selectCaseId = useRef(undefined);
+  const [fileName, setFileName] = useState();
+  const [stockId, setStockId] = useState();
   const [originData, setOriginData] = useState({});
   const [buttonStatus, setButtonStatus] = useState("stop");
   const [showType, setShowType] = useState("all");
   const [frequency, setFrequency] = useState(1);
+  const [realDataList, setRealDataList] = useState([]);
+  const [isRealDataButtonLoading, setIsRealDataButtonLoading] = useState(false);
   const [timeChart, setTimeChart] = useState({
     xAxis: [],
     price: [],
@@ -23,54 +29,56 @@ const AutoChart = () => {
   });
 
   function renderData() {
-    Promise.all([
-      defaultAxios({
-        url: api.getDisplay.url,
-        method: api.getDisplay.method,
-        params: {
-          isGetLatest: true,
-        },
-      }),
-      defaultAxios({
-        url: api.getDisplayChart.url,
-        method: api.getDisplayChart.method,
-        params: {
-          stockId: 1,
-          dateFormat: frequency === 60 ? 0 : 3,
-        },
-      }),
-    ]).then((val) => {
-      console.log(val[1].data, "123");
-      setOriginData(() => val[0].data);
-      // const getData =
-      //   val[1].data.length - 50 < 0 ? 0 : val[1].data.length - 100;
-      const xAxis = [],
-        price = [],
-        quantity = [],
-        buy = [],
-        sell = [];
-      val[1].data.slice(0, val[1].data.length).forEach((deta) => {
-        xAxis.push(deta.createdTime);
-        price.push(deta.close);
-        quantity.push(deta.quantity);
-        buy.push(deta.firstOrderBuy);
-        sell.push(deta.firstOrderSell);
+    if (stockId)
+      Promise.all([
+        defaultAxios({
+          url: api.getDisplay.url,
+          method: api.getDisplay.method,
+          params: {
+            stockId,
+            isGetLatest: true,
+          },
+        }),
+        defaultAxios({
+          url: api.getDisplayChart.url,
+          method: api.getDisplayChart.method,
+          params: {
+            stockId,
+            dateFormat: frequency === 60 ? 0 : 3,
+          },
+        }),
+      ]).then((val) => {
+        console.log(val[1].data, "123");
+        setOriginData(() => val[0].data);
+        // const getData =
+        //   val[1].data.length - 50 < 0 ? 0 : val[1].data.length - 100;
+        const xAxis = [],
+          price = [],
+          quantity = [],
+          buy = [],
+          sell = [];
+        val[1].data.slice(0, val[1].data.length).forEach((deta) => {
+          xAxis.push(deta.createdTime);
+          price.push(deta.close);
+          quantity.push(deta.quantity);
+          buy.push(deta.firstOrderBuy);
+          sell.push(deta.firstOrderSell);
+        });
+        setTimeChart({
+          xAxis,
+          price,
+          quantity,
+          buy,
+          sell,
+        });
       });
-      setTimeChart({
-        xAxis,
-        price,
-        quantity,
-        buy,
-        sell,
-      });
-    });
   }
   function resetStock(getData = false) {
     defaultAxios({
       url: api.resetStock.url,
       method: api.resetStock.method,
       data: {
-        id: 1,
+        id: stockId,
         isReset: true,
         virtualOrderContainerId: selectCaseId.current,
       },
@@ -89,8 +97,9 @@ const AutoChart = () => {
   }
 
   useEffect(() => {
-    clearInterval(chartRecord.current);
-    if (buttonStatus === "start") {
+    if (isRealDataButtonLoading) {
+      clearInterval(chartRecord.current);
+    } else {
       chartRecord.current = setInterval(() => {
         renderData();
       }, frequency * 1000);
@@ -98,7 +107,16 @@ const AutoChart = () => {
     return () => {
       clearInterval(chartRecord.current);
     };
-  }, [buttonStatus, frequency]);
+  }, [stockId, frequency, isRealDataButtonLoading]);
+
+  useEffect(() => {
+    defaultAxios({
+      url: api.getRealOrder.url,
+      method: api.getRealOrder.method,
+    }).then(({ data }) => {
+      setRealDataList(data);
+    });
+  }, []);
 
   return (
     <div>
@@ -136,12 +154,26 @@ const AutoChart = () => {
       </div>
       <BarLineChart data={timeChart} />
       <div className="flex justify-around my-6 items-center">
-        <Button type="primary" onClick={() => setButtonStatus("start")}>
+        <div className="w-1/6">
+          選擇股票
+          <StockSelector
+            style={{ width: "100%" }}
+            onChange={(e) => {
+              setStockId(e);
+            }}
+          />
+        </div>
+        <Button
+          type="primary"
+          onClick={() => setButtonStatus("start")}
+          disabled={!stockId}
+        >
           開始模擬
         </Button>
         <Button
           style={{ background: "#91A194", color: "white" }}
           onClick={() => setButtonStatus("stop")}
+          disabled={!stockId}
         >
           暫停模擬
         </Button>
@@ -151,6 +183,7 @@ const AutoChart = () => {
           onClick={() => {
             resetStock();
           }}
+          disabled={!stockId}
         >
           重製模擬
         </Button>
@@ -171,6 +204,46 @@ const AutoChart = () => {
             }}
           />
         </div>
+      </div>
+      <div className="flex justify-around my-6 items-center">
+        <div className="w-1/6">
+          選擇證交所資料
+          <Select
+            style={{ width: "100%" }}
+            onChange={(e) => {
+              setFileName(e);
+            }}
+          >
+            {realDataList &&
+              realDataList.map((realData) => {
+                return (
+                  <Option key={Math.random()} value={realData}>
+                    {realData}
+                  </Option>
+                );
+              })}
+          </Select>
+        </div>
+        <Button
+          onClick={() => {
+            const { url, method } = api.postRealOrder;
+            setIsRealDataButtonLoading(true);
+            defaultAxios({
+              url,
+              method,
+              data: {
+                stockId,
+                fileName,
+              },
+            }).then(() => {
+              setIsRealDataButtonLoading(false);
+            });
+          }}
+          disabled={!stockId || !fileName}
+          loading={isRealDataButtonLoading}
+        >
+          載入證交所資料
+        </Button>
       </div>
       <Title className="m-4 mb-0" level={5}>
         使用情境
