@@ -11,6 +11,7 @@ const { Option } = Select;
 
 const AutoChart = () => {
   const chartRecord = useRef();
+  const latestChartTime = useRef(undefined);
   const selectCaseId = useRef(undefined);
   const [fileName, setFileName] = useState();
   const [stockId, setStockId] = useState();
@@ -44,36 +45,37 @@ const AutoChart = () => {
           method: api.getDisplayChart.method,
           params: {
             stockId,
-            dateFormat: frequency === 60 ? 0 : 3,
+            dateFormat: 4,
+            createdTime: latestChartTime.current
+              ? JSON.stringify({
+                  min: new Date(latestChartTime.current).toISOString(),
+                })
+              : undefined,
           },
         }),
       ]).then((val) => {
-        console.log(val[1].data, "123");
         setOriginData(() => val[0].data);
-        // const getData =
-        //   val[1].data.length - 50 < 0 ? 0 : val[1].data.length - 100;
-        const xAxis = [],
-          price = [],
-          quantity = [],
-          buy = [],
-          sell = [];
-        val[1].data.slice(0, val[1].data.length).forEach((deta) => {
-          xAxis.push(deta.createdTime);
-          price.push(deta.close);
-          quantity.push(deta.quantity);
-          buy.push(deta.firstOrderBuy);
-          sell.push(deta.firstOrderSell);
-        });
-        setTimeChart({
-          xAxis,
-          price,
-          quantity,
-          buy,
-          sell,
+        const newTimeChart = JSON.parse(JSON.stringify(timeChart));
+        val[1].data.forEach((data, index, arr) => {
+          newTimeChart.xAxis.push(data.createdTime);
+          newTimeChart.price.push(data.close);
+          newTimeChart.quantity.push(data.quantity);
+          newTimeChart.buy.push(data.firstOrderBuy);
+          newTimeChart.sell.push(data.firstOrderSell);
+          if (index === arr.length - 1) {
+            const TIME_CHART = new Date(data.createdTime).getTime();
+            if (
+              !latestChartTime.current ||
+              TIME_CHART > new Date(latestChartTime.current).getTime()
+            ) {
+              latestChartTime.current = TIME_CHART + 1;
+              setTimeChart(newTimeChart);
+            }
+          }
         });
       });
   }
-  function resetStock(getData = false) {
+  function resetStock() {
     defaultAxios({
       url: api.resetStock.url,
       method: api.resetStock.method,
@@ -82,9 +84,8 @@ const AutoChart = () => {
         isReset: true,
         virtualOrderContainerId: selectCaseId.current,
       },
-    }).then(() => {
-      if (getData) renderData();
     });
+    latestChartTime.current = undefined;
     setOriginData({});
     setTimeChart({
       xAxis: [],
@@ -107,7 +108,7 @@ const AutoChart = () => {
     return () => {
       clearInterval(chartRecord.current);
     };
-  }, [stockId, frequency, isRealDataButtonLoading]);
+  }, [stockId, frequency, isRealDataButtonLoading, buttonStatus, timeChart]);
 
   useEffect(() => {
     defaultAxios({

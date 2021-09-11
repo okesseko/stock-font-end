@@ -39,6 +39,10 @@ const FIELDS = [
 
 const DATE_FORMAT = [
   {
+    header: "毫秒",
+    value: 4,
+  },
+  {
     header: "秒",
     value: 3,
   },

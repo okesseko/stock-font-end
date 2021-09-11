@@ -3,7 +3,6 @@ import BarChart from "../echart-example/bar";
 import { defaultAxios, api } from "../../environment/api";
 import { Button, Select, DatePicker, Table } from "antd";
 import BarLineChart from "../echart-example/bar-line";
-import fakeData from "../../fake";
 import dayjs from "dayjs";
 import { StockSelector } from "../../component/stock-selector";
 
@@ -32,6 +31,7 @@ const ReplayChart = () => {
   const [caseData, setCaseData] = useState([]);
   const [caseOrder, setCaseOrder] = useState([]);
   const [isResetButtonLoading, setIsResetButtonLoading] = useState(false);
+  const latestChartTime = useRef(undefined);
 
   useEffect(() => {
     defaultAxios({
@@ -65,33 +65,36 @@ const ReplayChart = () => {
         method: api.getDisplayChart.method,
         params: {
           stockId: replayStockId,
-          dateFormat: 3,
+          dateFormat: 4,
+          createdTime: latestChartTime.current
+            ? JSON.stringify({
+                min: new Date(latestChartTime.current).toISOString(),
+              })
+            : undefined,
         },
       }),
     ]).then((val) => {
       setOriginData(() => val[0].data);
-      console.log(val);
-      // const getData =
-      //   val[1].data.length - 50 < 0 ? 0 : val[1].data.length - 100;
-      const xAxis = [],
-        price = [],
-        quantity = [],
-        buy = [],
-        sell = [];
-      val[1].data.slice(0, val[1].data.length).forEach((deta) => {
-        xAxis.push(deta.createdTime);
-        price.push(deta.close);
-        quantity.push(deta.quantity);
-        buy.push(deta.firstOrderBuy);
-        sell.push(deta.firstOrderSell);
+
+      const newTimeChart = { ...timeChart };
+      val[1].data.forEach((data, index, arr) => {
+        newTimeChart.xAxis.push(data.createdTime);
+        newTimeChart.price.push(data.close);
+        newTimeChart.quantity.push(data.quantity);
+        newTimeChart.buy.push(data.firstOrderBuy);
+        newTimeChart.sell.push(data.firstOrderSell);
+        if (index === arr.length - 1) {
+          const TIME_CHART = new Date(data.createdTime).getTime();
+          if (
+            !latestChartTime.current ||
+            TIME_CHART > new Date(latestChartTime.current).getTime()
+          ) {
+            latestChartTime.current = TIME_CHART + 1;
+            setTimeChart(newTimeChart);
+          }
+        }
       });
-      setTimeChart({
-        xAxis,
-        price,
-        quantity,
-        buy,
-        sell,
-      });
+      setTimeChart(newTimeChart);
     });
   }
   useEffect(() => {
@@ -120,13 +123,8 @@ const ReplayChart = () => {
         setResetdataIndex(-1);
         setIsResetButtonLoading(false);
       });
-    } else if (buttonStatus === "real") {
-      setResetdata(fakeData);
-      setOriginData({});
-      setResetdataIndex(-1);
     } else if (buttonStatus === "start") {
       clearInterval(chartRecord.current);
-      console.log(1);
       clearInterval(getChartRender.current);
       chartRecord.current = setInterval(() => {
         setResetdataIndex((index) => {
@@ -135,9 +133,7 @@ const ReplayChart = () => {
       }, frequency);
       getChartRender.current = setInterval(renderData, 1000 * chartRender);
     } else if (buttonStatus === "stop") {
-      console.log("qweqweq");
       clearInterval(chartRecord.current);
-      console.log(2);
       clearInterval(getChartRender.current);
     }
   }, [buttonStatus]);
@@ -151,7 +147,6 @@ const ReplayChart = () => {
       );
     }
     if (nowStep) {
-      console.log("order");
       defaultAxios({
         url: api.postOrder.url,
         method: api.postOrder.method,
@@ -170,14 +165,13 @@ const ReplayChart = () => {
       clearInterval(chartRecord.current);
       chartRecord.current = setInterval(() => {
         setResetdataIndex((index) => {
-          return index + 1;
+          return index + 1 < restData.length ? index + 1 : index;
         });
       }, frequency);
     }
   }, [frequency]);
   useEffect(() => {
     if (buttonStatus === "start") {
-      console.log(3);
       clearInterval(getChartRender.current);
       getChartRender.current = setInterval(renderData, 1000 * chartRender);
     }
@@ -298,7 +292,10 @@ const ReplayChart = () => {
           <Button
             type="primary"
             disabled={!startTime || !stockId}
-            onClick={() => setButtonStatus("select")}
+            onClick={() => {
+              setButtonStatus("select");
+              latestChartTime.current = undefined;
+            }}
             loading={isResetButtonLoading}
           >
             載入重播
@@ -387,6 +384,7 @@ const ReplayChart = () => {
                   {data ? "UPDATE" : data === null ? "NULL" : "CANCEL"}
                 </span>
               ),
+              key: Math.random(),
             },
             {
               title: "時間限制",
@@ -394,6 +392,7 @@ const ReplayChart = () => {
               render: (data) => (
                 <span>{data ? "IOC" : data === 2 ? "FOK" : "ROD"}</span>
               ),
+              key: Math.random(),
             },
           ]}
           pagination={false}
