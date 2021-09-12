@@ -6,6 +6,8 @@ import BarLineChart from "../echart-example/bar-line";
 import dayjs from "dayjs";
 import { StockSelector } from "../../component/stock-selector";
 
+const { RangePicker } = DatePicker;
+
 const ReplayChart = () => {
   const chartRecord = useRef();
   const getChartRender = useRef();
@@ -18,7 +20,11 @@ const ReplayChart = () => {
   const [showType, setShowType] = useState("all");
   const [frequency, setFrequency] = useState(1000);
   const [chartRender, setChartRender] = useState(1);
-  const [startTime, setStartTime] = useState();
+  const [dataTime, setDataTime] = useState({
+    start: null,
+    end: null,
+    reply: null,
+  });
   const [timeChart, setTimeChart] = useState({
     xAxis: [],
     price: [],
@@ -31,7 +37,7 @@ const ReplayChart = () => {
   const [caseData, setCaseData] = useState([]);
   const [caseOrder, setCaseOrder] = useState([]);
   const [isResetButtonLoading, setIsResetButtonLoading] = useState(false);
-  const latestChartTime = useRef(undefined);
+  const latestChartTime = useRef(null);
 
   useEffect(() => {
     defaultAxios({
@@ -105,7 +111,7 @@ const ReplayChart = () => {
         method: api.resetStock.method,
         data: {
           id: stockId,
-          createdTime: startTime,
+          // createdTime: dataTime,
           isReset: false,
         },
       }).then((res) => {
@@ -217,12 +223,6 @@ const ReplayChart = () => {
         return <BarLineChart data={timeChart} />;
       }, [timeChart])}
       <div className="flex justify-around my-6 items-end">
-        {/* <Button
-          type="primary"
-          onClick={() => setButtonStatus("real")}
-        >
-          使用證交所資料
-        </Button> */}
         <Button
           type="primary"
           danger
@@ -265,88 +265,157 @@ const ReplayChart = () => {
           手動下一步
         </Button>
       </div>
-      <div style={{ padding: "10px" }}>
-        <div className="my-4 flex justify-around  items-end">
-          <div className="w-1/6">
-            選擇股票
-            <StockSelector
-              style={{ width: "100%" }}
-              onChange={(e) => {
-                setStockId(e);
-              }}
-            />
-          </div>
-          <div className="w-1/6">
-            選擇時間
-            <DatePicker
-              style={{ width: "100%" }}
-              showTime
-              placeholder="選擇重播開始時間"
-              disabledDate={(current) => current && current > dayjs()}
-              onChange={(time) => {
-                if (time) setStartTime(dayjs(time).toISOString());
-                else setStartTime(time);
-              }}
-            />
-          </div>
-          <Button
-            type="primary"
-            disabled={!startTime || !stockId}
-            onClick={() => {
-              setButtonStatus("select");
-              latestChartTime.current = undefined;
+      <div className="m-4 flex justify-around  items-end">
+        <div className="w-1/6">
+          選擇股票
+          <StockSelector
+            style={{ width: "100%" }}
+            onChange={(e) => {
+              setStockId(e);
             }}
-            loading={isResetButtonLoading}
-          >
-            載入重播
-          </Button>
-          <div className="w-1/6">
-            選擇情境
-            <Select
-              className="w-full"
-              options={caseData}
-              onChange={(caseId) => {
-                selectCaseId.current = caseId;
-                defaultAxios({
-                  url: api.getVirtualOrder.url,
-                  method: api.getVirtualOrder.method,
-                  params: {
-                    virtualOrderContainerId: caseId,
-                  },
-                }).then((res) => {
-                  setCaseOrder(res.data.content);
+          />
+        </div>
+        <div className="w-2/6">
+          選擇重播資料時間區間
+          <RangePicker
+            showTime
+            placeholder={["開始時間", "結束時間"]}
+            disabledDate={(current) => current && current > dayjs()}
+            onChange={(time) => {
+              if (time) {
+                setDataTime({
+                  ...dataTime,
+                  start: time[0],
+                  end: time[1],
                 });
-              }}
-            />
-          </div>
-
-          <Button
-            type="primary"
-            danger
-            disabled={!(caseOrder.length && replayStockId)}
-            onClick={() => {
-              const baseTime = Date.parse(startTime);
-              let accumulatedDelay = 0;
-              const transferedCaseOrder = caseOrder.map(
-                ({ delay, id, ...order }) => {
-                  accumulatedDelay += delay || 1;
-                  const createdTime = new Date(
-                    baseTime + accumulatedDelay
-                  ).toISOString();
+              } else {
+                setDataTime({
+                  ...dataTime,
+                  start: null,
+                  end: null,
+                });
+              }
+            }}
+          />
+        </div>
+        <div className="w-1/6">
+          選擇開始撥放時間
+          <DatePicker
+            style={{ width: "100%" }}
+            showTime
+            placeholder="選擇播放時間"
+            disabled={!(dataTime.start || dataTime.end)}
+            disabledDate={(current) =>
+              !(
+                current &&
+                current > dayjs(dataTime.start) &&
+                current < dayjs(dataTime.end).add(1, "d")
+              )
+            }
+            disabledTime={(current) => {
+              const timeArray = (time) =>
+                Array.from(new Array(time), (_, index) => index);
+              if (current) {
+                if (dayjs(current).isSame(dataTime.start, "day")) {
+                  const hour = dayjs(dataTime.start).hour();
+                  const min = dayjs(dataTime.start).minute();
+                  const sec = dayjs(dataTime.start).second();
                   return {
-                    ...order,
-                    createdTime,
-                    investorId: null,
-                    stockId: replayStockId,
+                    disabledHours: () => timeArray(hour),
+                    disabledMinutes: () => timeArray(min),
+                    disabledSeconds: () => timeArray(sec),
+                  };
+                } else if (dayjs(current).isSame(dataTime.end, "day")) {
+                  const hour = dayjs(dataTime.end).hour();
+                  const min = dayjs(dataTime.end).minute();
+                  const sec = dayjs(dataTime.end).second();
+                  return {
+                    disabledHours: () => timeArray(24).splice(hour + 1, 24),
+                    disabledMinutes: () => timeArray(60).splice(min + 1, 24),
+                    disabledSeconds: () => timeArray(60).splice(sec + 1, 24),
                   };
                 }
-              );
-              setResetdata(transferedCaseOrder);
+              }
+              return {
+                disabledHours: () => [],
+                disabledMinutes: () => [],
+                disabledSeconds: () => [],
+              };
             }}
-          >
-            匯入情境
-          </Button>
+            onChange={(time) => {
+              if (time)
+                setDataTime({
+                  ...dataTime,
+                  reply: time,
+                });
+              else
+                setDataTime({
+                  ...dataTime,
+                  reply: null,
+                });
+            }}
+          />
         </div>
+        <Button
+          type="primary"
+          disabled={!(dataTime.start && dataTime.end && stockId)}
+          onClick={() => {
+            setButtonStatus("select");
+            latestChartTime.current = null;
+          }}
+          loading={isResetButtonLoading}
+        >
+          載入重播
+        </Button>
+      </div>
+
+      <div className="m-4 flex justify-around  items-end">
+        <div className="w-1/6">
+          選擇情境
+          <Select
+            className="w-full"
+            options={caseData}
+            onChange={(caseId) => {
+              selectCaseId.current = caseId;
+              defaultAxios({
+                url: api.getVirtualOrder.url,
+                method: api.getVirtualOrder.method,
+                params: {
+                  virtualOrderContainerId: caseId,
+                },
+              }).then((res) => {
+                setCaseOrder(res.data.content);
+              });
+            }}
+          />
+        </div>
+
+        <Button
+          type="primary"
+          danger
+          disabled={!(caseOrder.length && replayStockId)}
+          onClick={() => {
+            const baseTime = Date.parse(dataTime);
+            let accumulatedDelay = 0;
+            const transferedCaseOrder = caseOrder.map(
+              ({ delay, id, ...order }) => {
+                accumulatedDelay += delay || 1;
+                const createdTime = new Date(
+                  baseTime + accumulatedDelay
+                ).toISOString();
+                return {
+                  ...order,
+                  createdTime,
+                  investorId: null,
+                  stockId: replayStockId,
+                };
+              }
+            );
+            setResetdata(transferedCaseOrder);
+          }}
+        >
+          匯入情境
+        </Button>
       </div>
       <div>
         下步狀態({restDataIndex} / {restData.length - 1} )
