@@ -111,7 +111,7 @@ const ReplayChart = () => {
         method: api.resetStock.method,
         data: {
           id: stockId,
-          createdTime: dayjs(dataTime.start).toISOString(),
+          startTime: dayjs(dataTime.start).toISOString(),
           endTime: dayjs(dataTime.end).toISOString(),
           replayTime: dataTime.reply
             ? dayjs(dataTime.reply).toISOString()
