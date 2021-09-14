@@ -399,7 +399,7 @@ const ReplayChart = () => {
           danger
           disabled={!(caseOrder.length && replayStockId)}
           onClick={() => {
-            const baseTime = Date.parse(dataTime);
+            const baseTime = Date.parse(dataTime.start);
             let accumulatedDelay = 0;
             const transferedCaseOrder = caseOrder.map(
               ({ delay, id, ...order }) => {
