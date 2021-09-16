@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const defaultAxios = axios.create({
-  baseURL: "http://118.161.14.131:8080/",
+  baseURL: "http://140.118.118.173:20023/",
 });
 
 export function settingToken(token) {
@@ -17,6 +17,7 @@ export const api = {
   getOrder: { url: "api/order", method: "GET" },
   postOrder: { url: "api/order", method: "POST" },
   postRealOrder: { url: "api/order/realData", method: "POST" },
+  getRealOrder: { url: "api/order/realData", method: "GET" },
   deleteOrder: { url: "api/order", method: "DELETE" },
   getDisplay: { url: "api/display", method: "GET" },
   getDisplayChart: { url: "api/display/chart", method: "GET" },

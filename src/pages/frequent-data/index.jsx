@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { defaultAxios, api } from "../../environment/api";
 import dayjs from "dayjs";
 import { Button, DatePicker, Select, Switch, Row, Col } from "antd";
+import { StockSelector } from "../../component/stock-selector";
 const { Option } = Select;
 
 const FIELDS = [
@@ -37,6 +38,10 @@ const FIELDS = [
 ];
 
 const DATE_FORMAT = [
+  {
+    header: "毫秒",
+    value: 4,
+  },
   {
     header: "秒",
     value: 3,
@@ -85,31 +90,14 @@ const FrequentData = function () {
   const [isGroup, setIsGroup] = useState(true);
 
   const [groupList, setGroupList] = useState();
-  const [stockList, setStockList] = useState();
 
   useEffect(() => {
-    Promise.all([
-      defaultAxios({
-        url: api.getGroup.url,
-        method: api.getGroup.method,
-      }),
-      defaultAxios({
-        url: api.getStock.url,
-        method: api.getStock.method,
-      }),
-    ]).then(
-      ([
-        {
-          data: { content: groupList },
-        },
-        {
-          data: { content: stockList },
-        },
-      ]) => {
-        setGroupList(groupList);
-        setStockList(stockList);
-      }
-    );
+    defaultAxios({
+      url: api.getGroup.url,
+      method: api.getGroup.method,
+    }).then(({ data: { content: groupList } }) => {
+      setGroupList(groupList);
+    });
   }, []);
 
   return (
@@ -143,26 +131,13 @@ const FrequentData = function () {
                 );
               })}
           </Select>
-          <Select
+          <StockSelector
             style={{ width: "100%", display: !isGroup ? undefined : "none" }}
             onChange={(e) => {
               setStocks(e);
             }}
             mode="multiple"
-            defaultValue={[]}
-            value={stocks}
-            placeholder="選擇股票"
-            showSearch
-          >
-            {stockList &&
-              stockList.map((stock) => {
-                return (
-                  <Option key={Math.random()} value={stock.id}>
-                    {stock.id}
-                  </Option>
-                );
-              })}
-          </Select>
+          />
         </Col>
       </Row>
       <Row style={{ marginTop: "20px" }}>

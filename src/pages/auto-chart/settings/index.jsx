@@ -2,7 +2,7 @@ import { configConsumerProps } from "antd/lib/config-provider";
 import React, { useEffect, useRef, useState } from "react";
 import { renderData } from "./math-model";
 import { defaultAxios, api } from "../../../environment/api";
-import { Slider } from 'antd';
+import { Slider } from "antd";
 
 export default function Settings({ buttonStatus = "stop" }) {
   const isFirst = useRef(true);
@@ -21,7 +21,7 @@ export default function Settings({ buttonStatus = "stop" }) {
     R_theta_A: 0.8,
     mu_B: 10,
     mu_A: 10,
-    batch_size: 10
+    batch_size: 10,
   });
   useEffect(() => {
     defaultAxios({
@@ -92,16 +92,14 @@ export default function Settings({ buttonStatus = "stop" }) {
     <div>
       <div className="flex justify-center">
         <div className="w-1/2">
-          <div>
-            batch size: {setting.batch_size}
-          </div>
+          <div>batch size: {setting.batch_size}</div>
           <Slider
             min={1}
             max={100}
             step={1}
             value={setting.batch_size}
             onChange={handleInputChangeBatchSize}
-            />
+          />
         </div>
       </div>
       <div className="flex justify-center mx-5">
@@ -116,7 +114,7 @@ export default function Settings({ buttonStatus = "stop" }) {
               step={0.1}
               value={setting.default_lambda_B}
               onChange={handleInputChangeLambdaB}
-              />
+            />
           </div>
           <div>
             <div>
@@ -170,69 +168,69 @@ export default function Settings({ buttonStatus = "stop" }) {
           </div>
         </div>
         <div className="w-1/4">
-        <div>
           <div>
-            λ<sub>A</sub>: {setting.default_lambda_A}
+            <div>
+              λ<sub>A</sub>: {setting.default_lambda_A}
+            </div>
+            <Slider
+              min={1}
+              max={100}
+              step={0.1}
+              value={setting.default_lambda_A}
+              onChange={handleInputChangeLambdaA}
+            />
           </div>
-          <Slider
-            min={1}
-            max={100}
-            step={0.1}
-            value={setting.default_lambda_A}
-            onChange={handleInputChangeLambdaA}
-          />
-        </div>
-        <div>
           <div>
-            R<sub>A</sub>: {setting.R_A}
+            <div>
+              R<sub>A</sub>: {setting.R_A}
+            </div>
+            <Slider
+              min={0.1}
+              max={5}
+              step={0.1}
+              value={setting.R_A}
+              onChange={handleInputChangeLambdaRatioA}
+            />
           </div>
-          <Slider
-            min={0.1}
-            max={5}
-            step={0.1}
-            value={setting.R_A}
-            onChange={handleInputChangeLambdaRatioA}
-          />
-        </div>
-        <hr className="my-3" />
-        <div>
+          <hr className="my-3" />
           <div>
-            θ<sub>A</sub>: {setting.default_theta_A}
+            <div>
+              θ<sub>A</sub>: {setting.default_theta_A}
+            </div>
+            <Slider
+              min={1}
+              max={100}
+              step={0.1}
+              value={setting.default_theta_A}
+              onChange={handleInputChangeThetaA}
+            />
           </div>
-          <Slider
-            min={1}
-            max={100}
-            step={0.1}
-            value={setting.default_theta_A}
-            onChange={handleInputChangeThetaA}
-          />
-        </div>
-        <div>
           <div>
-            R<sub>A</sub>: {setting.R_theta_A}
+            <div>
+              R<sub>A</sub>: {setting.R_theta_A}
+            </div>
+            <Slider
+              min={0.1}
+              max={5}
+              step={0.1}
+              value={setting.R_theta_A}
+              onChange={handleInputChangeThetaRatioA}
+            />
           </div>
-          <Slider
-            min={0.1}
-            max={5}
-            step={0.1}
-            value={setting.R_theta_A}
-            onChange={handleInputChangeThetaRatioA}
-          />
-        </div>
-        <hr className="my-3" />
-        <div>
+          <hr className="my-3" />
           <div>
-            μ<sub>A</sub>: {setting.mu_A}
+            <div>
+              μ<sub>A</sub>: {setting.mu_A}
+            </div>
+            <Slider
+              min={1}
+              max={100}
+              step={0.1}
+              value={setting.mu_A}
+              onChange={handleInputChangeMuA}
+            />
           </div>
-          <Slider
-            min={1}
-            max={100}
-            step={0.1}
-            value={setting.mu_A}
-            onChange={handleInputChangeMuA}
-          />
         </div>
-      </div>
       </div>
     </div>
   );
