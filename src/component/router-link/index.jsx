@@ -54,6 +54,9 @@ const RouterLink = ({ setToken }) => {
       <li className="py-5 text-xl border-b border-black">
         <NavLink to="/stock-font-end/frequent-data">高頻資料</NavLink>
       </li>
+      <li className="py-5 text-xl border-b border-black">
+        <NavLink to="/stock-font-end/real-data-upload">上傳真實資料</NavLink>
+      </li>
     </ul>
   );
 };

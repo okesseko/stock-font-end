@@ -39,8 +39,25 @@ export const api = {
     url: "api/virtualOrder/container",
     method: "DELETE",
   },
-  getFrequentData: { url: "api/frequentData", method: "GET" },
-  downloadFrequentData: { url: "api/frequentData/download", method: "GET" },
   getGroup: { url: "api/group", method: "GET" },
   getStock: { url: "api/stock", method: "GET" },
+
+  getRealDataDisplayContent: { url: "api/real-data/display", method: "GET" },
+  downloadRealDataDisplayContent: {
+    url: "api/real-data/display/download",
+    method: "GET",
+  },
+
+  postRealDataOrder: { url: "api/real-data/order", method: "POST" },
+  putRealDataOrder: { url: "api/real-data/order", method: "PUT" },
+  postRealDataOrderContent: {
+    url: "api/real-data/order/content",
+    method: "POST",
+  },
+  postRealDataDisplay: { url: "api/real-data/display", method: "POST" },
+  putRealDataDisplay: { url: "api/real-data/display", method: "PUT" },
+  postRealDataDisplayContent: {
+    url: "api/real-data/display/content",
+    method: "POST",
+  },
 };

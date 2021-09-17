@@ -251,12 +251,13 @@ const FrequentData = function () {
             console.log("date format", dateFormat);
             console.log("sample mode", sampleMode);
             console.log("fields ", fields);
-            if (stockIds.length)
+            if (stockIds.length) {
+              const { url, method } = api.downloadRealDataDisplayContent;
               await Promise.all(
                 stockIds.map((stockId) => {
                   return defaultAxios({
-                    url: api.downloadFrequentData.url,
-                    method: api.downloadFrequentData.method,
+                    url,
+                    method,
                     params: {
                       createdTime: JSON.stringify({
                         max: endTime,
@@ -280,6 +281,7 @@ const FrequentData = function () {
                   });
                 })
               );
+            }
           }}
         >
           DOWNLOAD CSV
