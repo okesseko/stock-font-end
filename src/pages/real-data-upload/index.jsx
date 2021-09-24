@@ -1,12 +1,26 @@
-import { Button } from "antd";
+import { Button, Table } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { api, defaultAxios } from "../../environment/api";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 const ORDER_SLICE_SIZE = 600000;
 const DISPLAY_SLICE_SIZE = 599896;
 
 const check = (...arg) => {
   if (true) console.log(...arg);
+};
+
+const getRealData = async (type, page) => {
+  console.log(type);
+  const { url, method } =
+    type === "order" ? api.getRealDataOrder : api.getRealDataDisplay;
+  return defaultAxios({
+    url,
+    method,
+    params: {
+      page,
+    },
+  });
 };
 
 const postRealData = async (id, type) => {
@@ -26,6 +40,16 @@ const putRealData = async (id, type) => {
     url,
     method,
     data: { id },
+  });
+};
+
+const deleteRealData = async (id, type) => {
+  const { url, method } =
+    type === "order" ? api.deleteRealDataOrder : api.deleteRealDataDisplay;
+  return defaultAxios({
+    url,
+    method,
+    data: [id],
   });
 };
 
@@ -117,6 +141,25 @@ const UploadProgress = ({ file, isLoading, type }) => {
 const ContentContainer = ({ type }) => {
   const [fileList, setFileList] = useState([]);
   const [isLoadingList, setIsLoadingList] = useState([]);
+  const [realData, setRealData] = useState([]);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+  const [totalSize, setTotalSize] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleGetRealData = () => {
+    getRealData(type, { page, pageSize }).then(({ data }) => {
+      setRealData(data.content);
+      setTotalSize(data.totalSize);
+      setIsLoading(false);
+    });
+  };
+
+  useEffect(() => {
+    handleGetRealData();
+  }, [page, pageSize]);
+
+  console.log(realData);
 
   return (
     <div>
@@ -150,26 +193,83 @@ const ContentContainer = ({ type }) => {
           );
         })}
       </div>
+      <Table
+        loading={isLoading}
+        dataSource={realData.map((v) => {
+          return {
+            key: Math.random(),
+            ...v,
+          };
+        })}
+        columns={[
+          {
+            title: "檔名",
+            dataIndex: "id",
+            key: Math.random(),
+          },
+          {
+            title: "已完成",
+            dataIndex: "isFinished",
+            render: (data) => {
+              return data === 0 ? "否" : "是";
+            },
+            key: Math.random(),
+          },
+          {
+            title: "刪除",
+            dataIndex: "action",
+            render: (data, { id }) => (
+              <Button
+                type="link"
+                shape="circle"
+                className="inline-flex justify-center items-center"
+                onClick={() => {
+                  setIsLoading(true);
+                  deleteRealData(id, type).then(() => {
+                    handleGetRealData();
+                  });
+                }}
+                icon={<DeleteOutlined />}
+              />
+            ),
+          },
+        ]}
+        pagination={{
+          pageSize: pageSize,
+          total: totalSize,
+          onChange: (page) => {
+            setPage(page);
+          },
+          onShowSizeChange: (cur, size) => {
+            setPageSize(size);
+          },
+        }}
+      />
     </div>
   );
 };
 
 const RealDataUpload = () => {
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-around",
-      }}
-    >
-      <div>
-        委託檔
-        <ContentContainer type="order" />
-      </div>
-      <div>
-        揭示檔
-        <ContentContainer type="display" />
+    <div style={{ textAlign: "center" }}>
+      <span style={{ color: "red" }}>
+        若"已完成"為否 請將該筆資料刪除後再重新上傳
+      </span>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-around",
+        }}
+      >
+        <div>
+          委託檔
+          <ContentContainer type="order" />
+        </div>
+        <div>
+          揭示檔
+          <ContentContainer type="display" />
+        </div>
       </div>
     </div>
   );

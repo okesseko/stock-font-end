@@ -48,14 +48,18 @@ export const api = {
     method: "GET",
   },
 
+  getRealDataOrder: { url: "api/real-data/order", method: "GET" },
   postRealDataOrder: { url: "api/real-data/order", method: "POST" },
   putRealDataOrder: { url: "api/real-data/order", method: "PUT" },
+  deleteRealDataOrder: { url: "api/real-data/order", method: "DELETE" },
   postRealDataOrderContent: {
     url: "api/real-data/order/content",
     method: "POST",
   },
+  getRealDataDisplay: { url: "api/real-data/display", method: "GET" },
   postRealDataDisplay: { url: "api/real-data/display", method: "POST" },
   putRealDataDisplay: { url: "api/real-data/display", method: "PUT" },
+  deleteRealDataDisplay: { url: "api/real-data/display", method: "DELETE" },
   postRealDataDisplayContent: {
     url: "api/real-data/display/content",
     method: "POST",
