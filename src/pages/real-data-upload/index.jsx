@@ -1,7 +1,7 @@
 import { Button, Table } from "antd";
 import { useEffect, useRef, useState } from "react";
 import { api, defaultAxios } from "../../environment/api";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { DeleteOutlined } from "@ant-design/icons";
 
 const ORDER_SLICE_SIZE = 600000;
 const DISPLAY_SLICE_SIZE = 599896;

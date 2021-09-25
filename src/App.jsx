@@ -7,6 +7,7 @@ import Case from "./pages/case";
 import EchartExample from "./pages/echart-example";
 import FrequentData from "./pages/frequent-data";
 import RealDataUpload from "./pages/real-data-upload";
+import Simulator from "./pages/simulator";
 import Main from "./pages/main";
 import OrderTable from "./pages/table/order-table";
 import PriceTable from "./pages/table/price-table";
@@ -79,6 +80,10 @@ const App = () => {
             <GuardedRoute
               path="/stock-font-end/real-data-upload"
               component={RealDataUpload}
+            />
+            <GuardedRoute
+              path="/stock-font-end/simulator"
+              component={Simulator}
             />
             <Redirect
               from="*"

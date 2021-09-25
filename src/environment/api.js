@@ -42,7 +42,14 @@ export const api = {
   getGroup: { url: "api/group", method: "GET" },
   getStock: { url: "api/stock", method: "GET" },
 
-  getRealDataDisplayContent: { url: "api/real-data/display", method: "GET" },
+  getRealDataOrderContent: {
+    url: "api/real-data/order/content",
+    method: "GET",
+  },
+  getRealDataDisplayContent: {
+    url: "api/real-data/display/content",
+    method: "GET",
+  },
   downloadRealDataDisplayContent: {
     url: "api/real-data/display/download",
     method: "GET",
