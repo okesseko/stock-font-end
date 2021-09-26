@@ -1,5 +1,5 @@
 import { Button, Table } from "antd";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { api, defaultAxios } from "../../environment/api";
 import { DeleteOutlined } from "@ant-design/icons";
 
@@ -147,19 +147,17 @@ const ContentContainer = ({ type }) => {
   const [totalSize, setTotalSize] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleGetRealData = () => {
+  const handleGetRealData = useCallback(() => {
     getRealData(type, { page, pageSize }).then(({ data }) => {
       setRealData(data.content);
       setTotalSize(data.totalSize);
       setIsLoading(false);
     });
-  };
+  }, [page, pageSize, type]);
 
   useEffect(() => {
     handleGetRealData();
-  }, [page, pageSize]);
-
-  console.log(realData);
+  }, [handleGetRealData]);
 
   return (
     <div>

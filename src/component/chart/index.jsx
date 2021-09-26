@@ -107,8 +107,8 @@ const DisplayChart = ({ onStockIdChange }) => {
   const [tickChartData, setTickChartData] = useState({});
   const [timeChartData, setTimeChartData] = useState([]);
 
-  const clearTimeOut = () => {
-    if (interval.current) clearTimeout(interval.current);
+  const clearInterval = () => {
+    if (interval.current) window.clearInterval(interval.current);
     interval.current = undefined;
   };
 
@@ -165,7 +165,7 @@ const DisplayChart = ({ onStockIdChange }) => {
   }, [stockId, dateFormat, timeChartData, latestTimeChartTime]);
 
   useEffect(() => {
-    clearTimeOut();
+    clearInterval();
 
     if (isRunning) {
       interval.current = setInterval(() => {
@@ -174,7 +174,7 @@ const DisplayChart = ({ onStockIdChange }) => {
     }
 
     return () => {
-      clearTimeOut();
+      clearInterval();
     };
   }, [handleInterval, isRunning, frequency]);
 

@@ -13,6 +13,30 @@ const getRealDataOrderContent = async (params) => {
   });
 };
 
+const resetStock = (stockId) => {
+  return defaultAxios({
+    url: api.resetStock.url,
+    method: api.resetStock.method,
+    data: {
+      id: stockId,
+      isReset: true,
+      isAutoDisplay: false,
+    },
+  });
+};
+
+const sendOrder = ({ id, realDataOrderId, ...order }) => {
+  const { url, method } = api.postOrder;
+  return defaultAxios({
+    url,
+    method,
+    data: {
+      ...order,
+      investorId: null,
+    },
+  });
+};
+
 const RealDataSimulator = () => {
   // Functional state
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -29,8 +53,7 @@ const RealDataSimulator = () => {
     if (isRunning) {
       const currentOrder = orders[currentIndex];
       const nextOrder = orders[currentIndex + 1];
-      // send order here
-      console.log(currentIndex, "up");
+      sendOrder(currentOrder);
       if (nextOrder) {
         const delay =
           Date.parse(nextOrder.createdTime) -
@@ -92,8 +115,9 @@ const RealDataSimulator = () => {
         <Button
           type="primary"
           danger
-          onClick={() => {
+          onClick={async () => {
             if (stockId) {
+              await resetStock(stockId);
               getRealDataOrderContent({
                 stockId,
                 createdTime: { min: startTime, max: endTime },
