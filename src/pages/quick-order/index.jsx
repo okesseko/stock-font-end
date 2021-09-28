@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 // import CSVReader from 'react-csv-reader';
 import ReadFile from "./read-file";
 import { api, defaultAxios } from "../../environment/api";
-import { Button, InputNumber, Select } from "antd";
+import { Button, Checkbox, InputNumber, Select } from "antd";
 import { StockSelector } from "../../component/stock-selector";
 
 const QuickOrder = () => {
@@ -17,6 +17,8 @@ const QuickOrder = () => {
   const [totalSize, setTotalSize] = useState(0);
   const [showType, setShowType] = useState("請選擇情境");
   const [timeRestriction, setTimeRestriction] = useState(0);
+  const [isAutoTime, setIsAutoTime] = useState(false);
+  // const [isSimulated, setIsSimulated] = useState(false);
 
   const [display, setDisplay] = useState();
 
@@ -46,6 +48,7 @@ const QuickOrder = () => {
             quantity: data.quantity,
             priceType: data.priceType, // MARKET = 0, LIMIT = 1
             timeRestriction: timeRestriction, // ROD = 0, IOC = 1, FOK = 2
+            isAutoTime,
           },
         }).then((res) => {
           refreshDisplay(showType);
@@ -82,6 +85,7 @@ const QuickOrder = () => {
           quantity: data.quantity,
           priceType: data.priceType, // MARKET = 0, LIMIT = 1
           timeRestriction: timeRestriction, // ROD = 0, IOC = 1, FOK = 2
+          isAutoTime,
         },
       }).then((res) => {
         refreshDisplay(showType);
@@ -119,6 +123,7 @@ const QuickOrder = () => {
           priceType: data.priceType, // MARKET = 0, LIMIT = 1
           timeRestriction: timeRestriction, // ROD = 0, IOC = 1, FOK = 2
           subMethod: 0,
+          isAutoTime,
         },
       }).then((res) => {
         refreshDisplay(showType);
@@ -167,7 +172,6 @@ const QuickOrder = () => {
     }
   }
 
-  console.log(1);
   function setData(data) {
     let newFiveTickRangeData = JSON.parse(JSON.stringify(data.fiveTickRange));
     newFiveTickRangeData = newFiveTickRangeData.sort(
@@ -296,6 +300,27 @@ const QuickOrder = () => {
             Reset
           </Button>
         )}
+        <Checkbox
+          checked={isAutoTime}
+          onChange={(e) => {
+            const { checked } = e.target;
+            setIsAutoTime(checked);
+            // if (!checked) {
+            //   setIsSimulated(false);
+            // }
+          }}
+        >
+          是否自動填入過去時間
+        </Checkbox>
+        {/* <Checkbox
+          checked={isSimulated}
+          onChange={(e) => {
+            setIsSimulated(e.target.checked);
+          }}
+          disabled={!isAutoTime}
+        >
+          是否為虛擬單
+        </Checkbox> */}
       </div>
 
       <div
