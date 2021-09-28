@@ -272,12 +272,24 @@ const FrequentData = function () {
                     const fileName = headers["content-disposition"]
                       .match(/".+"/)[0]
                       .replace(/"/g, "");
-                    const url = window.URL.createObjectURL(new Blob([data]));
+                    const transferData = data
+                      .split("\n")
+                      .map((row) => {
+                        return row
+                          .split(",")
+                          .map((s) => '="' + s + '"')
+                          .join(",");
+                      })
+                      .join("\n");
+                    const url = window.URL.createObjectURL(
+                      new Blob([transferData])
+                    );
                     const link = document.createElement("a");
                     link.href = url;
                     link.setAttribute("download", fileName);
                     document.body.appendChild(link);
                     link.click();
+                    window.URL.revokeObjectURL(url);
                   });
                 })
               );
