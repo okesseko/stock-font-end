@@ -272,15 +272,15 @@ const FrequentData = function () {
                     const fileName = headers["content-disposition"]
                       .match(/".+"/)[0]
                       .replace(/"/g, "");
-                    const transferData = data
-                      .split("\n")
-                      .map((row) => {
-                        return row
-                          .split(",")
-                          .map((s) => '="' + s + '"')
-                          .join(",");
-                      })
-                      .join("\n");
+                    const transferData = data;
+                    // .split("\n")
+                    // .map((row) => {
+                    //   return row
+                    //     .split(",")
+                    //     .map((s) => '="' + s + '"')
+                    //     .join(",");
+                    // })
+                    // .join("\n");
                     const url = window.URL.createObjectURL(
                       new Blob([transferData])
                     );
