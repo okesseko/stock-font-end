@@ -5,7 +5,7 @@ export const defaultAxios = axios.create({
 });
 
 export function settingToken(token) {
-  defaultAxios.defaults.headers.common["Authorization"] = token;
+  defaultAxios.defaults.headers.common["token"] = token;
 }
 
 // api

@@ -19,8 +19,8 @@ import { useEffect, useState } from "react";
 import { settingToken } from "./environment/api";
 
 const App = () => {
-  const [auth, setAuth] = useState(!!localStorage.getItem("token"));
-  const [token, setToken] = useState(localStorage.getItem("token") || "");
+  const [auth, setAuth] = useState(!!sessionStorage.getItem("token"));
+  const [token, setToken] = useState(sessionStorage.getItem("token") || "");
   const GuardedRoute = ({ component: Component, ...rest }) => (
     <Route
       {...rest}
@@ -33,6 +33,7 @@ const App = () => {
       }
     />
   );
+  console.log(token);
   useEffect(() => {
     setAuth(!!token);
     settingToken(token);

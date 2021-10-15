@@ -41,7 +41,7 @@ const QuickOrder = () => {
           url: api.postOrder.url,
           method: api.postOrder.method,
           data: {
-            investorId: 1,
+            // investorId: 1,
             stockId,
             method: data.method, // BUY = 0, SELL = 1
             price: data.price,
@@ -78,7 +78,7 @@ const QuickOrder = () => {
         url: api.postOrder.url,
         method: api.postOrder.method,
         data: {
-          investorId: 1,
+          // investorId: 1,
           stockId,
           method: data.method, // BUY = 0, SELL = 1
           price: data.price,
@@ -115,7 +115,7 @@ const QuickOrder = () => {
         url: api.postOrder.url,
         method: api.postOrder.method,
         data: {
-          investorId: 1,
+          // investorId: 1,
           stockId,
           method: data.method, // BUY = 0, SELL = 1
           price: data.price,
@@ -404,7 +404,7 @@ const QuickOrder = () => {
                   });
                 }}
               >
-                &nbsp;
+                {range.investorBuyQuantity || " "}
               </Button>
               <Button
                 className="w-1/2"
@@ -465,7 +465,7 @@ const QuickOrder = () => {
                   });
                 }}
               >
-                &nbsp;
+                {range.investorSellQuantity || " "}
               </Button>
             </div>
           ))}
