@@ -40,7 +40,7 @@ const RouterLink = ({ setToken }) => {
         <NavLink to="/stock-font-end/replay-chart">重播紀錄</NavLink>
       </li>
       <li className="py-5 text-xl border-b border-black">
-        <NavLink to="/stock-font-end/oreder-table">委託紀錄表單</NavLink>
+        <NavLink to="/stock-font-end/order-table">委託紀錄表單</NavLink>
       </li>
       <li className="py-5 text-xl border-b border-black">
         <NavLink to="/stock-font-end/price-table">成交紀錄表單</NavLink>

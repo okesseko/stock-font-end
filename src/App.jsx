@@ -62,7 +62,7 @@ const App = () => {
               component={ReplayChart}
             />
             <GuardedRoute
-              path="/stock-font-end/oreder-table"
+              path="/stock-font-end/order-table"
               component={OrderTable}
             />
             <GuardedRoute
