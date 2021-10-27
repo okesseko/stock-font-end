@@ -2,14 +2,18 @@ import { Button } from "antd";
 import React from "react";
 import { api, defaultAxios } from "../../environment/api";
 
-const DownloadButton = ({ type }) => {
+const DownloadButton = ({ type, stockId, startTime, endTime }) => {
   function download() {
     const apiName = type === "order" ? "getOrder" : "getTransaction";
     defaultAxios({
       url: api[apiName].url,
       method: api[apiName].method,
+      params: {
+        stockId,
+        createdTime: { min: startTime, max: endTime },
+      },
     }).then((res) => {
-      const content = res.data.content;
+      const content = res.data.content.length === 0 ? [{}] : res.data.content;
       const key = Object.keys(content[0]).join(",") + "\n";
       const csvFile = content.reduce(
         (pre, cur) => pre + Object.values(cur).join(",") + "\n",

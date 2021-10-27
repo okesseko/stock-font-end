@@ -50,27 +50,27 @@ const RealDataSimulator = () => {
   const [endTime, setEndTime] = useState();
 
   const handleTimeOut = useCallback(() => {
+    const currentOrder = orders[currentIndex];
+    const nextOrder = orders[currentIndex + 1];
+    sendOrder(currentOrder);
+    if (nextOrder) {
+      const delay =
+        Date.parse(nextOrder.createdTime) -
+        Date.parse(currentOrder.createdTime);
+      timeOut.current = setTimeout(() => {
+        setCurrentIndex(currentIndex + 1);
+      }, delay);
+    }
+  }, [currentIndex, orders]);
+
+  useEffect(() => {
     if (isRunning) {
-      const currentOrder = orders[currentIndex];
-      const nextOrder = orders[currentIndex + 1];
-      sendOrder(currentOrder);
-      if (nextOrder) {
-        const delay =
-          Date.parse(nextOrder.createdTime) -
-          Date.parse(currentOrder.createdTime);
-        timeOut.current = setTimeout(() => {
-          setCurrentIndex(currentIndex + 1);
-        }, delay);
-      }
+      handleTimeOut();
     } else if (timeOut.current) {
       clearTimeout(timeOut.current);
       timeOut.current = undefined;
     }
-  }, [currentIndex, orders, isRunning]);
-
-  useEffect(() => {
-    handleTimeOut();
-  }, [handleTimeOut]);
+  }, [isRunning, handleTimeOut]);
 
   return (
     <div>
