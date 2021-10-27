@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import ReactECharts from "echarts-for-react";
-import { data } from "../mock-data";
 
 const BarChart = ({ originData = {}, showType }) => {
   const [yAxisMax, setYAxisMax] = useState(10);

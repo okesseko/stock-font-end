@@ -4,6 +4,8 @@ import BarLineChart from "../../pages/echart-example/bar-line";
 import { Button, Select } from "antd";
 import { StockSelector } from "../stock-selector";
 import { api, defaultAxios } from "../../environment/api";
+import ReactECharts from "echarts-for-react";
+import dayjs from "dayjs";
 
 const check = (...arg) => {
   if (false) {
@@ -34,6 +36,14 @@ const getChartData = (stockId, dateFormat, latestTimeChartTime) => {
           }),
       },
     }),
+    defaultAxios({
+      url: api.getDisplay.url,
+      method: api.getDisplay.method,
+      params: {
+        stockId,
+        page: { page: 1, pageSize: 10 },
+      },
+    }),
   ]);
 };
 
@@ -57,7 +67,6 @@ const DisplayTickChart = ({ data = {} }) => {
   const [showType, setShowType] = useState("all");
   return (
     <div>
-      <BarChart originData={data} showType={showType} />
       <div className="flex justify-around my-6 items-center">
         <div>
           圖表模式
@@ -88,11 +97,46 @@ const DisplayTickChart = ({ data = {} }) => {
           />
         </div>
       </div>
+      <BarChart originData={data} showType={showType} />
     </div>
   );
 };
 
-const DisplayChart = ({ onStockIdChange }) => {
+const DisplaySplitChart = ({ data = [] }) => {
+  const option = {
+    xAxis: {
+      type: "category",
+      data: data.map((v) => v.x),
+      axisLabel: {
+        formatter: (value, index) => {
+          const day = dayjs(value).format("HH:mm:ss");
+          return day;
+        },
+      },
+    },
+    yAxis: {
+      type: "value",
+    },
+    series: [
+      {
+        data: data.map((v) => v.y),
+        type: "line",
+      },
+    ],
+    tooltip: {
+      trigger: "axis",
+      axisPointer: {
+        type: "cross",
+        label: {
+          backgroundColor: "#283b56",
+        },
+      },
+    },
+  };
+  return <ReactECharts option={option} />;
+};
+
+const DisplayChart = ({ onStockIdChange, stock }) => {
   //chart status
   const [isRunning, setIsRunning] = useState(false);
   const [frequency, setFrequency] = useState(1);
@@ -106,6 +150,7 @@ const DisplayChart = ({ onStockIdChange }) => {
   // chart data
   const [tickChartData, setTickChartData] = useState({});
   const [timeChartData, setTimeChartData] = useState([]);
+  const [splitChartData, setSplitChartData] = useState([]);
 
   const clearInterval = () => {
     if (interval.current) window.clearInterval(interval.current);
@@ -115,20 +160,38 @@ const DisplayChart = ({ onStockIdChange }) => {
   const resetChart = () => {
     setTickChartData({});
     setTimeChartData([]);
+    setSplitChartData([]);
     setLatestTimeChartTime(undefined);
   };
 
   useEffect(() => {
     resetChart();
     check("----");
-  }, [stockId, dateFormat]);
+  }, [stock, stockId, dateFormat]);
 
   const handleInterval = useCallback(() => {
-    check(stockId, dateFormat, interval.current, latestTimeChartTime);
-    getChartData(stockId, dateFormat, latestTimeChartTime).then(
-      ([{ data: tickChartData }, { data: _timeChartData }]) => {
+    check(
+      (stock && stock.id) || stockId,
+      dateFormat,
+      interval.current,
+      latestTimeChartTime
+    );
+    getChartData(
+      (stock && stock.id) || stockId,
+      dateFormat,
+      latestTimeChartTime
+    ).then(
+      ([
+        { data: tickChartData },
+        { data: _timeChartData },
+        {
+          data: { content: splitChartData },
+        },
+      ]) => {
+        // tick chart
         setTickChartData(tickChartData);
 
+        // time chart
         const newTimeChartData = JSON.parse(JSON.stringify(timeChartData));
         if (_timeChartData.length) {
           _timeChartData.forEach(({ originCreatedTime, ...timeChart }) => {
@@ -160,9 +223,21 @@ const DisplayChart = ({ onStockIdChange }) => {
           });
           setTimeChartData(newTimeChartData);
         }
+
+        // split chart
+        setSplitChartData(
+          splitChartData
+            .reverse()
+            .map(({ firstOrderBuyPrice, firstOrderSellPrice, createdTime }) => {
+              return {
+                x: createdTime,
+                y: firstOrderSellPrice - firstOrderBuyPrice,
+              };
+            })
+        );
       }
     );
-  }, [stockId, dateFormat, timeChartData, latestTimeChartTime]);
+  }, [stock, stockId, dateFormat, timeChartData, latestTimeChartTime]);
 
   useEffect(() => {
     clearInterval();
@@ -210,8 +285,11 @@ const DisplayChart = ({ onStockIdChange }) => {
           />
         );
       }, [timeChartData])}
+      {useMemo(() => {
+        return <DisplaySplitChart data={splitChartData} />;
+      }, [splitChartData])}
       <div className="flex justify-around my-6 items-center">
-        <div className="w-1/6">
+        <div className="w-1/6" style={{ display: stock ? "none" : undefined }}>
           選擇股票
           <StockSelector
             style={{ width: "100%" }}
@@ -224,7 +302,7 @@ const DisplayChart = ({ onStockIdChange }) => {
         <Button
           type="primary"
           onClick={() => setIsRunning(true)}
-          disabled={!stockId}
+          disabled={!stockId && !(stock && stock.id)}
         >
           開始播放
         </Button>
@@ -241,7 +319,7 @@ const DisplayChart = ({ onStockIdChange }) => {
           onClick={() => {
             resetChart();
           }}
-          disabled={!stockId}
+          disabled={!stockId && !(stock && stock.id)}
         >
           重製畫面
         </Button>
