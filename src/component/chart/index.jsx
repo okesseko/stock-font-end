@@ -36,14 +36,6 @@ const getChartData = (stockId, dateFormat, latestTimeChartTime) => {
           }),
       },
     }),
-    defaultAxios({
-      url: api.getDisplay.url,
-      method: api.getDisplay.method,
-      params: {
-        stockId,
-        page: { page: 1, pageSize: 10 },
-      },
-    }),
   ]);
 };
 
@@ -180,63 +172,52 @@ const DisplayChart = ({ onStockIdChange, stock }) => {
       (stock && stock.id) || stockId,
       dateFormat,
       latestTimeChartTime
-    ).then(
-      ([
-        { data: tickChartData },
-        { data: _timeChartData },
-        {
-          data: { content: splitChartData },
-        },
-      ]) => {
-        // tick chart
-        setTickChartData(tickChartData);
+    ).then(([{ data: tickChartData }, { data: _timeChartData }]) => {
+      // tick chart
+      setTickChartData(tickChartData);
 
-        // time chart
-        const newTimeChartData = JSON.parse(JSON.stringify(timeChartData));
-        if (_timeChartData.length) {
-          _timeChartData.forEach(({ originCreatedTime, ...timeChart }) => {
-            const LENGTH = newTimeChartData.length;
-            if (
-              LENGTH &&
-              newTimeChartData[LENGTH - 1].xAxis === timeChart.createdTime
-            ) {
-              newTimeChartData[LENGTH - 1] = {
-                xAxis: timeChart.createdTime,
-                price: timeChart.close,
-                quantity:
-                  timeChart.quantity + newTimeChartData[LENGTH - 1].quantity,
-                buy: timeChart.firstOrderBuy,
-                sell: timeChart.firstOrderSell,
-              };
-            } else {
-              newTimeChartData.push({
-                xAxis: timeChart.createdTime,
-                price: timeChart.close,
-                quantity: timeChart.quantity,
-                buy: timeChart.firstOrderBuy,
-                sell: timeChart.firstOrderSell,
-              });
-            }
-            if (originCreatedTime) {
-              setLatestTimeChartTime(new Date(originCreatedTime).getTime() + 1);
-            }
-          });
-          setTimeChartData(newTimeChartData);
-        }
-
+      // time chart
+      const newTimeChartData = JSON.parse(JSON.stringify(timeChartData));
+      if (_timeChartData.length) {
+        _timeChartData.forEach(({ originCreatedTime, ...timeChart }) => {
+          const LENGTH = newTimeChartData.length;
+          if (
+            LENGTH &&
+            newTimeChartData[LENGTH - 1].xAxis === timeChart.createdTime
+          ) {
+            newTimeChartData[LENGTH - 1] = {
+              xAxis: timeChart.createdTime,
+              price: timeChart.close,
+              quantity:
+                timeChart.quantity + newTimeChartData[LENGTH - 1].quantity,
+              buy: timeChart.firstOrderBuy,
+              sell: timeChart.firstOrderSell,
+            };
+          } else {
+            newTimeChartData.push({
+              xAxis: timeChart.createdTime,
+              price: timeChart.close,
+              quantity: timeChart.quantity,
+              buy: timeChart.firstOrderBuy,
+              sell: timeChart.firstOrderSell,
+            });
+          }
+          if (originCreatedTime) {
+            setLatestTimeChartTime(new Date(originCreatedTime).getTime() + 1);
+          }
+        });
+        setTimeChartData(newTimeChartData);
         // split chart
         setSplitChartData(
-          splitChartData
-            .reverse()
-            .map(({ firstOrderBuyPrice, firstOrderSellPrice, createdTime }) => {
-              return {
-                x: createdTime,
-                y: firstOrderSellPrice - firstOrderBuyPrice,
-              };
-            })
+          newTimeChartData.slice(-10).map(({ buy, sell, xAxis }) => {
+            return {
+              x: xAxis,
+              y: sell - buy,
+            };
+          })
         );
       }
-    );
+    });
   }, [stock, stockId, dateFormat, timeChartData, latestTimeChartTime]);
 
   useEffect(() => {
