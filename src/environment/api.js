@@ -22,7 +22,10 @@ export const api = {
   getDisplay: { url: "api/display", method: "GET" },
   getDisplayChart: { url: "api/display/chart", method: "GET" },
   getTransaction: { url: "api/transaction", method: "GET" },
+  getStock: { url: "api/stock", method: "GET" },
+  postStock: { url: "api/stock", method: "POST" },
   putStock: { url: "api/stock", method: "PUT" },
+  deleteStock: { url: "api/stock", method: "DELETE" },
   resetStock: { url: "api/stock/reset", method: "PUT" },
   getVirtualOrder: { url: "api/virtualOrder", method: "GET" },
   postVirtualOrder: { url: "api/virtualOrder", method: "POST" },
@@ -40,7 +43,6 @@ export const api = {
     method: "DELETE",
   },
   getGroup: { url: "api/group", method: "GET" },
-  getStock: { url: "api/stock", method: "GET" },
 
   getRealDataOrderContent: {
     url: "api/real-data/order/content",

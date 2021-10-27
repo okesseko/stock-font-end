@@ -60,6 +60,9 @@ const RouterLink = ({ setToken }) => {
       <li className="py-5 text-xl border-b border-black">
         <NavLink to="/stock-font-end/simulator">模擬下單</NavLink>
       </li>
+      <li className="py-5 text-xl border-b border-black">
+        <NavLink to="/stock-font-end/stock">股票管理</NavLink>
+      </li>
     </ul>
   );
 };

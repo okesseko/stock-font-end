@@ -13,6 +13,7 @@ import OrderTable from "./pages/table/order-table";
 import PriceTable from "./pages/table/price-table";
 import QuickOrder from "./pages/quick-order";
 import ReplayChart from "./pages/replay";
+import Stock from "./pages/stock";
 import Login from "./pages/login";
 import RouterLink from "./component/router-link";
 import { useEffect, useState } from "react";
@@ -85,6 +86,10 @@ const App = () => {
             <GuardedRoute
               path="/stock-font-end/simulator"
               component={Simulator}
+            />
+            <GuardedRoute
+              path="/stock-font-end/stock"
+              component={Stock}
             />
             <Redirect
               from="*"
