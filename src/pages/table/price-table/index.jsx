@@ -1,6 +1,7 @@
 import { Table } from "antd";
 import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
+import StockDatePicker from "../../../component/stock-date-picker";
 import { api, defaultAxios } from "../../../environment/api";
 import DownloadButton from "../downloadButton";
 
@@ -9,21 +10,42 @@ const PriceTable = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(20);
   const [totalSize, setTotalSize] = useState(0);
+  const [stockId, setStockId] = useState();
+  const [startTime, setStartTime] = useState();
+  const [endTime, setEndTime] = useState();
   useEffect(() => {
     defaultAxios({
       url: api.getTransaction.url,
       method: api.getTransaction.method,
       params: {
         page: { page: page, pageSize: pageSize },
+        stockId,
+        createdTime: { min: startTime, max: endTime },
       },
     }).then((res) => {
       setOrderData(res.data.content);
       setTotalSize(res.data.totalSize);
     });
-  }, [page, pageSize]);
+  }, [page, pageSize, stockId, startTime, endTime]);
   return (
     <div>
-      <DownloadButton type="investor" />
+      <StockDatePicker
+        onStockChange={(e) => {
+          setStockId(e);
+        }}
+        onStartChange={(e) => {
+          setStartTime(e);
+        }}
+        onEndChange={(e) => {
+          setEndTime(e);
+        }}
+      />
+      <DownloadButton
+        type="investor"
+        stockId={stockId}
+        startTime={startTime}
+        endTime={endTime}
+      />
       <Table
         columns={[
           {
