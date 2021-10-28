@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
-import { Modal, Form, Input, InputNumber } from "antd";
+import { Modal, Form, Input, InputNumber, Select } from "antd";
 import { api, defaultAxios } from "../../environment/api";
+const { Option } = Select;
 
 const CreateAndEdit = ({ isVisible, setIsVisible, initVal, reload }) => {
   const [form] = Form.useForm();
@@ -78,7 +79,11 @@ const CreateAndEdit = ({ isVisible, setIsVisible, initVal, reload }) => {
           name="type"
           rules={[{ required: true, message: "Require" }]}
         >
-          <InputNumber type="number" className="w-full" min={0} />
+          <Select className="w-full">
+            <Option value={0}>現股</Option>
+            <Option value={1}>ETF</Option>
+            <Option value={2}>權證</Option>
+          </Select>
         </Form.Item>
       </Form>
     </Modal>

@@ -5,6 +5,8 @@ import CreateAndEdit from "./modal";
 import { api, defaultAxios } from "../../environment/api";
 import dayjs from "dayjs";
 
+const TYPE_MAPPING = ["現股", "ETF", "權證"];
+
 const Stock = () => {
   const [data, setData] = useState([]);
   const [totalSize, setTotalSize] = useState(0);
@@ -182,6 +184,7 @@ const Stock = () => {
           {
             title: "類別",
             dataIndex: "type",
+            render: (data) => <span>{TYPE_MAPPING[data]}</span>,
           },
           {
             title: "更新時間",
