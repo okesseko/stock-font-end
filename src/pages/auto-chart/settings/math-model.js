@@ -46,20 +46,7 @@ function sendOrderApi(data) {
       quantity: data.quantity,
       priceType: data.priceType, // MARKET = 0, LIMIT = 1
       timeRestriction: data.timeRestriction, // ROD = 0, IOC = 1, FOK = 2
-    },
-  }).then((res) => {
-    // console.log(res.data);
-  });
-}
-
-function sendCancelApi(data) {
-  // console.log("cancelData", data);
-  defaultAxios({
-    url: api.deleteOrder.url,
-    method: api.deleteOrder.method,
-    data: {
-      id: data.id,
-      quantity: data.quantity,
+      subMethod: data.subMethod,
     },
   }).then((res) => {
     // console.log(res.data);
@@ -89,20 +76,20 @@ export const renderData = function (params, content) {
   let sellLeftQueue = [];
   let sellRightQueue = [];
   content.tickRange.forEach(function (data) {
-    if (data.price < firstOrderBuyPrice) {
+    if (data.price < firstOrderSellPrice) {
       buyLeftQueue.push(data.price);
     }
-    if (data.price < firstOrderSellPrice) {
+    if (data.price < firstOrderBuyPrice) {
       sellLeftQueue.push(data.price);
     }
   });
   let newTickRange = JSON.parse(JSON.stringify(content.tickRange))
   newTickRange = newTickRange.sort((a, b) => a.price - b.price)
   newTickRange.forEach(function (data) {
-    if (data.price > firstOrderBuyPrice) {
+    if (data.price > firstOrderSellPrice) {
       buyRightQueue.push(data.price);
     }
-    if (data.price > firstOrderSellPrice) {
+    if (data.price > firstOrderBuyPrice) {
       sellRightQueue.push(data.price);
     }
   });
@@ -156,7 +143,7 @@ export const renderData = function (params, content) {
     case "L":
       // console.log("Limit order");
       sendOrderApi({
-        investorId: 1,
+        investorId: null,
         stockId: 1,
         method: type == "B" ? 0 : 1, // BUY = 0, SELL = 1
         price: Number(lowest[0].substring(2, 10)),
@@ -170,7 +157,7 @@ export const renderData = function (params, content) {
     case "M":
       // console.log("Market order");
       sendOrderApi({
-        investorId: 1,
+        investorId: null,
         stockId: 1,
         method: type == "B" ? 0 : 1, // BUY = 0, SELL = 1
         price: 0,
@@ -199,10 +186,17 @@ export const renderData = function (params, content) {
         let random = randomProperty(content);
         if (random) {
           // console.log("randomProperty", random);
-
-          sendCancelApi({
-            id: random.id,
-            quantity: getBatches(batch_size),
+          console.log('random', random)
+          // console.log(random.price, random.priceType);
+          sendOrderApi({
+            investorId: null,
+            stockId: 1,
+            method: random.method, // BUY = 0, SELL = 1
+            price: random.price,
+            quantity: random.quantity,
+            priceType: random.priceType, // MARKET = 0, LIMIT = 1
+            timeRestriction: random.timeRestriction, // ROD = 0, IOC = 1, FOK = 2          
+            subMethod: 0,
           });
         }
       });
