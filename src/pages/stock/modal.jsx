@@ -51,17 +51,17 @@ const CreateAndEdit = ({ isVisible, setIsVisible, initVal, reload }) => {
           name="id"
           rules={[{ required: true, message: "Require" }]}
         >
-          <Input disabled={!!initVal} />
+          <Input />
         </Form.Item>
         <Form.Item
-          label="漲停價格"
+          label="收盤價格"
           name="closedPrice"
           rules={[{ required: true, message: "Require" }]}
         >
           <InputNumber type="number" className="w-full" min={0} />
         </Form.Item>
         <Form.Item
-          label="價格上限"
+          label="漲跌幅(%)"
           name="priceLimit"
           rules={[{ required: true, message: "Require" }]}
         >

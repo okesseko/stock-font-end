@@ -174,11 +174,11 @@ const Stock = () => {
             dataIndex: "currentPrice",
           },
           {
-            title: "漲停價格",
+            title: "收盤價格",
             dataIndex: "closedPrice",
           },
           {
-            title: "價格上限",
+            title: "漲跌幅(%)",
             dataIndex: "priceLimit",
           },
           {
