@@ -4,6 +4,10 @@ export const defaultAxios = axios.create({
   baseURL: "http://140.118.118.173:20023/",
 });
 
+if (localStorage.getItem("token")) {
+  settingToken(localStorage.getItem("token"));
+}
+
 export function settingToken(token) {
   defaultAxios.defaults.headers.common["token"] = token;
 }
