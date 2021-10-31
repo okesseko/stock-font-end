@@ -73,7 +73,7 @@ const Stock = () => {
         <Form.Item label="ID" name="id">
           <Input />
         </Form.Item>
-        <Form.Item label="漲停價格" name="closedPrice">
+        <Form.Item label="收盤價格" name="closedPrice">
           <Input.Group className="grid grid-cols-11 gap-x-4">
             <Form.Item name={["closedPrice", "min"]} noStyle>
               <Input
@@ -94,7 +94,7 @@ const Stock = () => {
             </Form.Item>
           </Input.Group>
         </Form.Item>
-        <Form.Item label="價格上限" name="priceLimit">
+        <Form.Item label="漲跌幅" name="priceLimit">
           <Input.Group className="grid grid-cols-11 gap-x-4">
             <Form.Item name={["priceLimit", "min"]} noStyle>
               <Input

@@ -1,16 +1,16 @@
 import axios from "axios";
 
-export const defaultAxios = axios.create({
-  baseURL: "http://140.118.118.173:20023/",
-});
+export function settingToken(token) {
+  defaultAxios.defaults.headers.common["token"] = token;
+}
 
 if (localStorage.getItem("token")) {
   settingToken(localStorage.getItem("token"));
 }
 
-export function settingToken(token) {
-  defaultAxios.defaults.headers.common["token"] = token;
-}
+export const defaultAxios = axios.create({
+  baseURL: "http://140.118.118.173:20023/",
+});
 
 // api
 
