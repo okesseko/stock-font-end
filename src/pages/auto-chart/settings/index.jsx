@@ -2,6 +2,7 @@ import { configConsumerProps } from "antd/lib/config-provider";
 import React, { useEffect, useRef, useState } from "react";
 import { renderData } from "./math-model";
 import { defaultAxios, api } from "../../../environment/api";
+import errorNotification from "../../../utils/errorNotification";
 import { Slider } from "antd";
 
 export default function Settings({ buttonStatus = "stop" }) {
@@ -30,10 +31,14 @@ export default function Settings({ buttonStatus = "stop" }) {
       params: {
         isGetLatest: true,
       },
-    }).then((res) => {
-      displayData.current = res.data;
-      setNextTime(renderData(setting, res.data));
-    });
+    })
+      .then((res) => {
+        displayData.current = res.data;
+        setNextTime(renderData(setting, res.data));
+      })
+      .catch((err) => {
+        errorNotification(err.response.data);
+      });
   }, []);
 
   useEffect(() => {

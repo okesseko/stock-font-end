@@ -3,6 +3,7 @@ import Settings from "./settings";
 import { defaultAxios, api } from "../../environment/api";
 import { Button, Typography } from "antd";
 import DisplayChart from "../../component/chart";
+import errorNotification from "../../utils/errorNotification";
 
 const { Title } = Typography;
 
@@ -18,6 +19,8 @@ const AutoChart = () => {
         id: stockId,
         isReset: true,
       },
+    }).catch((err) => {
+      errorNotification(err.response.data);
     });
 
     setButtonStatus("stop");

@@ -1,6 +1,8 @@
 import { Select } from "antd";
 import { useEffect, useState } from "react";
 import { api, defaultAxios } from "../../environment/api";
+import errorNotification from "../../utils/errorNotification";
+
 const { Option } = Select;
 export const StockSelector = ({ style, mode, onChange }) => {
   const [stocks, setStocks] = useState();
@@ -10,9 +12,13 @@ export const StockSelector = ({ style, mode, onChange }) => {
     defaultAxios({
       url: api.getStock.url,
       method: api.getStock.method,
-    }).then(({ data: { content: stockList } }) => {
-      setStockList(stockList);
-    });
+    })
+      .then(({ data: { content: stockList } }) => {
+        setStockList(stockList);
+      })
+      .catch((err) => {
+        errorNotification(err.response.data);
+      });
   }, []);
   return (
     <Select

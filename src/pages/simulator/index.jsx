@@ -2,6 +2,7 @@ import { Button, DatePicker, Table, Slider } from "antd";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { StockSelector } from "../../component/stock-selector";
 import { api, defaultAxios } from "../../environment/api";
+import errorNotification from "../../utils/errorNotification";
 import dayjs from "dayjs";
 
 const getRealDataOrderContent = async (params) => {
@@ -51,7 +52,9 @@ export const OrderSender = ({ orders, stockId }) => {
   const handleTimeOut = useCallback(() => {
     const currentOrder = orders[currentIndex];
     const nextOrder = orders[currentIndex + 1];
-    sendOrder(currentOrder);
+    sendOrder(currentOrder).catch((err) => {
+      errorNotification(err.response.data);
+    });
     if (nextOrder) {
       const delay =
         Date.parse(nextOrder.createdTime) -
@@ -97,7 +100,9 @@ export const OrderSender = ({ orders, stockId }) => {
           type="primary"
           danger
           onClick={() => {
-            resetStock(stockId);
+            resetStock(stockId).catch((err) => {
+              errorNotification(err.response.data);
+            });
           }}
           disabled={!stockId || !orders.length}
         >
@@ -243,13 +248,19 @@ const Simulator = () => {
           danger
           onClick={async () => {
             if (stockId) {
-              await resetStock(stockId);
+              await resetStock(stockId).catch((err) => {
+                errorNotification(err.response.data);
+              });
               getRealDataOrderContent({
                 stockId,
                 createdTime: { min: startTime, max: endTime },
-              }).then(({ data }) => {
-                setOrders(data.content);
-              });
+              })
+                .then(({ data }) => {
+                  setOrders(data.content);
+                })
+                .catch((err) => {
+                  errorNotification(err.response.data);
+                });
             }
           }}
           disabled={!stockId}
