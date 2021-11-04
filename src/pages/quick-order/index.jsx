@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 // import CSVReader from 'react-csv-reader';
 import ReadFile from "./read-file";
 import { api, defaultAxios } from "../../environment/api";
+import errorNotification from "../../utils/errorNotification";
 import { Button, Checkbox, InputNumber, Select } from "antd";
 import { StockSelector } from "../../component/stock-selector";
 
@@ -50,9 +51,13 @@ const QuickOrder = () => {
             timeRestriction: timeRestriction, // ROD = 0, IOC = 1, FOK = 2
             isAutoTime,
           },
-        }).then((res) => {
-          refreshDisplay(showType);
-        });
+        })
+          .then((res) => {
+            refreshDisplay(showType);
+          })
+          .catch((err) => {
+            errorNotification(err.response.data);
+          });
     } else {
       defaultAxios({
         url: api.postVirtualOrder.url,
@@ -65,9 +70,13 @@ const QuickOrder = () => {
           timeRestriction: timeRestriction, // ROD = 0, IOC = 1, FOK = 2
           virtualOrderContainerId: showType,
         },
-      }).then((res) => {
-        setData(res.data);
-      });
+      })
+        .then((res) => {
+          setData(res.data);
+        })
+        .catch((err) => {
+          errorNotification(err.response.data);
+        });
     }
   }
 
@@ -87,9 +96,13 @@ const QuickOrder = () => {
           timeRestriction: timeRestriction, // ROD = 0, IOC = 1, FOK = 2
           isAutoTime,
         },
-      }).then((res) => {
-        refreshDisplay(showType);
-      });
+      })
+        .then((res) => {
+          refreshDisplay(showType);
+        })
+        .catch((err) => {
+          errorNotification(err.response.data);
+        });
     } else {
       defaultAxios({
         url: api.postVirtualOrder.url,
@@ -102,9 +115,13 @@ const QuickOrder = () => {
           timeRestriction: timeRestriction, // ROD = 0, IOC = 1, FOK = 2
           virtualOrderContainerId: showType,
         },
-      }).then((res) => {
-        setData(res.data);
-      });
+      })
+        .then((res) => {
+          setData(res.data);
+        })
+        .catch((err) => {
+          errorNotification(err.response.data);
+        });
     }
   }
 
@@ -125,9 +142,13 @@ const QuickOrder = () => {
           subMethod: 0,
           isAutoTime,
         },
-      }).then((res) => {
-        refreshDisplay(showType);
-      });
+      })
+        .then((res) => {
+          refreshDisplay(showType);
+        })
+        .catch((err) => {
+          errorNotification(err.response.data);
+        });
     } else {
       defaultAxios({
         url: api.postVirtualOrder.url,
@@ -141,9 +162,13 @@ const QuickOrder = () => {
           subMethod: 0,
           virtualOrderContainerId: showType,
         },
-      }).then((res) => {
-        setData(res.data);
-      });
+      })
+        .then((res) => {
+          setData(res.data);
+        })
+        .catch((err) => {
+          errorNotification(err.response.data);
+        });
     }
   }
   function refreshDisplay(showType) {
@@ -166,9 +191,13 @@ const QuickOrder = () => {
         params: {
           isGetLatest: true,
         },
-      }).then((res) => {
-        setData(res.data.display);
-      });
+      })
+        .then((res) => {
+          setData(res.data.display);
+        })
+        .catch((err) => {
+          errorNotification(err.response.data);
+        });
     }
   }
 
@@ -198,17 +227,21 @@ const QuickOrder = () => {
       params: {
         page: { page: page, pageSize: pageSize },
       },
-    }).then((res) => {
-      let data = [];
-      res.data.content.forEach(function (content) {
-        data.push({
-          label: content.name,
-          value: content.id,
+    })
+      .then((res) => {
+        let data = [];
+        res.data.content.forEach(function (content) {
+          data.push({
+            label: content.name,
+            value: content.id,
+          });
         });
+        setContainerData(data);
+        setTotalSize(res.data.totalSize);
+      })
+      .catch((err) => {
+        errorNotification(err.response.data);
       });
-      setContainerData(data);
-      setTotalSize(res.data.totalSize);
-    });
 
     if (isRunning) {
       timer = setInterval(() => {
@@ -292,9 +325,13 @@ const QuickOrder = () => {
                   id: 1,
                   isReset: true,
                 },
-              }).then(() => {
-                refreshDisplay(showType);
-              });
+              })
+                .then(() => {
+                  refreshDisplay(showType);
+                })
+                .catch((err) => {
+                  errorNotification(err.response.data);
+                });
             }}
           >
             Reset

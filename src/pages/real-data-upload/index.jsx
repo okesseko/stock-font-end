@@ -1,6 +1,7 @@
 import { Button, Table } from "antd";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api, defaultAxios } from "../../environment/api";
+import errorNotification from "../../utils/errorNotification";
 import { DeleteOutlined } from "@ant-design/icons";
 
 const ORDER_SLICE_SIZE = 600000;
@@ -92,7 +93,10 @@ const UploadProgress = ({ file, isLoading, type }) => {
           .then(() => {
             setProgress(progress + ADDER);
           })
-          .catch(() => setIsError(true));
+          .catch((err) => {
+            errorNotification(err.response.data);
+            setIsError(true);
+          });
       });
       fileReader.readAsText(partFile);
     } else {
@@ -101,7 +105,10 @@ const UploadProgress = ({ file, isLoading, type }) => {
           // toggle real data status
           check(3);
         })
-        .catch(() => setIsError(true));
+        .catch((err) => {
+          errorNotification(err.response.data);
+          setIsError(true);
+        });
     }
   };
 
@@ -121,7 +128,10 @@ const UploadProgress = ({ file, isLoading, type }) => {
             //insert real data
             check(1);
           })
-          .catch(() => setIsError(true));
+          .catch((err) => {
+            errorNotification(err.response.data);
+            setIsError(true);
+          });
       } else handleNextProgress();
     }
   }, [isLoading, currentFile, type, progress]);

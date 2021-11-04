@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Modal, Form, Input, Select } from "antd";
 import { defaultAxios, api } from "../../environment/api";
+import errorNotification from "../../utils/errorNotification";
 
 const Create = ({ visible, setVisible, defaultValue, reset }) => {
   const [form] = Form.useForm();
@@ -35,21 +36,29 @@ const Create = ({ visible, setVisible, defaultValue, reset }) => {
               url: api.putContainer.url,
               method: api.putContainer.method,
               data: { ...value, id: defaultValue.id },
-            }).finally(() => {
-              reset(Math.random());
-              form.resetFields();
-              setVisible(false);
-            });
+            })
+              .catch((err) => {
+                errorNotification(err.response.data);
+              })
+              .finally(() => {
+                reset(Math.random());
+                form.resetFields();
+                setVisible(false);
+              });
           } else {
             defaultAxios({
               url: api.postContainer.url,
               method: api.postContainer.method,
               data: value,
-            }).finally(() => {
-              reset(Math.random());
-              form.resetFields();
-              setVisible(false);
-            });
+            })
+              .catch((err) => {
+                errorNotification(err.response.data);
+              })
+              .finally(() => {
+                reset(Math.random());
+                form.resetFields();
+                setVisible(false);
+              });
           }
 
           console.log(value);

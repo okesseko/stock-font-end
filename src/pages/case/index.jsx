@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { defaultAxios, api } from "../../environment/api";
+import errorNotification from "../../utils/errorNotification";
 import { Table, Button, Row, Col, Select, Input, Typography } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import Create from "./create";
@@ -25,11 +26,15 @@ const Case = () => {
         ...searchCondition,
         page: { page, pageSize },
       },
-    }).then((res) => {
-      console.log(res.data);
-      setOrderData(res.data.content);
-      setTotalSize(res.data.totalSize);
-    });
+    })
+      .then((res) => {
+        console.log(res.data);
+        setOrderData(res.data.content);
+        setTotalSize(res.data.totalSize);
+      })
+      .catch((err) => {
+        errorNotification(err.response.data);
+      });
   }, [page, pageSize, reset]);
   const rowSelection = {
     selectedRowKeys: checked,
@@ -96,10 +101,14 @@ const Case = () => {
               data: {
                 id: checked,
               },
-            }).finally(() => {
-              setChecked([]);
-              setReset(Math.random());
-            });
+            })
+              .catch((err) => {
+                errorNotification(err.response.data);
+              })
+              .finally(() => {
+                setChecked([]);
+                setReset(Math.random());
+              });
           }}
         >
           刪除勾選
@@ -182,9 +191,13 @@ const Case = () => {
                       data: {
                         id: [record.id],
                       },
-                    }).finally(() => {
-                      setReset(Math.random());
-                    });
+                    })
+                      .catch((err) => {
+                        errorNotification(err.response.data);
+                      })
+                      .finally(() => {
+                        setReset(Math.random());
+                      });
                   }}
                   icon={<DeleteOutlined />}
                 />

@@ -3,6 +3,7 @@ import { Table, Button, Space, Form, Input, DatePicker } from "antd";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import CreateAndEdit from "./modal";
 import { api, defaultAxios } from "../../environment/api";
+import errorNotification from "../../utils/errorNotification";
 import dayjs from "dayjs";
 
 const TYPE_MAPPING = ["現股", "ETF", "權證"];
@@ -24,10 +25,14 @@ const Stock = () => {
       data: {
         id,
       },
-    }).then(() => {
-      setReloadData(Math.random());
-      setSelectStock([]);
-    });
+    })
+      .then(() => {
+        setReloadData(Math.random());
+        setSelectStock([]);
+      })
+      .catch((err) => {
+        errorNotification(err.response.data);
+      });
   }
   useEffect(() => {
     defaultAxios({
@@ -37,10 +42,14 @@ const Stock = () => {
         page: { page: page, pageSize: pageSize },
         ...searchCondition,
       },
-    }).then((res) => {
-      setData(res.data.content);
-      setTotalSize(res.data.totalSize);
-    });
+    })
+      .then((res) => {
+        setData(res.data.content);
+        setTotalSize(res.data.totalSize);
+      })
+      .catch((err) => {
+        errorNotification(err.response.data);
+      });
   }, [page, pageSize, searchCondition, reloadData]);
   useEffect(() => {
     if (!visible) {

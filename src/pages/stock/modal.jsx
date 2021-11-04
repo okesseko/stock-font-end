@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
 import { Modal, Form, Input, InputNumber, Select } from "antd";
 import { api, defaultAxios } from "../../environment/api";
+import errorNotification from "../../utils/errorNotification";
 const { Option } = Select;
 
 const CreateAndEdit = ({ isVisible, setIsVisible, initVal, reload }) => {
@@ -39,11 +40,15 @@ const CreateAndEdit = ({ isVisible, setIsVisible, initVal, reload }) => {
             url: api[axiosType].url,
             method: api[axiosType].method,
             data: { ...value, groupId: [] },
-          }).then(() => {
-            form.resetFields();
-            setIsVisible(false);
-            reload(Math.random());
-          });
+          })
+            .then(() => {
+              form.resetFields();
+              setIsVisible(false);
+              reload(Math.random());
+            })
+            .catch((err) => {
+              errorNotification(err.response.data);
+            });
         }}
       >
         <Form.Item

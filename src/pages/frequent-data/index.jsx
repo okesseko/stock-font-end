@@ -3,6 +3,7 @@ import { defaultAxios, api } from "../../environment/api";
 import dayjs from "dayjs";
 import { Button, DatePicker, Select, Switch, Row, Col } from "antd";
 import { StockSelector } from "../../component/stock-selector";
+import errorNotification from "../../utils/errorNotification";
 const { Option } = Select;
 
 const FIELDS = [
@@ -95,9 +96,13 @@ const FrequentData = function () {
     defaultAxios({
       url: api.getGroup.url,
       method: api.getGroup.method,
-    }).then(({ data: { content: groupList } }) => {
-      setGroupList(groupList);
-    });
+    })
+      .then(({ data: { content: groupList } }) => {
+        setGroupList(groupList);
+      })
+      .catch((err) => {
+        errorNotification(err.response.data);
+      });
   }, []);
 
   return (
@@ -268,29 +273,33 @@ const FrequentData = function () {
                       fields,
                       stockId,
                     },
-                  }).then(({ data, headers }) => {
-                    const fileName = headers["content-disposition"]
-                      .match(/".+"/)[0]
-                      .replace(/"/g, "");
-                    const transferData = data;
-                    // .split("\n")
-                    // .map((row) => {
-                    //   return row
-                    //     .split(",")
-                    //     .map((s) => '="' + s + '"')
-                    //     .join(",");
-                    // })
-                    // .join("\n");
-                    const url = window.URL.createObjectURL(
-                      new Blob([transferData])
-                    );
-                    const link = document.createElement("a");
-                    link.href = url;
-                    link.setAttribute("download", fileName);
-                    document.body.appendChild(link);
-                    link.click();
-                    window.URL.revokeObjectURL(url);
-                  });
+                  })
+                    .then(({ data, headers }) => {
+                      const fileName = headers["content-disposition"]
+                        .match(/".+"/)[0]
+                        .replace(/"/g, "");
+                      const transferData = data;
+                      // .split("\n")
+                      // .map((row) => {
+                      //   return row
+                      //     .split(",")
+                      //     .map((s) => '="' + s + '"')
+                      //     .join(",");
+                      // })
+                      // .join("\n");
+                      const url = window.URL.createObjectURL(
+                        new Blob([transferData])
+                      );
+                      const link = document.createElement("a");
+                      link.href = url;
+                      link.setAttribute("download", fileName);
+                      document.body.appendChild(link);
+                      link.click();
+                      window.URL.revokeObjectURL(url);
+                    })
+                    .catch((err) => {
+                      errorNotification(err.response.data);
+                    });
                 })
               );
             }

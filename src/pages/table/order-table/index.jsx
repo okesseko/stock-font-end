@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import React, { useEffect, useState } from "react";
 import StockDatePicker from "../../../component/stock-date-picker";
 import { api, defaultAxios } from "../../../environment/api";
+import errorNotification from "../../../utils/errorNotification";
 import DownloadButton from "../downloadButton";
 
 const OrderTable = () => {
@@ -22,10 +23,14 @@ const OrderTable = () => {
         stockId,
         createdTime: { min: startTime, max: endTime },
       },
-    }).then((res) => {
-      setOrderData(res.data.content);
-      setTotalSize(res.data.totalSize);
-    });
+    })
+      .then((res) => {
+        setOrderData(res.data.content);
+        setTotalSize(res.data.totalSize);
+      })
+      .catch((err) => {
+        errorNotification(err.response.data);
+      });
   }, [page, pageSize, stockId, startTime, endTime]);
 
   return (

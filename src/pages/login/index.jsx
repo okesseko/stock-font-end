@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Form, Input, Button, Alert } from "antd";
 import { defaultAxios, api } from "../../environment/api";
+import errorNotification from "../../utils/errorNotification";
 import { useHistory } from "react-router-dom";
 
 const Login = ({ setToken }) => {
@@ -35,6 +36,7 @@ const Login = ({ setToken }) => {
               history.replace("/stock-font-end/");
             })
             .catch((err) => {
+              errorNotification(err.response.data);
               setLoginError(err.message);
             });
         }}

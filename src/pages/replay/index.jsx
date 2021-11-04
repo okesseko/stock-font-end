@@ -5,6 +5,7 @@ import { Button, Select, DatePicker, Table } from "antd";
 import BarLineChart from "../echart-example/bar-line";
 import dayjs from "dayjs";
 import { StockSelector } from "../../component/stock-selector";
+import errorNotification from "../../utils/errorNotification";
 import DisplayChart from "../../component/chart";
 import { OrderSender } from "../simulator";
 
@@ -33,14 +34,18 @@ const ReplayChart = () => {
       params: {
         stockId,
       },
-    }).then((res) => {
-      setCaseData(
-        res.data.content.map((content) => ({
-          label: content.name,
-          value: content.id,
-        }))
-      );
-    });
+    })
+      .then((res) => {
+        setCaseData(
+          res.data.content.map((content) => ({
+            label: content.name,
+            value: content.id,
+          }))
+        );
+      })
+      .catch((err) => {
+        errorNotification(err.response.data);
+      });
   }, [stockId]);
 
   return (
@@ -159,11 +164,15 @@ const ReplayChart = () => {
                   : undefined,
                 isReset: false,
               },
-            }).then((res) => {
-              setRestData(res.data.orders);
-              setReplayStockId(res.data.display.stockId);
-              setIsResetButtonLoading(false);
-            });
+            })
+              .then((res) => {
+                setRestData(res.data.orders);
+                setReplayStockId(res.data.display.stockId);
+                setIsResetButtonLoading(false);
+              })
+              .catch((err) => {
+                errorNotification(err.response.data);
+              });
             latestChartTime.current = null;
           }}
           loading={isResetButtonLoading}
@@ -186,9 +195,13 @@ const ReplayChart = () => {
                 params: {
                   virtualOrderContainerId: caseId,
                 },
-              }).then((res) => {
-                setCaseOrder(res.data.content);
-              });
+              })
+                .then((res) => {
+                  setCaseOrder(res.data.content);
+                })
+                .catch((err) => {
+                  errorNotification(err.response.data);
+                });
             }}
           />
         </div>

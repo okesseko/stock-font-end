@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 
 import { CSVReader } from 'react-papaparse'
 import { api, defaultAxios } from "../../../environment/api";
+import errorNotification from "../../../utils/errorNotification";
 import { Button } from "antd";
 
 const buttonRef = React.createRef()
@@ -50,9 +51,13 @@ export default class ReadFile extends Component {
           url: api.postVirtualOrder.url,
           method: api.postVirtualOrder.method,
           data: sendData,
-        }).then((res) => {
-          // setData(res.data);
-        });  
+        })
+          .then((res) => {
+            // setData(res.data);
+          })
+          .catch((err) => {
+            errorNotification(err.response.data);
+          });
       }
     })
   }

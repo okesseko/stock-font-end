@@ -3,6 +3,7 @@ import React from "react";
 import { Button } from "antd";
 import { defaultAxios, api } from "../../environment/api";
 import { useHistory } from "react-router-dom";
+import errorNotification from "../../utils/errorNotification";
 
 const RouterLink = ({ setToken }) => {
   const history = useHistory();
@@ -16,10 +17,14 @@ const RouterLink = ({ setToken }) => {
             defaultAxios({
               url: api.logout.url,
               method: api.logout.method,
-            }).finally((res) => {
-              setToken(null);
-              history.replace("/stock-font-end/login/");
-            });
+            })
+              .catch((err) => {
+                errorNotification(err.response.data);
+              })
+              .finally((res) => {
+                setToken(null);
+                history.replace("/stock-font-end/login/");
+              });
           }}
         >
           登出
