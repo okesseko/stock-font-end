@@ -44,6 +44,7 @@ export const OrderSender = ({ orders, stockId }) => {
   const [speed, setSpeed] = useState(1);
   const timeOut = useRef();
   const speedRef = useRef(1);
+  const sliderDelay = useRef();
 
   useEffect(() => {
     setCurrentIndex(0);
@@ -96,18 +97,6 @@ export const OrderSender = ({ orders, stockId }) => {
         >
           暫停模擬
         </Button>
-        <Button
-          type="primary"
-          danger
-          onClick={() => {
-            resetStock(stockId).catch((err) => {
-              errorNotification(err.response.data);
-            });
-          }}
-          disabled={!stockId || !orders.length}
-        >
-          重製模擬
-        </Button>
         <div style={{ width: "200px" }}>
           播放速度 {speed} 倍
           <Slider
@@ -129,6 +118,12 @@ export const OrderSender = ({ orders, stockId }) => {
           onChange={(e) => {
             setCurrentIndex(e);
             setIsRunnung(false);
+            if (sliderDelay.current) clearTimeout(sliderDelay.current);
+            sliderDelay.current = setTimeout(() => {
+              resetStock(stockId).catch((err) => {
+                errorNotification(err.response.data);
+              });
+            }, 1000);
           }}
         />
         <Table

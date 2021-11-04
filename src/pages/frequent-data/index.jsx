@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { defaultAxios, api } from "../../environment/api";
 import dayjs from "dayjs";
-import { Button, DatePicker, Select, Switch, Row, Col } from "antd";
+import {
+  Button,
+  DatePicker,
+  Select,
+  Switch,
+  Row,
+  Col,
+  InputNumber,
+} from "antd";
 import { StockSelector } from "../../component/stock-selector";
 import errorNotification from "../../utils/errorNotification";
 const { Option } = Select;
@@ -82,11 +90,14 @@ const SAMPLE_MODE = [
 const FrequentData = function () {
   const [group, setGroup] = useState();
   const [stocks, setStocks] = useState();
+  const [unit, setUnit] = useState(1);
   const [dateFormat, setDateFormat] = useState(3);
   const [sampleMode, setSampleMode] = useState(0);
   const [fields, setFields] = useState(FIELDS);
   const [startTime, setStartTime] = useState();
   const [endTime, setEndTime] = useState();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const [isGroup, setIsGroup] = useState(true);
 
@@ -116,7 +127,6 @@ const FrequentData = function () {
             }}
           />
         </Col>
-        {/* <Col span={3}>{isGroup ? "類股" : "股票"}</Col> */}
         <Col span={6}>
           {isGroup ? "類股" : "股票"}
           <Select
@@ -178,23 +188,33 @@ const FrequentData = function () {
       <Row style={{ marginTop: "20px" }}>
         <Col span={6}>
           時間頻率
-          <Select
-            allowClear
-            style={{ width: "100%" }}
-            onChange={(e) => {
-              setDateFormat(e);
-            }}
-            value={dateFormat}
-            placeholder="選擇時間頻率"
-          >
-            {DATE_FORMAT.map((dateFormat) => {
-              return (
-                <Option key={Math.random()} value={dateFormat.value}>
-                  {dateFormat.header}
-                </Option>
-              );
-            })}
-          </Select>
+          <div style={{ display: "flex", flexDirection: "row" }}>
+            <InputNumber
+              style={{ width: "100%" }}
+              value={unit}
+              step={1}
+              onChange={(e) => {
+                setUnit(Math.floor(e));
+              }}
+            />
+            <Select
+              allowClear
+              style={{ width: "100%" }}
+              onChange={(e) => {
+                setDateFormat(e);
+              }}
+              value={dateFormat}
+              placeholder="選擇時間頻率"
+            >
+              {DATE_FORMAT.map((dateFormat) => {
+                return (
+                  <Option key={Math.random()} value={dateFormat.value}>
+                    {dateFormat.header}
+                  </Option>
+                );
+              })}
+            </Select>
+          </div>
         </Col>
         <Col span={6}>
           取樣模式
@@ -241,6 +261,7 @@ const FrequentData = function () {
       </Row>
       <Row style={{ marginTop: "20px" }}>
         <Button
+          loading={isLoading}
           onClick={async () => {
             let stockIds = [];
             if (isGroup) {
@@ -251,13 +272,14 @@ const FrequentData = function () {
               if (stocks) stockIds = stocks;
             }
 
-            console.log("stockIds", stockIds);
-            console.log("time range", startTime, endTime);
-            console.log("date format", dateFormat);
-            console.log("sample mode", sampleMode);
-            console.log("fields ", fields);
+            // console.log("stockIds", stockIds);
+            // console.log("time range", startTime, endTime);
+            // console.log("date format", dateFormat);
+            // console.log("sample mode", sampleMode);
+            // console.log("fields ", fields);
             if (stockIds.length) {
               const { url, method } = api.downloadRealDataDisplayContent;
+              setIsLoading(true);
               await Promise.all(
                 stockIds.map((stockId) => {
                   return defaultAxios({
@@ -268,6 +290,7 @@ const FrequentData = function () {
                         max: endTime,
                         min: startTime,
                       }),
+                      unit,
                       dateFormat,
                       sampleMode,
                       fields,
@@ -279,14 +302,7 @@ const FrequentData = function () {
                         .match(/".+"/)[0]
                         .replace(/"/g, "");
                       const transferData = data;
-                      // .split("\n")
-                      // .map((row) => {
-                      //   return row
-                      //     .split(",")
-                      //     .map((s) => '="' + s + '"')
-                      //     .join(",");
-                      // })
-                      // .join("\n");
+
                       const url = window.URL.createObjectURL(
                         new Blob([transferData])
                       );
@@ -296,6 +312,7 @@ const FrequentData = function () {
                       document.body.appendChild(link);
                       link.click();
                       window.URL.revokeObjectURL(url);
+                      setIsLoading(false);
                     })
                     .catch((err) => {
                       errorNotification(err.response.data);
