@@ -4,8 +4,7 @@ import { api, defaultAxios } from "../../environment/api";
 import errorNotification from "../../utils/errorNotification";
 import { DeleteOutlined } from "@ant-design/icons";
 
-const ORDER_SLICE_SIZE = 600000;
-const DISPLAY_SLICE_SIZE = 599896;
+const ADDER_CONST = 600000;
 
 const check = (...arg) => {
   if (true) console.log(...arg);
@@ -72,20 +71,19 @@ const UploadProgress = ({ file, isLoading, type }) => {
   const [currentFile, setCurrentFile] = useState();
   const [isError, setIsError] = useState(false);
   const isFirstUpload = useRef(true);
+  const restString = useRef("");
 
-  const handleNextProgress = () => {
-    const ADD_CONST = type === "order" ? ORDER_SLICE_SIZE : DISPLAY_SLICE_SIZE;
+  const handleNextProgress = useCallback(() => {
     if (progress < currentFile.size) {
-      const ADDER =
-        progress + ADD_CONST <= currentFile.size
-          ? ADD_CONST
-          : currentFile.size - progress;
+      const ADDER = Math.min(ADDER_CONST, currentFile.size - progress);
 
       const partFile = currentFile.slice(progress, progress + ADDER);
       const fileReader = new FileReader();
       fileReader.addEventListener("load", (e) => {
         const result = e.target.result.split("\n");
-        if (result[result.length - 1] === "") result.splice(-1);
+        result[0] = restString.current + result[0];
+        restString.current = result[result.length - 1];
+        result.pop();
 
         // insert real data content
         check(2);
@@ -110,7 +108,7 @@ const UploadProgress = ({ file, isLoading, type }) => {
           setIsError(true);
         });
     }
-  };
+  }, [currentFile, progress, type]);
 
   useEffect(() => {
     //TODO 在按一次上傳 file為何會變??
@@ -134,7 +132,7 @@ const UploadProgress = ({ file, isLoading, type }) => {
           });
       } else handleNextProgress();
     }
-  }, [isLoading, currentFile, type, progress]);
+  }, [isLoading, currentFile, type, handleNextProgress]);
 
   return currentFile ? (
     <div>
