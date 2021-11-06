@@ -114,7 +114,7 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
   return (
     <div className="card-container px-5">
       <Tabs type="card" centered onChange={handleTabsChange}>
-        <TabPane tab="Modal (1)" key="1">
+        <TabPane tab="Model (1)" key="1">
           <div>
             <div className="flex justify-center">
               <div className="w-1/2">
@@ -260,7 +260,7 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
             </div>
           </div>
         </TabPane>
-        <TabPane tab="Modal (2)" key="2">
+        <TabPane tab="Model (2)" key="2">
           <div>
             <div className="flex justify-center">
               <div className="w-1/2">
