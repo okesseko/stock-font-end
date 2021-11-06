@@ -3,7 +3,9 @@ import React, { useEffect, useRef, useState } from "react";
 import { renderData } from "./math-model";
 import { defaultAxios, api } from "../../../environment/api";
 import errorNotification from "../../../utils/errorNotification";
-import { Slider } from "antd";
+import { Slider, Tabs } from "antd";
+
+const { TabPane } = Tabs;
 
 export default function Settings({ buttonStatus = "stop", stockId }) {
   const displayData = useRef();
@@ -11,6 +13,9 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
   const [nextTime, setNextTime] = useState(0);
 
   const [setting, setSetting] = useState({
+    current_tab: 1,
+    default_alpha_B: 1,
+    default_alpha_A: 1,
     default_lambda_B: 10,
     default_lambda_A: 10,
     R_B: 0.8,
@@ -49,6 +54,14 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
       }, nextTime);
     }
   }, [nextTime, buttonStatus]);
+
+  const handleInputChangeAlphaB = (value) => {
+    setSetting({ ...setting, default_alpha_B: value });
+  };
+
+  const handleInputChangeAlphaA = (value) => {
+    setSetting({ ...setting, default_alpha_A: value });
+  };
 
   const handleInputChangeLambdaB = (value) => {
     setSetting({ ...setting, default_lambda_B: value });
@@ -94,150 +107,330 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
     setSetting({ ...setting, batch_size: value });
   };
 
+  const handleTabsChange = (key) => {
+    setSetting({ ...setting, current_tab: key });
+  };
+
   return (
-    <div>
-      <div className="flex justify-center">
-        <div className="w-1/2">
-          <div>batch size: {setting.batch_size}</div>
-          <Slider
-            min={1}
-            max={100}
-            step={1}
-            value={setting.batch_size}
-            onChange={handleInputChangeBatchSize}
-          />
-        </div>
-      </div>
-      <div className="flex justify-center mx-5">
-        <div className="mr-5 pr-5 border-r w-1/4">
+    <div className="card-container px-5">
+      <Tabs type="card" centered onChange={handleTabsChange}>
+        <TabPane tab="Modal (1)" key="1">
           <div>
-            <div>
-              λ<sub>B</sub>: {setting.default_lambda_B}
+            <div className="flex justify-center">
+              <div className="w-1/2">
+                <div>batch size: {setting.batch_size}</div>
+                <Slider
+                  min={1}
+                  max={100}
+                  step={1}
+                  value={setting.batch_size}
+                  onChange={handleInputChangeBatchSize}
+                />
+              </div>
             </div>
-            <Slider
-              min={1}
-              max={100}
-              step={0.1}
-              value={setting.default_lambda_B}
-              onChange={handleInputChangeLambdaB}
-            />
+            <div className="flex justify-center mx-5">
+              <div className="mr-5 pr-5 border-r w-1/4">
+                <div>
+                  <div>
+                    λ<sub>B</sub>: {setting.default_lambda_B}
+                  </div>
+                  <Slider
+                    min={1}
+                    max={100}
+                    step={0.1}
+                    value={setting.default_lambda_B}
+                    onChange={handleInputChangeLambdaB}
+                  />
+                </div>
+                <div>
+                  <div>
+                    R<sub>B</sub>: {setting.R_B}
+                  </div>
+                  <Slider
+                    min={0.1}
+                    max={5}
+                    step={0.1}
+                    value={setting.R_B}
+                    onChange={handleInputChangeLambdaRatioB}
+                  />
+                </div>
+                <hr className="my-3" />
+                <div>
+                  <div>
+                    θ<sub>B</sub>: {setting.default_theta_B}
+                  </div>
+                  <Slider
+                    min={1}
+                    max={100}
+                    step={0.1}
+                    value={setting.default_theta_B}
+                    onChange={handleInputChangeThetaB}
+                  />
+                </div>
+                <div>
+                  <div>
+                    R<sub>B</sub>: {setting.R_theta_B}
+                  </div>
+                  <Slider
+                    min={0.1}
+                    max={5}
+                    step={0.1}
+                    value={setting.R_theta_B}
+                    onChange={handleInputChangeThetaRatioB}
+                  />
+                </div>
+                <hr className="my-3" />
+                <div>
+                  <div>
+                    μ<sub>B</sub>: {setting.mu_B}
+                  </div>
+                  <Slider
+                    min={1}
+                    max={100}
+                    step={0.1}
+                    value={setting.mu_B}
+                    onChange={handleInputChangeMuB}
+                  />
+                </div>
+              </div>
+              <div className="w-1/4">
+                <div>
+                  <div>
+                    λ<sub>A</sub>: {setting.default_lambda_A}
+                  </div>
+                  <Slider
+                    min={1}
+                    max={100}
+                    step={0.1}
+                    value={setting.default_lambda_A}
+                    onChange={handleInputChangeLambdaA}
+                  />
+                </div>
+                <div>
+                  <div>
+                    R<sub>A</sub>: {setting.R_A}
+                  </div>
+                  <Slider
+                    min={0.1}
+                    max={5}
+                    step={0.1}
+                    value={setting.R_A}
+                    onChange={handleInputChangeLambdaRatioA}
+                  />
+                </div>
+                <hr className="my-3" />
+                <div>
+                  <div>
+                    θ<sub>A</sub>: {setting.default_theta_A}
+                  </div>
+                  <Slider
+                    min={1}
+                    max={100}
+                    step={0.1}
+                    value={setting.default_theta_A}
+                    onChange={handleInputChangeThetaA}
+                  />
+                </div>
+                <div>
+                  <div>
+                    R<sub>A</sub>: {setting.R_theta_A}
+                  </div>
+                  <Slider
+                    min={0.1}
+                    max={5}
+                    step={0.1}
+                    value={setting.R_theta_A}
+                    onChange={handleInputChangeThetaRatioA}
+                  />
+                </div>
+                <hr className="my-3" />
+                <div>
+                  <div>
+                    μ<sub>A</sub>: {setting.mu_A}
+                  </div>
+                  <Slider
+                    min={1}
+                    max={100}
+                    step={0.1}
+                    value={setting.mu_A}
+                    onChange={handleInputChangeMuA}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
+        </TabPane>
+        <TabPane tab="Modal (2)" key="2">
           <div>
-            <div>
-              R<sub>B</sub>: {setting.R_B}
+            <div className="flex justify-center">
+              <div className="w-1/2">
+                <div>batch size: {setting.batch_size}</div>
+                <Slider
+                  min={1}
+                  max={100}
+                  step={1}
+                  value={setting.batch_size}
+                  onChange={handleInputChangeBatchSize}
+                />
+              </div>
             </div>
-            <Slider
-              min={0.1}
-              max={5}
-              step={0.1}
-              value={setting.R_B}
-              onChange={handleInputChangeLambdaRatioB}
-            />
-          </div>
-          <hr className="my-3" />
-          <div>
-            <div>
-              θ<sub>B</sub>: {setting.default_theta_B}
+            <div className="flex justify-center mx-5">
+              <div className="mr-5 pr-5 border-r w-1/4">
+                <div>
+                  <div>
+                    α<sub>B</sub>: {setting.default_alpha_B}
+                  </div>
+                  <Slider
+                    min={1}
+                    max={10}
+                    step={0.1}
+                    value={setting.default_alpha_B}
+                    onChange={handleInputChangeAlphaB}
+                  />
+                </div>
+                <div>
+                  <div>
+                    λ<sub>B</sub>: {setting.default_lambda_B}
+                  </div>
+                  <Slider
+                    min={1}
+                    max={100}
+                    step={0.1}
+                    value={setting.default_lambda_B}
+                    onChange={handleInputChangeLambdaB}
+                  />
+                </div>
+                <div>
+                  <div>
+                    R<sub>B</sub>: {setting.R_B}
+                  </div>
+                  <Slider
+                    min={0.1}
+                    max={5}
+                    step={0.1}
+                    value={setting.R_B}
+                    onChange={handleInputChangeLambdaRatioB}
+                  />
+                </div>
+                <hr className="my-3" />
+                <div>
+                  <div>
+                    θ<sub>B</sub>: {setting.default_theta_B}
+                  </div>
+                  <Slider
+                    min={1}
+                    max={100}
+                    step={0.1}
+                    value={setting.default_theta_B}
+                    onChange={handleInputChangeThetaB}
+                  />
+                </div>
+                <div>
+                  <div>
+                    R<sub>B</sub>: {setting.R_theta_B}
+                  </div>
+                  <Slider
+                    min={0.1}
+                    max={5}
+                    step={0.1}
+                    value={setting.R_theta_B}
+                    onChange={handleInputChangeThetaRatioB}
+                  />
+                </div>
+                <hr className="my-3" />
+                <div>
+                  <div>
+                    μ<sub>B</sub>: {setting.mu_B}
+                  </div>
+                  <Slider
+                    min={1}
+                    max={100}
+                    step={0.1}
+                    value={setting.mu_B}
+                    onChange={handleInputChangeMuB}
+                  />
+                </div>
+              </div>
+              <div className="w-1/4">
+                <div>
+                  <div>
+                    α<sub>A</sub>: {setting.default_alpha_A}
+                  </div>
+                  <Slider
+                    min={1}
+                    max={10}
+                    step={0.1}
+                    value={setting.default_alpha_A}
+                    onChange={handleInputChangeAlphaA}
+                  />
+                </div>
+                <div>
+                  <div>
+                    λ<sub>A</sub>: {setting.default_lambda_A}
+                  </div>
+                  <Slider
+                    min={1}
+                    max={100}
+                    step={0.1}
+                    value={setting.default_lambda_A}
+                    onChange={handleInputChangeLambdaA}
+                  />
+                </div>
+                <div>
+                  <div>
+                    R<sub>A</sub>: {setting.R_A}
+                  </div>
+                  <Slider
+                    min={0.1}
+                    max={5}
+                    step={0.1}
+                    value={setting.R_A}
+                    onChange={handleInputChangeLambdaRatioA}
+                  />
+                </div>
+                <hr className="my-3" />
+                <div>
+                  <div>
+                    θ<sub>A</sub>: {setting.default_theta_A}
+                  </div>
+                  <Slider
+                    min={1}
+                    max={100}
+                    step={0.1}
+                    value={setting.default_theta_A}
+                    onChange={handleInputChangeThetaA}
+                  />
+                </div>
+                <div>
+                  <div>
+                    R<sub>A</sub>: {setting.R_theta_A}
+                  </div>
+                  <Slider
+                    min={0.1}
+                    max={5}
+                    step={0.1}
+                    value={setting.R_theta_A}
+                    onChange={handleInputChangeThetaRatioA}
+                  />
+                </div>
+                <hr className="my-3" />
+                <div>
+                  <div>
+                    μ<sub>A</sub>: {setting.mu_A}
+                  </div>
+                  <Slider
+                    min={1}
+                    max={100}
+                    step={0.1}
+                    value={setting.mu_A}
+                    onChange={handleInputChangeMuA}
+                  />
+                </div>
+              </div>
             </div>
-            <Slider
-              min={1}
-              max={100}
-              step={0.1}
-              value={setting.default_theta_B}
-              onChange={handleInputChangeThetaB}
-            />
           </div>
-          <div>
-            <div>
-              R<sub>B</sub>: {setting.R_theta_B}
-            </div>
-            <Slider
-              min={0.1}
-              max={5}
-              step={0.1}
-              value={setting.R_theta_B}
-              onChange={handleInputChangeThetaRatioB}
-            />
-          </div>
-          <hr className="my-3" />
-          <div>
-            <div>
-              μ<sub>B</sub>: {setting.mu_B}
-            </div>
-            <Slider
-              min={1}
-              max={100}
-              step={0.1}
-              value={setting.mu_B}
-              onChange={handleInputChangeMuB}
-            />
-          </div>
-        </div>
-        <div className="w-1/4">
-          <div>
-            <div>
-              λ<sub>A</sub>: {setting.default_lambda_A}
-            </div>
-            <Slider
-              min={1}
-              max={100}
-              step={0.1}
-              value={setting.default_lambda_A}
-              onChange={handleInputChangeLambdaA}
-            />
-          </div>
-          <div>
-            <div>
-              R<sub>A</sub>: {setting.R_A}
-            </div>
-            <Slider
-              min={0.1}
-              max={5}
-              step={0.1}
-              value={setting.R_A}
-              onChange={handleInputChangeLambdaRatioA}
-            />
-          </div>
-          <hr className="my-3" />
-          <div>
-            <div>
-              θ<sub>A</sub>: {setting.default_theta_A}
-            </div>
-            <Slider
-              min={1}
-              max={100}
-              step={0.1}
-              value={setting.default_theta_A}
-              onChange={handleInputChangeThetaA}
-            />
-          </div>
-          <div>
-            <div>
-              R<sub>A</sub>: {setting.R_theta_A}
-            </div>
-            <Slider
-              min={0.1}
-              max={5}
-              step={0.1}
-              value={setting.R_theta_A}
-              onChange={handleInputChangeThetaRatioA}
-            />
-          </div>
-          <hr className="my-3" />
-          <div>
-            <div>
-              μ<sub>A</sub>: {setting.mu_A}
-            </div>
-            <Slider
-              min={1}
-              max={100}
-              step={0.1}
-              value={setting.mu_A}
-              onChange={handleInputChangeMuA}
-            />
-          </div>
-        </div>
-      </div>
+        </TabPane>
+      </Tabs>
     </div>
   );
 }

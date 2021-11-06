@@ -54,7 +54,10 @@ function sendOrderApi(data) {
   });
 }
 
-export const renderData = function (params, content, firstTime, stockId) {
+export const renderData = function (params, content) {
+  let current_tab = params.current_tab;
+  let default_alpha_B = params.default_alpha_B;
+  let default_alpha_A = params.default_alpha_A;
   let default_lambda_B = params.default_lambda_B;
   let default_lambda_A = params.default_lambda_A;
   let R_B = params.R_B;
@@ -105,6 +108,9 @@ export const renderData = function (params, content, firstTime, stockId) {
   buyLeftQueue.forEach(function (price) {
     let lambda_B = default_lambda_B * Math.pow(R_B, count);
     let theta_B = default_theta_B * Math.pow(R_theta_B, count);
+    if (current_tab == 2) {
+      lambda_B = default_lambda_B / Math.pow(count+1, default_alpha_B);
+    }
     T["LB" + price] = nextExponential(lambda_B);
     T["CB" + price] = nextExponential(theta_B);
     count++;
@@ -113,6 +119,9 @@ export const renderData = function (params, content, firstTime, stockId) {
   buyRightQueue.forEach(function (price) {
     let lambda_B = default_lambda_B * Math.pow(R_B, count);
     let theta_B = default_theta_B * Math.pow(R_theta_B, count);
+    if (current_tab == 2) {
+      lambda_B = default_lambda_B / Math.pow(count+1, default_alpha_B);
+    }
     T["LB" + price] = nextExponential(lambda_B);
     T["CB" + price] = nextExponential(theta_B);
     count++;
@@ -121,6 +130,9 @@ export const renderData = function (params, content, firstTime, stockId) {
   sellLeftQueue.forEach(function (price) {
     let lambda_A = default_lambda_A * Math.pow(R_A, count);
     let theta_A = default_theta_A * Math.pow(R_theta_A, count);
+    if (current_tab == 2) {
+      lambda_A = default_lambda_A / Math.pow(count+1, default_alpha_A);
+    }
     T["LA" + price] = nextExponential(lambda_A);
     T["CA" + price] = nextExponential(theta_A);
     count++;
@@ -129,6 +141,9 @@ export const renderData = function (params, content, firstTime, stockId) {
   sellRightQueue.forEach(function (price) {
     let lambda_A = default_lambda_A * Math.pow(R_A, count);
     let theta_A = default_theta_A * Math.pow(R_theta_A, count);
+    if (current_tab == 2) {
+      lambda_A = default_lambda_A / Math.pow(count+1, default_alpha_A);
+    }
     T["LA" + price] = nextExponential(lambda_A);
     T["CA" + price] = nextExponential(theta_A);
     count++;
