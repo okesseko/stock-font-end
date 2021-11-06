@@ -33,7 +33,7 @@ const Case = () => {
         setTotalSize(res.data.totalSize);
       })
       .catch((err) => {
-        errorNotification(err.response.data);
+        errorNotification(err?.response?.data);
       });
   }, [page, pageSize, reset]);
   const rowSelection = {
@@ -103,7 +103,7 @@ const Case = () => {
               },
             })
               .catch((err) => {
-                errorNotification(err.response.data);
+                errorNotification(err?.response?.data);
               })
               .finally(() => {
                 setChecked([]);
@@ -193,7 +193,7 @@ const Case = () => {
                       },
                     })
                       .catch((err) => {
-                        errorNotification(err.response.data);
+                        errorNotification(err?.response?.data);
                       })
                       .finally(() => {
                         setReset(Math.random());

@@ -44,7 +44,7 @@ const ReplayChart = () => {
         );
       })
       .catch((err) => {
-        errorNotification(err.response.data);
+        errorNotification(err?.response?.data);
       });
   }, [stockId]);
 
@@ -171,7 +171,7 @@ const ReplayChart = () => {
                 setIsResetButtonLoading(false);
               })
               .catch((err) => {
-                errorNotification(err.response.data);
+                errorNotification(err?.response?.data);
               });
             latestChartTime.current = null;
           }}
@@ -200,7 +200,7 @@ const ReplayChart = () => {
                   setCaseOrder(res.data.content);
                 })
                 .catch((err) => {
-                  errorNotification(err.response.data);
+                  errorNotification(err?.response?.data);
                 });
             }}
           />

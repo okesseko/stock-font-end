@@ -29,7 +29,7 @@ const OrderTable = () => {
         setTotalSize(res.data.totalSize);
       })
       .catch((err) => {
-        errorNotification(err.response.data);
+        errorNotification(err?.response?.data);
       });
   }, [page, pageSize, stockId, startTime, endTime]);
 

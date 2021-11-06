@@ -112,7 +112,7 @@ const FrequentData = function () {
         setGroupList(groupList);
       })
       .catch((err) => {
-        errorNotification(err.response.data);
+        errorNotification(err?.response?.data);
       });
   }, []);
 
@@ -315,7 +315,7 @@ const FrequentData = function () {
                       setIsLoading(false);
                     })
                     .catch((err) => {
-                      errorNotification(err.response.data);
+                      errorNotification(err?.response?.data);
                     });
                 })
               );

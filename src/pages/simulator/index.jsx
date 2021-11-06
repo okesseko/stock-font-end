@@ -54,7 +54,7 @@ export const OrderSender = ({ orders, stockId }) => {
     const currentOrder = orders[currentIndex];
     const nextOrder = orders[currentIndex + 1];
     sendOrder(currentOrder).catch((err) => {
-      errorNotification(err.response.data);
+      errorNotification(err?.response?.data);
     });
     if (nextOrder) {
       const delay =
@@ -121,7 +121,7 @@ export const OrderSender = ({ orders, stockId }) => {
             if (sliderDelay.current) clearTimeout(sliderDelay.current);
             sliderDelay.current = setTimeout(() => {
               resetStock(stockId).catch((err) => {
-                errorNotification(err.response.data);
+                errorNotification(err?.response?.data);
               });
             }, 1000);
           }}
@@ -244,7 +244,7 @@ const Simulator = () => {
           onClick={async () => {
             if (stockId) {
               await resetStock(stockId).catch((err) => {
-                errorNotification(err.response.data);
+                errorNotification(err?.response?.data);
               });
               getRealDataOrderContent({
                 stockId,
@@ -254,7 +254,7 @@ const Simulator = () => {
                   setOrders(data.content);
                 })
                 .catch((err) => {
-                  errorNotification(err.response.data);
+                  errorNotification(err?.response?.data);
                 });
             }
           }}

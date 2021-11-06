@@ -221,7 +221,7 @@ const DisplayChart = ({ onStockIdChange, stock }) => {
         }
       })
       .catch((err) => {
-        errorNotification(err.response.data);
+        errorNotification(err?.response?.data);
       });
   }, [stock, stockId, dateFormat, timeChartData, latestTimeChartTime]);
 

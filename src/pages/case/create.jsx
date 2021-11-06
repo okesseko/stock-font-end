@@ -38,7 +38,7 @@ const Create = ({ visible, setVisible, defaultValue, reset }) => {
               data: { ...value, id: defaultValue.id },
             })
               .catch((err) => {
-                errorNotification(err.response.data);
+                errorNotification(err?.response?.data);
               })
               .finally(() => {
                 reset(Math.random());
@@ -52,7 +52,7 @@ const Create = ({ visible, setVisible, defaultValue, reset }) => {
               data: value,
             })
               .catch((err) => {
-                errorNotification(err.response.data);
+                errorNotification(err?.response?.data);
               })
               .finally(() => {
                 reset(Math.random());

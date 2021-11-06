@@ -47,7 +47,7 @@ const CreateAndEdit = ({ isVisible, setIsVisible, initVal, reload }) => {
               reload(Math.random());
             })
             .catch((err) => {
-              errorNotification(err.response.data);
+              errorNotification(err?.response?.data);
             });
         }}
       >

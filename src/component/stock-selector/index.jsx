@@ -17,7 +17,7 @@ export const StockSelector = ({ style, mode, onChange }) => {
         setStockList(stockList);
       })
       .catch((err) => {
-        errorNotification(err.response.data);
+        errorNotification(err?.response?.data);
       });
   }, []);
   return (

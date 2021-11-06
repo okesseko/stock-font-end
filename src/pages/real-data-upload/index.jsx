@@ -92,7 +92,7 @@ const UploadProgress = ({ file, isLoading, type }) => {
             setProgress(progress + ADDER);
           })
           .catch((err) => {
-            errorNotification(err.response.data);
+            errorNotification(err?.response?.data);
             setIsError(true);
           });
       });
@@ -104,7 +104,7 @@ const UploadProgress = ({ file, isLoading, type }) => {
           check(3);
         })
         .catch((err) => {
-          errorNotification(err.response.data);
+          errorNotification(err?.response?.data);
           setIsError(true);
         });
     }
@@ -127,7 +127,7 @@ const UploadProgress = ({ file, isLoading, type }) => {
             check(1);
           })
           .catch((err) => {
-            errorNotification(err.response.data);
+            errorNotification(err?.response?.data);
             setIsError(true);
           });
       } else handleNextProgress();
