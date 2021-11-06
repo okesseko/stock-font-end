@@ -54,7 +54,7 @@ function sendOrderApi(data) {
   });
 }
 
-export const renderData = function (params, content) {
+export const renderData = function (params, content, firstTime, stockId) {
   let current_tab = params.current_tab;
   let default_alpha_B = params.default_alpha_B;
   let default_alpha_A = params.default_alpha_A;
