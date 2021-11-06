@@ -1,10 +1,10 @@
 import axios from "axios";
 
+const token = sessionStorage.getItem("token");
+const headers = token ? { token } : {};
 export const defaultAxios = axios.create({
   baseURL: "http://140.118.118.173:20023/",
-  headers: {
-    token: sessionStorage.getItem("token") || undefined,
-  },
+  headers: { ...headers },
 });
 export function settingToken(token) {
   defaultAxios.defaults.headers.common["token"] = token;
