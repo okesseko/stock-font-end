@@ -5,8 +5,7 @@ import { defaultAxios, api } from "../../../environment/api";
 import errorNotification from "../../../utils/errorNotification";
 import { Slider } from "antd";
 
-export default function Settings({ buttonStatus = "stop" }) {
-  const isFirst = useRef(true);
+export default function Settings({ buttonStatus = "stop", stockId }) {
   const displayData = useRef();
   const timeSet = useRef();
   const [nextTime, setNextTime] = useState(0);
@@ -34,17 +33,19 @@ export default function Settings({ buttonStatus = "stop" }) {
     })
       .then((res) => {
         displayData.current = res.data;
-        setNextTime(renderData(setting, res.data));
+        setNextTime(renderData(setting, res.data, true));
       })
       .catch((err) => {
-        errorNotification(err.response.data);
+        errorNotification(err?.response?.data);
       });
   }, []);
 
   useEffect(() => {
     if (nextTime && buttonStatus !== "stop") {
       setTimeout(() => {
-        setNextTime(() => renderData(setting, displayData.current));
+        setNextTime(() =>
+          renderData(setting, displayData.current, false, stockId)
+        );
       }, nextTime);
     }
   }, [nextTime, buttonStatus]);

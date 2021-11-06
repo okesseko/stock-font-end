@@ -20,7 +20,7 @@ const AutoChart = () => {
         isReset: true,
       },
     }).catch((err) => {
-      errorNotification(err.response.data);
+      errorNotification(err?.response?.data);
     });
 
     setButtonStatus("stop");
@@ -62,7 +62,7 @@ const AutoChart = () => {
       <Title className="m-4 mb-0" level={5}>
         使用情境
       </Title>
-      <Settings buttonStatus={buttonStatus} />
+      <Settings buttonStatus={buttonStatus} stockId={stockId} />
     </div>
   );
 };

@@ -50,11 +50,11 @@ function sendOrderApi(data) {
       subMethod: data.subMethod,
     },
   }).catch((err) => {
-    errorNotification(err.response.data);
+    errorNotification(err?.response?.data);
   });
 }
 
-export const renderData = function (params, content) {
+export const renderData = function (params, content, firstTime, stockId) {
   let default_lambda_B = params.default_lambda_B;
   let default_lambda_A = params.default_lambda_A;
   let R_B = params.R_B;
@@ -145,74 +145,75 @@ export const renderData = function (params, content) {
 
   // console.log("T", T);
 
-  switch (kind) {
-    // 限價單
-    case "L":
-      // console.log("Limit order");
-      sendOrderApi({
-        investorId: null,
-        stockId: 1,
-        method: type == "B" ? 0 : 1, // BUY = 0, SELL = 1
-        price: Number(lowest[0].substring(2, 10)),
-        quantity: getBatches(batch_size),
-        priceType: 1, // MARKET = 0, LIMIT = 1
-        timeRestriction: 0, // ROD = 0, IOC = 1, FOK = 2
-      });
-      break;
+  if (!firstTime)
+    switch (kind) {
+      // 限價單
+      case "L":
+        // console.log("Limit order");
+        sendOrderApi({
+          investorId: null,
+          stockId,
+          method: type == "B" ? 0 : 1, // BUY = 0, SELL = 1
+          price: Number(lowest[0].substring(2, 10)),
+          quantity: getBatches(batch_size),
+          priceType: 1, // MARKET = 0, LIMIT = 1
+          timeRestriction: 0, // ROD = 0, IOC = 1, FOK = 2
+        });
+        break;
 
-    // 市價單
-    case "M":
-      // console.log("Market order");
-      sendOrderApi({
-        investorId: null,
-        stockId: 1,
-        method: type == "B" ? 0 : 1, // BUY = 0, SELL = 1
-        price: 0,
-        quantity: getBatches(batch_size),
-        priceType: 0, // MARKET = 0, LIMIT = 1
-        timeRestriction: 0, // ROD = 0, IOC = 1, FOK = 2
-      });
-      break;
+      // 市價單
+      case "M":
+        // console.log("Market order");
+        sendOrderApi({
+          investorId: null,
+          stockId,
+          method: type == "B" ? 0 : 1, // BUY = 0, SELL = 1
+          price: 0,
+          quantity: getBatches(batch_size),
+          priceType: 0, // MARKET = 0, LIMIT = 1
+          timeRestriction: 0, // ROD = 0, IOC = 1, FOK = 2
+        });
+        break;
 
-    // 取消單
-    case "C":
-      defaultAxios({
-        url: api.getOrder.url,
-        method: api.getOrder.method,
-      })
-        .then((res) => {
-          const orderData = res.data;
-          // console.log("order datas", orderData);
-          let content = orderData.content.filter(function (data) {
-            return data.price == lowest[0].substring(2, 10);
+      // 取消單
+      case "C":
+        defaultAxios({
+          url: api.getOrder.url,
+          method: api.getOrder.method,
+        })
+          .then((res) => {
+            const orderData = res.data;
+            // console.log("order datas", orderData);
+            let content = orderData.content.filter(function (data) {
+              return data.price == lowest[0].substring(2, 10);
+            });
+
+            let randomProperty = function (obj) {
+              let keys = Object.keys(obj);
+              return obj[keys[(keys.length * Math.random()) << 0]];
+            };
+            let random = randomProperty(content);
+            if (random) {
+              // console.log("randomProperty", random);
+              console.log("random", random);
+              // console.log(random.price, random.priceType);
+              sendOrderApi({
+                investorId: null,
+                stockId,
+                method: random.method, // BUY = 0, SELL = 1
+                price: random.price,
+                quantity: random.quantity,
+                priceType: random.priceType, // MARKET = 0, LIMIT = 1
+                timeRestriction: random.timeRestriction, // ROD = 0, IOC = 1, FOK = 2
+                subMethod: 0,
+              });
+            }
+          })
+          .catch((err) => {
+            errorNotification(err?.response?.data);
           });
 
-          let randomProperty = function (obj) {
-            let keys = Object.keys(obj);
-            return obj[keys[(keys.length * Math.random()) << 0]];
-          };
-          let random = randomProperty(content);
-          if (random) {
-            // console.log("randomProperty", random);
-            console.log("random", random);
-            // console.log(random.price, random.priceType);
-            sendOrderApi({
-              investorId: null,
-              stockId: 1,
-              method: random.method, // BUY = 0, SELL = 1
-              price: random.price,
-              quantity: random.quantity,
-              priceType: random.priceType, // MARKET = 0, LIMIT = 1
-              timeRestriction: random.timeRestriction, // ROD = 0, IOC = 1, FOK = 2
-              subMethod: 0,
-            });
-          }
-        })
-        .catch((err) => {
-          errorNotification(err.response.data);
-        });
-
-      break;
-  }
+        break;
+    }
   return next;
 };
