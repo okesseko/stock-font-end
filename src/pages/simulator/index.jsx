@@ -152,7 +152,10 @@ export const OrderSender = ({ orders, stockId }) => {
             setIsRunnung(false);
             if (sliderDelay.current) clearTimeout(sliderDelay.current);
             sliderDelay.current = setTimeout(() => {
-              resetStock(stockId).catch((err) => {
+              const order = orders[currentIndex];
+              resetStock(
+                order.stockId === stockId ? stockId : order.stockId
+              ).catch((err) => {
                 errorNotification(err?.response?.data);
               });
             }, 1000);
