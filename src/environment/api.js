@@ -1,14 +1,18 @@
 import axios from "axios";
+import { appEventEmitter } from "../App";
 
-const token = sessionStorage.getItem("token");
-const headers = token ? { token } : {};
 export const defaultAxios = axios.create({
   baseURL: "http://140.118.118.173:20023/",
-  headers: { ...headers },
 });
 export function settingToken(token) {
   defaultAxios.defaults.headers.common["token"] = token;
 }
+
+defaultAxios.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (!config.headers.token) config.headers.token = token;
+  return config;
+});
 
 // api
 

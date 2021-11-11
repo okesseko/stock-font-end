@@ -31,7 +31,7 @@ const Login = ({ setToken }) => {
         onFinish={(data) => {
           defaultAxios({ url: api.login.url, method: api.login.method, data })
             .then((res) => {
-              sessionStorage.setItem("token", res.data);
+              localStorage.setItem("token", res.data);
               setToken(res.data);
               history.replace("/stock-font-end/");
             })

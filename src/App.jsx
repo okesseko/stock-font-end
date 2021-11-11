@@ -18,10 +18,13 @@ import Login from "./pages/login";
 import RouterLink from "./component/router-link";
 import { useEffect, useState } from "react";
 import { settingToken } from "./environment/api";
+const events = require("events");
+
+export const appEventEmitter = new events.EventEmitter();
 
 const App = () => {
-  const [auth, setAuth] = useState(!!sessionStorage.getItem("token"));
-  const [token, setToken] = useState(sessionStorage.getItem("token") || "");
+  const [auth, setAuth] = useState(!!localStorage.getItem("token"));
+  const [token, setToken] = useState(localStorage.getItem("token") || "");
   const GuardedRoute = ({ component: Component, ...rest }) => (
     <Route
       {...rest}
@@ -34,7 +37,12 @@ const App = () => {
       }
     />
   );
-  console.log(token);
+  useEffect(() => {
+    appEventEmitter.on("unauthorization", (msg) => {
+      localStorage.removeItem("token");
+      setAuth(false);
+    });
+  }, []);
   useEffect(() => {
     setAuth(!!token);
     settingToken(token);
