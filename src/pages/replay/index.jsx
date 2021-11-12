@@ -5,10 +5,15 @@ import Simulator from "../simulator";
 
 const ReplayChart = () => {
   const [replayStockId, setReplayStockId] = useState();
+  const [isResetChart, setIsResetChart] = useState(false);
 
   return (
     <div>
-      <DisplayChart stock={replayStockId ? { id: replayStockId } : {}} />
+      <DisplayChart
+        isResetChart={isResetChart}
+        setIsResetChart={setIsResetChart}
+        stock={replayStockId ? { id: replayStockId } : {}}
+      />
       {/*       <div className="m-4 flex justify-around  items-end">
         <div className="w-1/6">
           選擇股票
@@ -76,6 +81,9 @@ const ReplayChart = () => {
         </Button>
       </div> */}
       <Simulator
+        onReset={() => {
+          setIsResetChart(true);
+        }}
         customResetStock={async (stockId) => {
           const { url, method } = api.resetStock;
           return await defaultAxios({

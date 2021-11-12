@@ -65,7 +65,7 @@ const debugOrders = (orders, type) => {
   }
 };
 
-export const OrderSender = ({ orders, stockId }) => {
+export const OrderSender = ({ orders, stockId, onReset }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isRunning, setIsRunnung] = useState(false);
   const [speed, setSpeed] = useState(1);
@@ -152,6 +152,7 @@ export const OrderSender = ({ orders, stockId }) => {
             setIsRunnung(false);
             if (sliderDelay.current) clearTimeout(sliderDelay.current);
             sliderDelay.current = setTimeout(() => {
+              // onReset && onReset();
               const order = orders[currentIndex];
               resetStock(
                 order.stockId === stockId ? stockId : order.stockId
@@ -224,7 +225,7 @@ export const OrderSender = ({ orders, stockId }) => {
   );
 };
 
-const RealDataSimulator = ({ customResetStock }) => {
+const RealDataSimulator = ({ customResetStock, onReset }) => {
   // Functional state
   const [orders, setOrders] = useState([]);
 
@@ -310,12 +311,12 @@ const RealDataSimulator = ({ customResetStock }) => {
           載入委託
         </Button>
       </div>
-      <OrderSender orders={orders} stockId={stockId} />
+      <OrderSender orders={orders} stockId={stockId} onReset={onReset} />
     </div>
   );
 };
 
-const ReplaySimulator = ({ customResetStock }) => {
+const ReplaySimulator = ({ customResetStock, onReset }) => {
   // Functional state
   const [orders, setOrders] = useState([]);
 
@@ -401,12 +402,12 @@ const ReplaySimulator = ({ customResetStock }) => {
           載入重播
         </Button>
       </div>
-      <OrderSender orders={orders} stockId={stockId} />
+      <OrderSender orders={orders} stockId={stockId} onReset={onReset} />
     </div>
   );
 };
 
-const CaseSimulator = ({ customResetStock }) => {
+const CaseSimulator = ({ customResetStock, onReset }) => {
   // Functional state
   const [orders, setOrders] = useState([]);
   const [caseData, setCaseData] = useState([]);
@@ -520,22 +521,30 @@ const CaseSimulator = ({ customResetStock }) => {
           載入情境
         </Button>
       </div>
-      <OrderSender orders={orders} stockId={stockId} />
+      <OrderSender orders={orders} stockId={stockId} onReset={onReset} />
     </div>
   );
 };
 
-const Simulator = ({ customResetStock }) => {
+const Simulator = ({ customResetStock, onReset }) => {
   return (
     <Tabs type="card" centered>
       <TabPane tab="真實資料" key="1">
-        <RealDataSimulator customResetStock={customResetStock} />;
+        <RealDataSimulator
+          customResetStock={customResetStock}
+          onReset={onReset}
+        />
+        ;
       </TabPane>
       <TabPane tab="重播資料" key="2">
-        <ReplaySimulator customResetStock={customResetStock} />;
+        <ReplaySimulator
+          customResetStock={customResetStock}
+          onReset={onReset}
+        />
+        ;
       </TabPane>
       {/* <TabPane tab="情境資料" key="3">
-        <CaseSimulator customResetStock={customResetStock} />;
+        <CaseSimulator customResetStock={customResetStock} onReset={onReset} />;
       </TabPane> */}
     </Tabs>
   );

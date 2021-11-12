@@ -256,10 +256,10 @@ const QuickOrder = () => {
 
   return (
     <div className="w-10/12 mx-auto">
-      <div>
+      {/* <div>
         <ReadFile />
         <hr className="mb-5" />
-      </div>
+      </div> */}
       <div>
         <Select
           value={showType}
@@ -337,7 +337,7 @@ const QuickOrder = () => {
             Reset
           </Button>
         )}
-        <Checkbox
+        {/* <Checkbox
           checked={isAutoTime}
           onChange={(e) => {
             const { checked } = e.target;
@@ -348,7 +348,7 @@ const QuickOrder = () => {
           }}
         >
           是否自動填入過去時間
-        </Checkbox>
+        </Checkbox> */}
         {/* <Checkbox
           checked={isSimulated}
           onChange={(e) => {

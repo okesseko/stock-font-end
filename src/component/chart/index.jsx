@@ -129,7 +129,12 @@ const DisplaySplitChart = ({ data = [] }) => {
   return <ReactECharts option={option} />;
 };
 
-const DisplayChart = ({ onStockIdChange, stock }) => {
+const DisplayChart = ({
+  onStockIdChange,
+  stock,
+  isResetChart,
+  setIsResetChart,
+}) => {
   //chart status
   const [isRunning, setIsRunning] = useState(false);
   const [frequency, setFrequency] = useState(1);
@@ -161,6 +166,13 @@ const DisplayChart = ({ onStockIdChange, stock }) => {
     resetChart();
     check("----");
   }, [stock, stockId, dateFormat]);
+
+  useEffect(() => {
+    if (isResetChart) {
+      resetChart();
+      setIsResetChart(false);
+    }
+  }, [isResetChart, setIsResetChart]);
 
   const handleInterval = useCallback(() => {
     check(
