@@ -3,14 +3,21 @@ import React, { useEffect, useRef, useState } from "react";
 import { renderData } from "./math-model";
 import { defaultAxios, api } from "../../../environment/api";
 import errorNotification from "../../../utils/errorNotification";
-import { Slider, Tabs } from "antd";
+import { Slider, Tabs, Typography, Table } from "antd";
 
+const { Title } = Typography;
 const { TabPane } = Tabs;
 
 export default function Settings({ buttonStatus = "stop", stockId }) {
   const displayData = useRef();
   const timeSet = useRef();
   const [nextTime, setNextTime] = useState(0);
+
+  const [q, setQ] = useState({
+    array_a: [],
+    array_b: [],
+    q1_array: [],
+  });
 
   const [setting, setSetting] = useState({
     current_tab: 1,
@@ -27,6 +34,63 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
     mu_B: 10,
     mu_A: 10,
     batch_size: 10,
+    s: 1,
+    max_a: 13,
+    max_b: 11,
+    gap: 3,
+  });
+
+  const [table, setTable] = useState({
+    columns: [
+      {
+        title: 'b \\ a',
+        dataIndex: 'name',
+        key: Math.random(),
+      },
+      {
+        title: 1,
+        dataIndex: 1,
+        key: Math.random(),
+      },
+      {
+        title: 4,
+        dataIndex: 4,
+        key: Math.random(),
+      },
+      {
+        title: 7,
+        dataIndex: 7,
+        key: Math.random(),
+      },
+      {
+        title: 10,
+        dataIndex: 10,
+        key: Math.random(),
+      },
+      {
+        title: 13,
+        dataIndex: 13,
+        key: Math.random(),
+      },
+    ],
+    dataSource: [
+      {
+        key: 2,
+        name: 2,
+      },
+      {
+        key: 5,
+        name: 5,
+      },
+      {
+        key: 8,
+        name: 8,
+      },
+      {
+        key: 11,
+        name: 11,
+      },
+    ],
   });
   useEffect(() => {
     defaultAxios({
@@ -38,7 +102,7 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
     })
       .then((res) => {
         displayData.current = res.data;
-        setNextTime(renderData(setting, res.data, true));
+        setNextTime(renderData(setting, q, res.data, true));
       })
       .catch((err) => {
         errorNotification(err?.response?.data);
@@ -49,7 +113,7 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
     if (nextTime && buttonStatus !== "stop") {
       setTimeout(() => {
         setNextTime(() =>
-          renderData(setting, displayData.current, false, stockId)
+          renderData(setting, q, displayData.current, false, stockId)
         );
       }, nextTime);
     }
@@ -110,6 +174,84 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
   const handleTabsChange = (key) => {
     setSetting({ ...setting, current_tab: key });
   };
+
+  const handleInputChangeS = (key) => {
+    setSetting({ ...setting, s: key });
+  };
+
+  const handleInputChangeMaxA = (key) => {
+    setSetting({ ...setting, max_a: key });
+    renderTable(setting.gap, key, setting.max_b);
+    setQ1Array();
+  };
+
+  const handleInputChangeMaxB = (key) => {
+    setSetting({ ...setting, max_b: key });
+    renderTable(setting.gap, setting.max_a, key);
+    setQ1Array();
+  };
+
+  const handleInputChangeGap = (key) => {
+    setSetting({ ...setting, gap: key });
+    renderTable(key, setting.max_a, setting.max_b);
+    setQ1Array();
+  };
+
+  function setQ1Array() { 
+    let array_a = [];
+    let array_b = [];
+    let q1_array = [];
+
+    let start_a = (setting.max_a % setting.gap == 0) ? setting.gap : setting.max_a % setting.gap;
+    for(var i=start_a; i<=setting.max_a; i=i+setting.gap) {
+      array_a.push(i)
+    }
+    let start_b = (setting.max_b % setting.gap == 0) ? setting.gap : setting.max_b % setting.gap;
+    for(var i=start_b; i<=setting.max_b; i=i+setting.gap) {
+      array_b.push(i)
+    }
+  
+    array_a.forEach(a => {
+      array_b.forEach(b => {
+        q1_array.push({
+          [a]: false, 
+          [b]: false,
+          midprice: 0,
+          count_up: 0, 
+          count_down: 0,
+        });
+      });
+    });  
+    setQ({ ...q, array_a: array_a, array_b: array_b, q1_array, q1_array });
+  }
+
+  function renderTable(gap, max_a, max_b) {
+    let columns = [
+      {
+        title: 'b \\ a',
+        dataIndex: 'name',
+        key: Math.random(),
+      },
+    ];
+    let dataSource = [];
+
+    let start_a = (max_a % gap == 0) ? gap : max_a % gap;
+    for(var i=start_a; i<=max_a; i=i+gap) {
+      columns.push({
+        title: i,
+        dataIndex: i,
+        key: i,
+      })
+    }
+    let start_b = (max_b % gap == 0) ? gap : max_b % gap;
+    for(var i=start_b; i<=max_b; i=i+gap) {
+      dataSource.push({
+        key: i,
+        name: i,
+      })
+    }
+    setTable({ ...table, columns: columns, dataSource: dataSource });
+  }
 
   return (
     <div className="card-container px-5">
@@ -431,6 +573,155 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
           </div>
         </TabPane>
       </Tabs>
+      <hr className="my-3" />
+      <div className="">
+        <Title className="mt-4 mb-3" level={5}>
+          Q1 數值表格
+        </Title>
+        <div className="flex justify-center">
+          <div className="w-1/3">
+            <div className="flex justify-center">
+              <div className="w-3/4">
+                <div>s: {setting.s}</div>
+                <Slider
+                  min={1}
+                  max={5}
+                  step={1}
+                  value={setting.s}
+                  onChange={handleInputChangeS}
+                />
+              </div>
+            </div>
+            <div className="flex justify-center">
+              <div className="w-3/4">
+                <div>max_a: {setting.max_a}</div>
+                <Slider
+                  min={1}
+                  max={100}
+                  step={1}
+                  value={setting.max_a}
+                  onChange={handleInputChangeMaxA}
+                />
+              </div>
+            </div>
+            <div className="flex justify-center">
+              <div className="w-3/4">
+                <div>max_b: {setting.max_b}</div>
+                <Slider
+                  min={1}
+                  max={100}
+                  step={1}
+                  value={setting.max_b}
+                  onChange={handleInputChangeMaxB}
+                />
+              </div>
+            </div>
+            <div className="flex justify-center">
+              <div className="w-3/4">
+                <div>gap: {setting.gap}</div>
+                <Slider
+                  min={1}
+                  max={10}
+                  step={1}
+                  value={setting.gap}
+                  onChange={handleInputChangeGap}
+                />
+              </div>
+            </div>
+          </div>
+
+          <Table
+            bordered
+            className="w-2/3"
+            dataSource={table.dataSource}
+            columns={table.columns}
+        // columns={[
+        //   {
+        //     title: "訂單 ID",
+        //     dataIndex: "orderId",
+        //     render: (data) => <span>{data || "NULL"}</span>,
+        //     key: Math.random(),
+        //   },
+        //   {
+        //     title: "投資 ID",
+        //     dataIndex: "investorId",
+        //     key: Math.random(),
+        //   },
+        //   {
+        //     title: "股票 ID",
+        //     dataIndex: "stockId",
+        //     key: Math.random(),
+        //   },
+        //   {
+        //     title: "類型",
+        //     dataIndex: "method",
+        //     render: (data) => <span>{data ? "sell" : "buy"}</span>,
+        //     key: Math.random(),
+        //   },
+        //   {
+        //     title: "副類型",
+        //     dataIndex: "subMethod",
+        //     render: (data) => (
+        //       <span>{data ? "UPDATE" : data === null ? "NULL" : "CANCEL"}</span>
+        //     ),
+        //     key: Math.random(),
+        //   },
+        //   {
+        //     title: "價格",
+        //     dataIndex: "price",
+        //     key: Math.random(),
+        //   },
+        //   {
+        //     title: "數量",
+        //     dataIndex: "quantity",
+        //     key: Math.random(),
+        //   },
+        //   {
+        //     title: "價格類型",
+        //     dataIndex: "priceType",
+        //     render: (data) => <span>{data ? "LIMIT" : "MARKET"}</span>,
+        //     key: Math.random(),
+        //   },
+        //   {
+        //     title: "狀態",
+        //     dataIndex: "status",
+        //     render: (data) => <span>{data ? "FULL" : "PARTIAL"}</span>,
+        //     key: Math.random(),
+        //   },
+        //   {
+        //     title: "時間限制",
+        //     dataIndex: "timeRestriction",
+        //     render: (data) => (
+        //       <span>{data ? "IOC" : data === 2 ? "FOK" : "ROD"}</span>
+        //     ),
+        //     key: Math.random(),
+        //   },
+        //   {
+        //     title: "委託時間",
+        //     dataIndex: "createdTime",
+        //     width: 200,
+        //     render: (data) => (
+        //       <span>{dayjs(data).format("YYYY/MM/DD HH:mm:ss")}</span>
+        //     ),
+        //     key: Math.random(),
+        //   },
+        // ]}
+        // dataSource={orederData}
+        // pagination={{
+        //   pageSize: pageSize,
+        //   total: totalSize,
+        //   onChange: (page) => {
+        //     setPage(page);
+        //   },
+        //   onShowSizeChange: (cur, size) => {
+        //     setPageSize(size);
+        //   },
+        // }}
+        sticky
+      />
+
+        </div>
+      </div>
     </div>
   );
 }

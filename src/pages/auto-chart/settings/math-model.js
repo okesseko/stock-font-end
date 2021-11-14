@@ -54,7 +54,7 @@ function sendOrderApi(data) {
   });
 }
 
-export const renderData = function (params, content, firstTime, stockId) {
+export const renderData = function (params, q, content, firstTime, stockId) {
   let current_tab = params.current_tab;
   let default_alpha_B = params.default_alpha_B;
   let default_alpha_A = params.default_alpha_A;
@@ -69,6 +69,14 @@ export const renderData = function (params, content, firstTime, stockId) {
   let mu_B = params.mu_B;
   let mu_A = params.mu_A;
   let batch_size = params.batch_size;
+  let s = params.s;
+  let max_a = params.max_a;
+  let max_b = params.max_b;
+  let gap = params.gap;
+
+  let array_a = q.array_a;
+  let array_b = q.array_b;
+  let q1_array = q.q1_array;
 
   let T = {};
   var count = 0;
@@ -158,6 +166,24 @@ export const renderData = function (params, content, firstTime, stockId) {
   let kind = lowest[0].substring(0, 1);
   let type = lowest[0].substring(1, 2);
 
+  function checkMidPrice() {
+    q1_array.forEach((element, key) => {
+      let check = true;
+      for (const value of Object.entries(element)) {
+        if (value == false) {
+          check = false;
+        }
+      }
+      if (check == true && q1_array[key].midprice == 0) {
+        q1_array[key].midprice = (element.b_price + element.a_price) / 2;
+      } else if (check == true && q1_array[key].midprice != 0) {
+        
+      }
+    });
+
+    console.log('q1_array', q1_array);
+  }
+
   // console.log("T", T);
 
   if (!firstTime)
@@ -165,15 +191,39 @@ export const renderData = function (params, content, firstTime, stockId) {
       // 限價單
       case "L":
         // console.log("Limit order");
+        let price = Number(lowest[0].substring(2, 10));
+        let quantity = getBatches(batch_size);
         sendOrderApi({
           investorId: null,
           stockId,
           method: type == "B" ? 0 : 1, // BUY = 0, SELL = 1
-          price: Number(lowest[0].substring(2, 10)),
-          quantity: getBatches(batch_size),
+          price: price,
+          quantity: quantity,
           priceType: 1, // MARKET = 0, LIMIT = 1
           timeRestriction: 0, // ROD = 0, IOC = 1, FOK = 2
         });
+
+        if (type == "B") {
+          if (array_b.find(element => element == quantity) != undefined) {
+            q1_array.forEach((element, key) => {
+              if (Object.keys(element)[0] == quantity) {
+                q1_array[key][quantity] = true;
+                q1_array[key].b_price = price;
+              }
+            })
+          }
+        } else {
+          if (array_a.find(element => element == quantity) != undefined) {
+            q1_array.forEach((element, key) => {
+              if (Object.keys(element)[1] == quantity) {
+                q1_array[key][quantity] = true;
+                q1_array[key].a_price = price;
+              }
+            })
+          }
+        }
+
+        checkMidPrice();
         break;
 
       // 市價單
@@ -210,7 +260,7 @@ export const renderData = function (params, content, firstTime, stockId) {
             let random = randomProperty(content);
             if (random) {
               // console.log("randomProperty", random);
-              console.log("random", random);
+              // console.log("random", random);
               // console.log(random.price, random.priceType);
               sendOrderApi({
                 investorId: null,
