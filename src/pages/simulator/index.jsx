@@ -80,6 +80,11 @@ export const OrderSender = ({ orders, stockId, onReset }) => {
     }
     setCurrentIndex(0);
     setIsRunnung(false);
+
+    return () => {
+      if (sliderDelay.current) clearTimeout(sliderDelay.current);
+      if (timeOut.current) clearTimeout(timeOut.current);
+    };
   }, [orders]);
 
   const handleTimeOut = useCallback(() => {
@@ -94,19 +99,22 @@ export const OrderSender = ({ orders, stockId, onReset }) => {
         Date.parse(currentOrder.createdTime);
       timeOut.current = setTimeout(() => {
         setCurrentIndex(currentIndex + 1);
-      }, delay / speedRef.current);
+      }, Math.max(delay / speedRef.current, 50));
     }
   }, [currentIndex, orders]);
 
   useEffect(() => {
-    speedRef.current = speed;
     if (isRunning) {
       handleTimeOut();
     } else if (timeOut.current) {
       clearTimeout(timeOut.current);
       timeOut.current = undefined;
     }
-  }, [isRunning, handleTimeOut, speed]);
+  }, [isRunning, handleTimeOut]);
+
+  useEffect(() => {
+    speedRef.current = speed;
+  }, [speed]);
 
   return (
     <div>
@@ -133,7 +141,7 @@ export const OrderSender = ({ orders, stockId, onReset }) => {
           播放速度 {speed} 倍
           <Slider
             value={speed}
-            max={20}
+            max={10}
             disabled={!stockId || !orders.length}
             onChange={(e) => {
               setSpeed(e);
@@ -152,7 +160,7 @@ export const OrderSender = ({ orders, stockId, onReset }) => {
             setIsRunnung(false);
             if (sliderDelay.current) clearTimeout(sliderDelay.current);
             sliderDelay.current = setTimeout(() => {
-              // onReset && onReset();
+              onReset && onReset();
               const order = orders[currentIndex];
               resetStock(
                 order.stockId === stockId ? stockId : order.stockId
