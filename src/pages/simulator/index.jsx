@@ -426,24 +426,26 @@ const CaseSimulator = ({ customResetStock, onReset }) => {
   const [startTime, setStartTime] = useState();
 
   useEffect(() => {
-    defaultAxios({
-      url: api.getVirtualOrderContainer.url,
-      method: api.getVirtualOrderContainer.method,
-      params: {
-        stockId,
-      },
-    })
-      .then((res) => {
-        setCaseData(
-          res.data.content.map((content) => ({
-            label: content.name,
-            value: content.id,
-          }))
-        );
+    if (stockId) {
+      defaultAxios({
+        url: api.getVirtualOrderContainer.url,
+        method: api.getVirtualOrderContainer.method,
+        params: {
+          stockId,
+        },
       })
-      .catch((err) => {
-        errorNotification(err?.response?.data);
-      });
+        .then((res) => {
+          setCaseData(
+            res.data.content.map((content) => ({
+              label: content.name,
+              value: content.id,
+            }))
+          );
+        })
+        .catch((err) => {
+          errorNotification(err?.response?.data);
+        });
+    }
   }, [stockId]);
 
   debugOrders(orders, "case");
@@ -551,9 +553,9 @@ const Simulator = ({ customResetStock, onReset }) => {
         />
         ;
       </TabPane>
-      {/* <TabPane tab="情境資料" key="3">
+      <TabPane tab="情境資料" key="3">
         <CaseSimulator customResetStock={customResetStock} onReset={onReset} />;
-      </TabPane> */}
+      </TabPane>
     </Tabs>
   );
 };
