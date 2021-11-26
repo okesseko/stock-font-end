@@ -10,10 +10,63 @@ const check = (...arg) => {
   if (true) console.log(...arg);
 };
 
+const getGetRealDataApiByType = (type) => {
+  switch (type) {
+    case "transaction":
+      return api.getRealDataTransaction;
+    case "display":
+      return api.getRealDataDisplay;
+    default:
+      return api.getRealDataOrder;
+  }
+};
+
+const getPostRealDataApiByType = (type) => {
+  switch (type) {
+    case "transaction":
+      return api.postRealDataTransaction;
+    case "display":
+      return api.postRealDataDisplay;
+    default:
+      return api.postRealDataOrder;
+  }
+};
+
+const getPutRealDataApiByType = (type) => {
+  switch (type) {
+    case "transaction":
+      return api.putRealDataTransaction;
+    case "display":
+      return api.putRealDataDisplay;
+    default:
+      return api.putRealDataOrder;
+  }
+};
+
+const getDeleteRealDataApiByType = (type) => {
+  switch (type) {
+    case "transaction":
+      return api.deleteRealDataTransaction;
+    case "display":
+      return api.deleteRealDataDisplay;
+    default:
+      return api.deleteRealDataOrder;
+  }
+};
+
+const getPostRealDataContentApiByType = (type) => {
+  switch (type) {
+    case "transaction":
+      return api.postRealDataTransactionContent;
+    case "display":
+      return api.postRealDataDisplayContent;
+    default:
+      return api.postRealDataOrderContent;
+  }
+};
+
 const getRealData = async (type, page) => {
-  console.log(type);
-  const { url, method } =
-    type === "order" ? api.getRealDataOrder : api.getRealDataDisplay;
+  const { url, method } = getGetRealDataApiByType(type);
   return defaultAxios({
     url,
     method,
@@ -24,8 +77,7 @@ const getRealData = async (type, page) => {
 };
 
 const postRealData = async (id, type) => {
-  const { url, method } =
-    type === "order" ? api.postRealDataOrder : api.postRealDataDisplay;
+  const { url, method } = getPostRealDataApiByType(type);
   return defaultAxios({
     url,
     method,
@@ -34,8 +86,7 @@ const postRealData = async (id, type) => {
 };
 
 const putRealData = async (id, type) => {
-  const { url, method } =
-    type === "order" ? api.putRealDataOrder : api.putRealDataDisplay;
+  const { url, method } = getPutRealDataApiByType(type);
   return defaultAxios({
     url,
     method,
@@ -43,21 +94,17 @@ const putRealData = async (id, type) => {
   });
 };
 
-const deleteRealData = async (id, type) => {
-  const { url, method } =
-    type === "order" ? api.deleteRealDataOrder : api.deleteRealDataDisplay;
+const deleteRealData = async (ids, type) => {
+  const { url, method } = getDeleteRealDataApiByType(type);
   return defaultAxios({
     url,
     method,
-    data: [id],
+    data: ids,
   });
 };
 
 const postRealDataContent = async (id, type, data) => {
-  const { url, method } =
-    type === "order"
-      ? api.postRealDataOrderContent
-      : api.postRealDataDisplayContent;
+  const { url, method } = getPostRealDataContentApiByType(type);
   return defaultAxios({
     url,
     method,
@@ -187,6 +234,21 @@ const ContentContainer = ({ type }) => {
       >
         上傳
       </Button>
+      <Button
+        type="primary"
+        danger
+        onClick={() => {
+          setIsLoading(true);
+          const ids = realData
+            .filter((v) => v.isFinished === 0)
+            .map((v) => v.id);
+          deleteRealData(ids, type).then(() => {
+            handleGetRealData();
+          });
+        }}
+      >
+        刪除未完成
+      </Button>
       <div style={{ display: "flex", flexDirection: "column" }}>
         {fileList.map((file, index) => {
           return (
@@ -231,7 +293,7 @@ const ContentContainer = ({ type }) => {
                 className="inline-flex justify-center items-center"
                 onClick={() => {
                   setIsLoading(true);
-                  deleteRealData(id, type).then(() => {
+                  deleteRealData([id], type).then(() => {
                     handleGetRealData();
                   });
                 }}
@@ -271,6 +333,10 @@ const RealDataUpload = () => {
         <div>
           委託檔
           <ContentContainer type="order" />
+        </div>
+        <div>
+          成交檔
+          <ContentContainer type="transaction" />
         </div>
         <div>
           揭示檔

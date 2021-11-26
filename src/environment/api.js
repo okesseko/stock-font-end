@@ -1,5 +1,4 @@
 import axios from "axios";
-import { appEventEmitter } from "../App";
 
 export const defaultAxios = axios.create({
   baseURL: "http://140.118.118.173:20023/",
@@ -54,12 +53,12 @@ export const api = {
     url: "api/real-data/order/content",
     method: "GET",
   },
-  getRealDataDisplayContent: {
-    url: "api/real-data/display/content",
+  getRealDataTransactionContent: {
+    url: "api/real-data/transaction/content",
     method: "GET",
   },
-  downloadRealDataDisplayContent: {
-    url: "api/real-data/display/download",
+  getRealDataDisplayContent: {
+    url: "api/real-data/display/content",
     method: "GET",
   },
 
@@ -69,6 +68,17 @@ export const api = {
   deleteRealDataOrder: { url: "api/real-data/order", method: "DELETE" },
   postRealDataOrderContent: {
     url: "api/real-data/order/content",
+    method: "POST",
+  },
+  getRealDataTransaction: { url: "api/real-data/transaction", method: "GET" },
+  postRealDataTransaction: { url: "api/real-data/transaction", method: "POST" },
+  putRealDataTransaction: { url: "api/real-data/transaction", method: "PUT" },
+  deleteRealDataTransaction: {
+    url: "api/real-data/transaction",
+    method: "DELETE",
+  },
+  postRealDataTransactionContent: {
+    url: "api/real-data/transaction/content",
     method: "POST",
   },
   getRealDataDisplay: { url: "api/real-data/display", method: "GET" },

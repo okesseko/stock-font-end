@@ -13,8 +13,27 @@ import {
 import { StockSelector } from "../../component/stock-selector";
 import errorNotification from "../../utils/errorNotification";
 const { Option } = Select;
-
-const FIELDS = [
+const ORDER_FIELDS = [
+  "count",
+  "method",
+  "subMethod",
+  "price",
+  "quantity",
+  "priceType",
+  "timeRestriction",
+  "stockId",
+  "trdate",
+  "ts",
+];
+const TRANSACTION_FIELDS = [
+  "count",
+  "stockId",
+  "price",
+  "quantity",
+  "trdate",
+  "ts",
+];
+const DISPLAY_FIELDS = [
   "count",
   "mthpx",
   "mthsz",
@@ -41,11 +60,36 @@ const FIELDS = [
   "asz",
   "bsz",
   "sym",
-  "tickcnt",
   "trdate",
   "ts",
 ];
 
+const getFileTypeFields = (fileType) => {
+  switch (fileType) {
+    case "transaction":
+      return TRANSACTION_FIELDS;
+    case "display":
+      return DISPLAY_FIELDS;
+    default:
+      return ORDER_FIELDS;
+  }
+};
+const getFileTypeAPI = (fileType) => {
+  switch (fileType) {
+    case "transaction":
+      return api.getRealDataTransactionContent;
+    case "display":
+      return api.getRealDataDisplayContent;
+    default:
+      return api.getRealDataOrderContent;
+  }
+};
+
+const FILET_TYPE = [
+  { header: "委託檔", value: "order" },
+  { header: "成交檔", value: "transaction" },
+  { header: "揭示檔", value: "display" },
+];
 const DATE_FORMAT = [
   {
     header: "毫秒",
@@ -90,16 +134,18 @@ const SAMPLE_MODE = [
 const FrequentData = function () {
   const [group, setGroup] = useState();
   const [stocks, setStocks] = useState();
+  const [fileType, setFileType] = useState("order");
   const [unit, setUnit] = useState(1);
+  const [isSample, setIsSample] = useState(true);
   const [dateFormat, setDateFormat] = useState(3);
   const [sampleMode, setSampleMode] = useState(0);
-  const [fields, setFields] = useState(FIELDS);
+  const [fields, setFields] = useState(ORDER_FIELDS);
   const [startTime, setStartTime] = useState();
   const [endTime, setEndTime] = useState();
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const [isGroup, setIsGroup] = useState(true);
+  const [isGroup, setIsGroup] = useState(false);
 
   const [groupList, setGroupList] = useState();
 
@@ -120,12 +166,30 @@ const FrequentData = function () {
     <div style={{ padding: "20px" }}>
       <Row>
         <Col span={6}>
-          <Switch
+          {/* <Switch
             checked={isGroup}
             onChange={() => {
               setIsGroup(!isGroup);
             }}
-          />
+          /> */}
+          檔案類型
+          <Select
+            style={{ width: "100%" }}
+            onChange={(e) => {
+              setFileType(e);
+              setFields(getFileTypeFields(e));
+            }}
+            value={fileType}
+            placeholder="選擇檔案類型"
+          >
+            {FILET_TYPE.map((fileType) => {
+              return (
+                <Option key={Math.random()} value={fileType.value}>
+                  {fileType.header}
+                </Option>
+              );
+            })}
+          </Select>
         </Col>
         <Col span={6}>
           {isGroup ? "類股" : "股票"}
@@ -187,9 +251,16 @@ const FrequentData = function () {
       </Row>
       <Row style={{ marginTop: "20px" }}>
         <Col span={6}>
-          時間頻率
+          {isSample ? "時間頻率" : "不取樣"}
+          <Switch
+            checked={isSample}
+            onChange={() => {
+              setIsSample(!isSample);
+            }}
+          />
           <div style={{ display: "flex", flexDirection: "row" }}>
             <InputNumber
+              disabled={!isSample}
               style={{ width: "100%" }}
               value={unit}
               step={1}
@@ -198,6 +269,7 @@ const FrequentData = function () {
               }}
             />
             <Select
+              disabled={!isSample}
               allowClear
               style={{ width: "100%" }}
               onChange={(e) => {
@@ -219,7 +291,7 @@ const FrequentData = function () {
         <Col span={6}>
           取樣模式
           <Select
-            disabled={dateFormat === undefined}
+            disabled={dateFormat === undefined || !isSample}
             style={{ width: "100%" }}
             onChange={(e) => {
               setSampleMode(e);
@@ -249,7 +321,7 @@ const FrequentData = function () {
             mode="multiple"
             placeholder="選擇欄位"
           >
-            {FIELDS.map((field) => {
+            {getFileTypeFields(fileType).map((field) => {
               return (
                 <Option key={Math.random()} value={field}>
                   {field}
@@ -278,30 +350,39 @@ const FrequentData = function () {
             // console.log("sample mode", sampleMode);
             // console.log("fields ", fields);
             if (stockIds.length) {
-              const { url, method } = api.downloadRealDataDisplayContent;
+              const { url, method } = getFileTypeAPI(fileType);
               setIsLoading(true);
+              const createdTime = {
+                max: endTime,
+                min: startTime,
+              };
+
               await Promise.all(
                 stockIds.map((stockId) => {
                   return defaultAxios({
                     url,
                     method,
                     params: {
-                      createdTime: JSON.stringify({
-                        max: endTime,
-                        min: startTime,
-                      }),
+                      createdTime,
                       unit,
-                      dateFormat,
+                      dateFormat: isSample ? dateFormat : undefined,
                       sampleMode,
                       fields,
                       stockId,
                     },
                   })
                     .then(({ data, headers }) => {
-                      const fileName = headers["content-disposition"]
-                        .match(/".+"/)[0]
-                        .replace(/"/g, "");
-                      const transferData = data;
+                      const fileName = headers["filename"];
+                      const header = data.length
+                        ? Object.keys(data[0]).join(",") + "\n"
+                        : "";
+                      const transferData =
+                        header +
+                        data
+                          .map((v) => {
+                            return Object.values(v).join(",");
+                          })
+                          .join("\n");
 
                       const url = window.URL.createObjectURL(
                         new Blob([transferData])
@@ -315,6 +396,7 @@ const FrequentData = function () {
                       setIsLoading(false);
                     })
                     .catch((err) => {
+                      console.log(err);
                       errorNotification(err?.response?.data);
                     });
                 })

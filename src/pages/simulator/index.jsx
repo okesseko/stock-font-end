@@ -9,6 +9,7 @@ const { TabPane } = Tabs;
 
 const getRealDataOrderContent = async (params) => {
   const { url, method } = api.getRealDataOrderContent;
+  params.isSimulatedOrder = true;
   return defaultAxios({
     url,
     method,
