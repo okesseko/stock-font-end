@@ -134,7 +134,20 @@ const UploadProgress = ({ file, isLoading, type }) => {
 
         // insert real data content
         check(2);
-        postRealDataContent(currentFile.name, type, result)
+        let insertArr = [];
+        if (result.length < 1000) insertArr.push(result);
+        else {
+          let cnt = 0;
+          while (cnt < result.length) {
+            insertArr.push(result.slice(cnt, cnt + 1000));
+            cnt += 1000;
+          }
+        }
+        Promise.all(
+          insertArr.map((arr) => {
+            return postRealDataContent(currentFile.name, type, arr);
+          })
+        )
           .then(() => {
             setProgress(progress + ADDER);
           })
