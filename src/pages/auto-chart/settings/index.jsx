@@ -24,17 +24,9 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
     default_alpha_B: 0.52,
     default_alpha_A: 0.52,
     default_lambda_B: 10,
-    default_lambda_B1: 1.85,
-    default_lambda_B2: 1.51,
-    default_lambda_B3: 1.09,
-    default_lambda_B4: 0.88,
-    default_lambda_B5: 0.77,
+    default_lambda_B_K: 1.92,
     default_lambda_A: 10,
-    default_lambda_A1: 1.85,
-    default_lambda_A2: 1.51,
-    default_lambda_A3: 1.09,
-    default_lambda_A4: 0.88,
-    default_lambda_A5: 0.77,
+    default_lambda_A_K: 1.92,
     R_B: 0.8,
     R_A: 0.8,
     default_theta_B: 10,
@@ -143,48 +135,16 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
     setSetting({ ...setting, default_lambda_B: value });
   };
 
-  const handleInputChangeLambdaB1 = (value) => {
-    setSetting({ ...setting, default_lambda_B1: value });
-  };
-
-  const handleInputChangeLambdaB2 = (value) => {
-    setSetting({ ...setting, default_lambda_B2: value });
-  };
-
-  const handleInputChangeLambdaB3 = (value) => {
-    setSetting({ ...setting, default_lambda_B3: value });
-  };
-
-  const handleInputChangeLambdaB4 = (value) => {
-    setSetting({ ...setting, default_lambda_B4: value });
-  };
-
-  const handleInputChangeLambdaB5 = (value) => {
-    setSetting({ ...setting, default_lambda_B5: value });
+  const handleInputChangeLambdaBK = (value) => {
+    setSetting({ ...setting, default_lambda_B_K: value });
   };
 
   const handleInputChangeLambdaA = (value) => {
     setSetting({ ...setting, default_lambda_A: value });
   };
 
-  const handleInputChangeLambdaA1 = (value) => {
-    setSetting({ ...setting, default_lambda_A1: value });
-  };
-
-  const handleInputChangeLambdaA2 = (value) => {
-    setSetting({ ...setting, default_lambda_A2: value });
-  };
-
-  const handleInputChangeLambdaA3 = (value) => {
-    setSetting({ ...setting, default_lambda_A3: value });
-  };
-
-  const handleInputChangeLambdaA4 = (value) => {
-    setSetting({ ...setting, default_lambda_A4: value });
-  };
-
-  const handleInputChangeLambdaA5 = (value) => {
-    setSetting({ ...setting, default_lambda_A5: value });
+  const handleInputChangeLambdaAK = (value) => {
+    setSetting({ ...setting, default_lambda_A_K: value });
   };
 
   const handleInputChangeLambdaRatioB = (value) => {
@@ -502,62 +462,14 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
                 </div>
                 <div>
                   <div>
-                    λ<sub>B1</sub>: {setting.default_lambda_B1}
+                    k<sub>B</sub>: {setting.default_lambda_B_K}
                   </div>
                   <Slider
                     min={1}
                     max={10}
                     step={0.01}
-                    value={setting.default_lambda_B1}
-                    onChange={handleInputChangeLambdaB1}
-                  />
-                </div>
-                <div>
-                  <div>
-                    λ<sub>B2</sub>: {setting.default_lambda_B2}
-                  </div>
-                  <Slider
-                    min={1}
-                    max={10}
-                    step={0.01}
-                    value={setting.default_lambda_B2}
-                    onChange={handleInputChangeLambdaB2}
-                  />
-                </div>
-                <div>
-                  <div>
-                    λ<sub>B3</sub>: {setting.default_lambda_B3}
-                  </div>
-                  <Slider
-                    min={1}
-                    max={10}
-                    step={0.01}
-                    value={setting.default_lambda_B3}
-                    onChange={handleInputChangeLambdaB3}
-                  />
-                </div>
-                <div>
-                  <div>
-                    λ<sub>B4</sub>: {setting.default_lambda_B4}
-                  </div>
-                  <Slider
-                    min={1}
-                    max={10}
-                    step={0.01}
-                    value={setting.default_lambda_B4}
-                    onChange={handleInputChangeLambdaB4}
-                  />
-                </div>
-                <div>
-                  <div>
-                    λ<sub>B5</sub>: {setting.default_lambda_B5}
-                  </div>
-                  <Slider
-                    min={1}
-                    max={10}
-                    step={0.01}
-                    value={setting.default_lambda_B5}
-                    onChange={handleInputChangeLambdaB5}
+                    value={setting.default_lambda_B_K}
+                    onChange={handleInputChangeLambdaBK}
                   />
                 </div>
                 {/* <div>
@@ -626,62 +538,14 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
                 </div>
                 <div>
                   <div>
-                    λ<sub>A1</sub>: {setting.default_lambda_A1}
+                    k<sub>A</sub>: {setting.default_lambda_A_K}
                   </div>
                   <Slider
                     min={1}
                     max={10}
                     step={0.01}
-                    value={setting.default_lambda_A1}
-                    onChange={handleInputChangeLambdaA1}
-                  />
-                </div>
-                <div>
-                  <div>
-                    λ<sub>A2</sub>: {setting.default_lambda_A2}
-                  </div>
-                  <Slider
-                    min={1}
-                    max={10}
-                    step={0.01}
-                    value={setting.default_lambda_A2}
-                    onChange={handleInputChangeLambdaA2}
-                  />
-                </div>
-                <div>
-                  <div>
-                    λ<sub>A3</sub>: {setting.default_lambda_A3}
-                  </div>
-                  <Slider
-                    min={1}
-                    max={10}
-                    step={0.01}
-                    value={setting.default_lambda_A3}
-                    onChange={handleInputChangeLambdaA3}
-                  />
-                </div>
-                <div>
-                  <div>
-                    λ<sub>A4</sub>: {setting.default_lambda_A4}
-                  </div>
-                  <Slider
-                    min={1}
-                    max={10}
-                    step={0.01}
-                    value={setting.default_lambda_A4}
-                    onChange={handleInputChangeLambdaA4}
-                  />
-                </div>
-                <div>
-                  <div>
-                    λ<sub>A5</sub>: {setting.default_lambda_A5}
-                  </div>
-                  <Slider
-                    min={1}
-                    max={10}
-                    step={0.01}
-                    value={setting.default_lambda_A5}
-                    onChange={handleInputChangeLambdaA5}
+                    value={setting.default_lambda_A_K}
+                    onChange={handleInputChangeLambdaAK}
                   />
                 </div>
                 {/* <div>

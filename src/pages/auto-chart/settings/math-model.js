@@ -59,17 +59,9 @@ export const renderData = function (params, q, content, firstTime, stockId) {
   let default_alpha_B = params.default_alpha_B;
   let default_alpha_A = params.default_alpha_A;
   let default_lambda_B = params.default_lambda_B;
-  let default_lambda_B1 = params.default_lambda_B1;
-  let default_lambda_B2 = params.default_lambda_B2;
-  let default_lambda_B3 = params.default_lambda_B3;
-  let default_lambda_B4 = params.default_lambda_B4;
-  let default_lambda_B5 = params.default_lambda_B5;
+  let default_lambda_B_K = params.default_lambda_B_K;
   let default_lambda_A = params.default_lambda_A;
-  let default_lambda_A1 = params.default_lambda_A1;
-  let default_lambda_A2 = params.default_lambda_A2;
-  let default_lambda_A3 = params.default_lambda_A3;
-  let default_lambda_A4 = params.default_lambda_A4;
-  let default_lambda_A5 = params.default_lambda_A5;
+  let default_lambda_A_K = params.default_lambda_A_K;
   let R_B = params.R_B;
   let R_A = params.R_A;
   let default_theta_B = params.default_theta_B;
@@ -127,25 +119,7 @@ export const renderData = function (params, q, content, firstTime, stockId) {
     let lambda_B = default_lambda_B * Math.pow(R_B, count);
     let theta_B = default_theta_B * Math.pow(R_theta_B, count);
     if (current_tab == 2) {
-      switch (count) {
-        case 0:
-          lambda_B = default_lambda_B1 / Math.pow(count+1, default_alpha_B);
-          break;
-        case 1:
-          lambda_B = default_lambda_B2 / Math.pow(count+1, default_alpha_B);
-          break;
-        case 2:
-          lambda_B = default_lambda_B3 / Math.pow(count+1, default_alpha_B);
-          break;
-        case 3:
-          lambda_B = default_lambda_B4 / Math.pow(count+1, default_alpha_B);
-          break;
-        case 4:
-          lambda_B = default_lambda_B5 / Math.pow(count+1, default_alpha_B);
-          break;
-        default:
-          break;
-      }
+      lambda_B = default_lambda_B_K / Math.pow(count+1, default_alpha_B);
     }
     T["LB" + price] = nextExponential(lambda_B);
     T["CB" + price] = nextExponential(theta_B);
@@ -156,25 +130,7 @@ export const renderData = function (params, q, content, firstTime, stockId) {
     let lambda_B = default_lambda_B * Math.pow(R_B, count);
     let theta_B = default_theta_B * Math.pow(R_theta_B, count);
     if (current_tab == 2) {
-      switch (count) {
-        case 0:
-          lambda_B = default_lambda_B1 / Math.pow(count+1, default_alpha_B);
-          break;
-        case 1:
-          lambda_B = default_lambda_B2 / Math.pow(count+1, default_alpha_B);
-          break;
-        case 2:
-          lambda_B = default_lambda_B3 / Math.pow(count+1, default_alpha_B);
-          break;
-        case 3:
-          lambda_B = default_lambda_B4 / Math.pow(count+1, default_alpha_B);
-          break;
-        case 4:
-          lambda_B = default_lambda_B5 / Math.pow(count+1, default_alpha_B);
-          break;
-        default:
-          break;
-      }
+      lambda_B = default_lambda_B_K / Math.pow(count+1, default_alpha_B);
     }
     T["LB" + price] = nextExponential(lambda_B);
     T["CB" + price] = nextExponential(theta_B);
@@ -185,25 +141,7 @@ export const renderData = function (params, q, content, firstTime, stockId) {
     let lambda_A = default_lambda_A * Math.pow(R_A, count);
     let theta_A = default_theta_A * Math.pow(R_theta_A, count);
     if (current_tab == 2) {
-      switch (count) {
-        case 0:
-          lambda_A = default_lambda_A1 / Math.pow(count+1, default_alpha_A);
-          break;
-        case 1:
-          lambda_A = default_lambda_A2 / Math.pow(count+1, default_alpha_A);
-          break;
-        case 2:
-          lambda_A = default_lambda_A3 / Math.pow(count+1, default_alpha_A);
-          break;
-        case 3:
-          lambda_A = default_lambda_A4 / Math.pow(count+1, default_alpha_A);
-          break;
-        case 4:
-          lambda_A = default_lambda_A5 / Math.pow(count+1, default_alpha_A);
-          break;
-        default:
-          break;
-      }
+      lambda_A = default_lambda_A_K / Math.pow(count+1, default_alpha_A);
     }
     T["LA" + price] = nextExponential(lambda_A);
     T["CA" + price] = nextExponential(theta_A);
@@ -214,25 +152,7 @@ export const renderData = function (params, q, content, firstTime, stockId) {
     let lambda_A = default_lambda_A * Math.pow(R_A, count);
     let theta_A = default_theta_A * Math.pow(R_theta_A, count);
     if (current_tab == 2) {
-      switch (count) {
-        case 0:
-          lambda_A = default_lambda_A1 / Math.pow(count+1, default_alpha_A);
-          break;
-        case 1:
-          lambda_A = default_lambda_A2 / Math.pow(count+1, default_alpha_A);
-          break;
-        case 2:
-          lambda_A = default_lambda_A3 / Math.pow(count+1, default_alpha_A);
-          break;
-        case 3:
-          lambda_A = default_lambda_A4 / Math.pow(count+1, default_alpha_A);
-          break;
-        case 4:
-          lambda_A = default_lambda_A5 / Math.pow(count+1, default_alpha_A);
-          break;
-        default:
-          break;
-      }
+      lambda_A = default_lambda_A_K / Math.pow(count+1, default_alpha_A);
     }
     T["LA" + price] = nextExponential(lambda_A);
     T["CA" + price] = nextExponential(theta_A);
