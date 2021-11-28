@@ -21,18 +21,30 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
 
   const [setting, setSetting] = useState({
     current_tab: 1,
-    default_alpha_B: 1,
-    default_alpha_A: 1,
+    default_alpha_B: 0.52,
+    default_alpha_A: 0.52,
     default_lambda_B: 10,
+    default_lambda_B1: 1.85,
+    default_lambda_B2: 1.51,
+    default_lambda_B3: 1.09,
+    default_lambda_B4: 0.88,
+    default_lambda_B5: 0.77,
     default_lambda_A: 10,
+    default_lambda_A1: 1.85,
+    default_lambda_A2: 1.51,
+    default_lambda_A3: 1.09,
+    default_lambda_A4: 0.88,
+    default_lambda_A5: 0.77,
     R_B: 0.8,
     R_A: 0.8,
     default_theta_B: 10,
     default_theta_A: 10,
     R_theta_B: 0.8,
     R_theta_A: 0.8,
-    mu_B: 10,
-    mu_A: 10,
+    mu_B: 0.94,
+    mu_A: 0.94,
+    n: 10, 
+    p: 0.5,
     batch_size: 10,
     s: 1,
     max_a: 13,
@@ -131,8 +143,48 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
     setSetting({ ...setting, default_lambda_B: value });
   };
 
+  const handleInputChangeLambdaB1 = (value) => {
+    setSetting({ ...setting, default_lambda_B1: value });
+  };
+
+  const handleInputChangeLambdaB2 = (value) => {
+    setSetting({ ...setting, default_lambda_B2: value });
+  };
+
+  const handleInputChangeLambdaB3 = (value) => {
+    setSetting({ ...setting, default_lambda_B3: value });
+  };
+
+  const handleInputChangeLambdaB4 = (value) => {
+    setSetting({ ...setting, default_lambda_B4: value });
+  };
+
+  const handleInputChangeLambdaB5 = (value) => {
+    setSetting({ ...setting, default_lambda_B5: value });
+  };
+
   const handleInputChangeLambdaA = (value) => {
     setSetting({ ...setting, default_lambda_A: value });
+  };
+
+  const handleInputChangeLambdaA1 = (value) => {
+    setSetting({ ...setting, default_lambda_A1: value });
+  };
+
+  const handleInputChangeLambdaA2 = (value) => {
+    setSetting({ ...setting, default_lambda_A2: value });
+  };
+
+  const handleInputChangeLambdaA3 = (value) => {
+    setSetting({ ...setting, default_lambda_A3: value });
+  };
+
+  const handleInputChangeLambdaA4 = (value) => {
+    setSetting({ ...setting, default_lambda_A4: value });
+  };
+
+  const handleInputChangeLambdaA5 = (value) => {
+    setSetting({ ...setting, default_lambda_A5: value });
   };
 
   const handleInputChangeLambdaRatioB = (value) => {
@@ -165,6 +217,14 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
 
   const handleInputChangeMuA = (value) => {
     setSetting({ ...setting, mu_A: value });
+  };
+
+  const handleInputChangeN = (value) => {
+    setSetting({ ...setting, n: value });
+  };
+
+  const handleInputChangeP = (value) => {
+    setSetting({ ...setting, p: value });
   };
 
   const handleInputChangeBatchSize = (value) => {
@@ -329,7 +389,7 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
                   <Slider
                     min={1}
                     max={100}
-                    step={0.1}
+                    step={0.01}
                     value={setting.mu_B}
                     onChange={handleInputChangeMuB}
                   />
@@ -393,7 +453,7 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
                   <Slider
                     min={1}
                     max={100}
-                    step={0.1}
+                    step={0.01}
                     value={setting.mu_A}
                     onChange={handleInputChangeMuA}
                   />
@@ -404,20 +464,30 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
         </TabPane>
         <TabPane tab="Model (2)" key="2">
           <div>
-            <div className="flex justify-center">
-              <div className="w-1/2">
-                <div>batch size: {setting.batch_size}</div>
+            <div className="flex justify-center mx-5 border-b pb-3">
+              <div className="mr-5 pr-5 w-1/2">
+                <div>n: {setting.n}</div>
                 <Slider
                   min={1}
                   max={100}
                   step={1}
-                  value={setting.batch_size}
-                  onChange={handleInputChangeBatchSize}
+                  value={setting.n}
+                  onChange={handleInputChangeN}
+                />
+              </div>
+              <div className="w-1/2">
+                <div>p: {setting.p}</div>
+                <Slider
+                  min={0}
+                  max={1}
+                  step={0.01}
+                  value={setting.p}
+                  onChange={handleInputChangeP}
                 />
               </div>
             </div>
-            <div className="flex justify-center mx-5">
-              <div className="mr-5 pr-5 border-r w-1/4">
+            <div className="flex justify-center mx-5 mt-3">
+              <div className="mr-5 pr-5 border-r w-1/2">
                 <div>
                   <div>
                     α<sub>B</sub>: {setting.default_alpha_B}
@@ -425,24 +495,72 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
                   <Slider
                     min={1}
                     max={10}
-                    step={0.1}
+                    step={0.01}
                     value={setting.default_alpha_B}
                     onChange={handleInputChangeAlphaB}
                   />
                 </div>
                 <div>
                   <div>
-                    λ<sub>B</sub>: {setting.default_lambda_B}
+                    λ<sub>B1</sub>: {setting.default_lambda_B1}
                   </div>
                   <Slider
                     min={1}
-                    max={100}
-                    step={0.1}
-                    value={setting.default_lambda_B}
-                    onChange={handleInputChangeLambdaB}
+                    max={10}
+                    step={0.01}
+                    value={setting.default_lambda_B1}
+                    onChange={handleInputChangeLambdaB1}
                   />
                 </div>
                 <div>
+                  <div>
+                    λ<sub>B2</sub>: {setting.default_lambda_B2}
+                  </div>
+                  <Slider
+                    min={1}
+                    max={10}
+                    step={0.01}
+                    value={setting.default_lambda_B2}
+                    onChange={handleInputChangeLambdaB2}
+                  />
+                </div>
+                <div>
+                  <div>
+                    λ<sub>B3</sub>: {setting.default_lambda_B3}
+                  </div>
+                  <Slider
+                    min={1}
+                    max={10}
+                    step={0.01}
+                    value={setting.default_lambda_B3}
+                    onChange={handleInputChangeLambdaB3}
+                  />
+                </div>
+                <div>
+                  <div>
+                    λ<sub>B4</sub>: {setting.default_lambda_B4}
+                  </div>
+                  <Slider
+                    min={1}
+                    max={10}
+                    step={0.01}
+                    value={setting.default_lambda_B4}
+                    onChange={handleInputChangeLambdaB4}
+                  />
+                </div>
+                <div>
+                  <div>
+                    λ<sub>B5</sub>: {setting.default_lambda_B5}
+                  </div>
+                  <Slider
+                    min={1}
+                    max={10}
+                    step={0.01}
+                    value={setting.default_lambda_B5}
+                    onChange={handleInputChangeLambdaB5}
+                  />
+                </div>
+                {/* <div>
                   <div>
                     R<sub>B</sub>: {setting.R_B}
                   </div>
@@ -453,7 +571,7 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
                     value={setting.R_B}
                     onChange={handleInputChangeLambdaRatioB}
                   />
-                </div>
+                </div> */}
                 <hr className="my-3" />
                 <div>
                   <div>
@@ -487,13 +605,13 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
                   <Slider
                     min={1}
                     max={100}
-                    step={0.1}
+                    step={0.01}
                     value={setting.mu_B}
                     onChange={handleInputChangeMuB}
                   />
                 </div>
               </div>
-              <div className="w-1/4">
+              <div className="w-1/2">
                 <div>
                   <div>
                     α<sub>A</sub>: {setting.default_alpha_A}
@@ -501,24 +619,72 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
                   <Slider
                     min={1}
                     max={10}
-                    step={0.1}
+                    step={0.01}
                     value={setting.default_alpha_A}
                     onChange={handleInputChangeAlphaA}
                   />
                 </div>
                 <div>
                   <div>
-                    λ<sub>A</sub>: {setting.default_lambda_A}
+                    λ<sub>A1</sub>: {setting.default_lambda_A1}
                   </div>
                   <Slider
                     min={1}
-                    max={100}
-                    step={0.1}
-                    value={setting.default_lambda_A}
-                    onChange={handleInputChangeLambdaA}
+                    max={10}
+                    step={0.01}
+                    value={setting.default_lambda_A1}
+                    onChange={handleInputChangeLambdaA1}
                   />
                 </div>
                 <div>
+                  <div>
+                    λ<sub>A2</sub>: {setting.default_lambda_A2}
+                  </div>
+                  <Slider
+                    min={1}
+                    max={10}
+                    step={0.01}
+                    value={setting.default_lambda_A2}
+                    onChange={handleInputChangeLambdaA2}
+                  />
+                </div>
+                <div>
+                  <div>
+                    λ<sub>A3</sub>: {setting.default_lambda_A3}
+                  </div>
+                  <Slider
+                    min={1}
+                    max={10}
+                    step={0.01}
+                    value={setting.default_lambda_A3}
+                    onChange={handleInputChangeLambdaA3}
+                  />
+                </div>
+                <div>
+                  <div>
+                    λ<sub>A4</sub>: {setting.default_lambda_A4}
+                  </div>
+                  <Slider
+                    min={1}
+                    max={10}
+                    step={0.01}
+                    value={setting.default_lambda_A4}
+                    onChange={handleInputChangeLambdaA4}
+                  />
+                </div>
+                <div>
+                  <div>
+                    λ<sub>A5</sub>: {setting.default_lambda_A5}
+                  </div>
+                  <Slider
+                    min={1}
+                    max={10}
+                    step={0.01}
+                    value={setting.default_lambda_A5}
+                    onChange={handleInputChangeLambdaA5}
+                  />
+                </div>
+                {/* <div>
                   <div>
                     R<sub>A</sub>: {setting.R_A}
                   </div>
@@ -529,7 +695,7 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
                     value={setting.R_A}
                     onChange={handleInputChangeLambdaRatioA}
                   />
-                </div>
+                </div> */}
                 <hr className="my-3" />
                 <div>
                   <div>
@@ -563,7 +729,7 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
                   <Slider
                     min={1}
                     max={100}
-                    step={0.1}
+                    step={0.01}
                     value={setting.mu_A}
                     onChange={handleInputChangeMuA}
                   />
