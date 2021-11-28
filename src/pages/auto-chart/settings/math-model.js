@@ -29,9 +29,41 @@ function geometricDistribution(min, max, prob) {
   }
 }
 
-function getBatches(batch_size) {
-  let p = 0.2;
-  return geometricDistribution(1, batch_size, p);
+function randomChoice(p) {
+  let rnd = p.reduce( (a, b) => a + b ) * Math.random();
+  return p.findIndex( a => (rnd -= a) < 0 );
+}
+
+function randomChoices(p, count) {
+  return Array.from(Array(count), randomChoice.bind(null, p));
+}
+
+function C_n_m(n, m) {
+    if (m>(n-m)) {
+      return C_n_m(n, n-m);
+    }
+    let output = 1.0;
+    for(var i=0; i<m; i++) {
+      output=output*(n-i)/(i+1)
+    }
+    return Math.round(output);
+}
+
+function getBinomialSampling(n, p) {
+  const n_1 = n-1;
+  let probability_list = [];
+  // number_list = list(range(1,n+1));
+  for(var i=0; i<n_1+1; i++) {
+    probability_list.push(
+      C_n_m(n_1,i)*(p**i)*((1-p)**(n_1-i))
+    );
+  }
+  
+  return randomChoice(probability_list, 1);
+}
+
+function getBatches(n, p) {
+  return getBinomialSampling(n, p);
 }
 
 function sendOrderApi(data) {
@@ -70,6 +102,8 @@ export const renderData = function (params, q, content, firstTime, stockId) {
   let R_theta_A = params.R_theta_A;
   let mu_B = params.mu_B;
   let mu_A = params.mu_A;
+  let n = params.n;
+  let p = params.p;
   let batch_size = params.batch_size;
   let s = params.s;
   let max_a = params.max_a;
@@ -194,7 +228,7 @@ export const renderData = function (params, q, content, firstTime, stockId) {
       case "L":
         // console.log("Limit order");
         let price = Number(lowest[0].substring(2, 10));
-        let quantity = getBatches(batch_size);
+        let quantity = getBatches(n, p);
         sendOrderApi({
           investorId: null,
           stockId,
@@ -236,7 +270,7 @@ export const renderData = function (params, q, content, firstTime, stockId) {
           stockId,
           method: type == "B" ? 0 : 1, // BUY = 0, SELL = 1
           price: 0,
-          quantity: getBatches(batch_size),
+          quantity: getBatches(n, p),
           priceType: 0, // MARKET = 0, LIMIT = 1
           timeRestriction: 0, // ROD = 0, IOC = 1, FOK = 2
         });
