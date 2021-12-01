@@ -16,8 +16,8 @@ const OrderTable = () => {
   const [endTime, setEndTime] = useState();
   useEffect(() => {
     defaultAxios({
-      url: api.getOrder.url,
-      method: api.getOrder.method,
+      url: api.getDisplay.url,
+      method: api.getDisplay.method,
       params: {
         page: { page: page, pageSize: pageSize },
         stockId,

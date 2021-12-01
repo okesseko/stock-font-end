@@ -15,6 +15,7 @@ import QuickOrder from "./pages/quick-order";
 import ReplayChart from "./pages/replay";
 import Stock from "./pages/stock";
 import Login from "./pages/login";
+import Q1Chart from "./pages/Q1-chart";
 import RouterLink from "./component/router-link";
 import { useEffect, useState } from "react";
 import { settingToken } from "./environment/api";
@@ -70,6 +71,7 @@ const App = () => {
               path="/stock-font-end/replay-chart"
               component={ReplayChart}
             />
+            <GuardedRoute path="/stock-font-end/Q1-chart" component={Q1Chart} />
             <GuardedRoute
               path="/stock-font-end/order-table"
               component={OrderTable}
