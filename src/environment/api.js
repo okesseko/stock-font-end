@@ -53,12 +53,25 @@ export const api = {
     url: "api/real-data/order/content",
     method: "GET",
   },
+  getRealDataOrderAvailableDate: {
+    url: "api/real-data/order/available",
+    method: "GET",
+  },
+
   getRealDataTransactionContent: {
     url: "api/real-data/transaction/content",
     method: "GET",
   },
+  getRealDataTransactionAvailableDate: {
+    url: "api/real-data/transaction/available",
+    method: "GET",
+  },
   getRealDataDisplayContent: {
     url: "api/real-data/display/content",
+    method: "GET",
+  },
+  getRealDataDisplayAvailableDate: {
+    url: "api/real-data/display/available",
     method: "GET",
   },
 

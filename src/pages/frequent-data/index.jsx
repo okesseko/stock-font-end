@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { defaultAxios, api } from "../../environment/api";
-import dayjs from "dayjs";
+import moment from "moment";
 import {
   Button,
   DatePicker,
@@ -74,7 +74,7 @@ const getFileTypeFields = (fileType) => {
       return ORDER_FIELDS;
   }
 };
-const getFileTypeAPI = (fileType) => {
+const getRealDataContentAPI = (fileType) => {
   switch (fileType) {
     case "transaction":
       return api.getRealDataTransactionContent;
@@ -82,6 +82,17 @@ const getFileTypeAPI = (fileType) => {
       return api.getRealDataDisplayContent;
     default:
       return api.getRealDataOrderContent;
+  }
+};
+
+const getRealDataAvailableAPI = (fileType) => {
+  switch (fileType) {
+    case "transaction":
+      return api.getRealDataTransactionAvailableDate;
+    case "display":
+      return api.getRealDataDisplayAvailableDate;
+    default:
+      return api.getRealDataOrderAvailableDate;
   }
 };
 
@@ -133,13 +144,15 @@ const SAMPLE_MODE = [
 
 const FrequentData = function () {
   const [group, setGroup] = useState();
-  const [stocks, setStocks] = useState();
+  const [stocks, setStocks] = useState([]);
   const [fileType, setFileType] = useState("order");
   const [unit, setUnit] = useState(1);
   const [isSample, setIsSample] = useState(true);
   const [dateFormat, setDateFormat] = useState(3);
   const [sampleMode, setSampleMode] = useState(0);
   const [fields, setFields] = useState(ORDER_FIELDS);
+
+  const [availableDate, setAvailableDate] = useState([]);
   const [startTime, setStartTime] = useState();
   const [endTime, setEndTime] = useState();
 
@@ -148,7 +161,27 @@ const FrequentData = function () {
   const [isGroup, setIsGroup] = useState(false);
 
   const [groupList, setGroupList] = useState();
-
+  useEffect(() => {
+    if (stocks) {
+      const { url, method } = getRealDataAvailableAPI(fileType);
+      Promise.all(
+        stocks.map((stock) => {
+          return defaultAxios({
+            url: url + `/${stock}`,
+            method,
+          });
+        })
+      ).then((datas) => {
+        const dateSet = new Set();
+        datas.forEach(({ data }) => {
+          data.forEach((date) => {
+            dateSet.add(date);
+          });
+        });
+        setAvailableDate(Array.from(dateSet));
+      });
+    }
+  }, [fileType, stocks]);
   useEffect(() => {
     defaultAxios({
       url: api.getGroup.url,
@@ -161,7 +194,6 @@ const FrequentData = function () {
         errorNotification(err?.response?.data);
       });
   }, []);
-
   return (
     <div style={{ padding: "20px" }}>
       <Row>
@@ -178,6 +210,8 @@ const FrequentData = function () {
             onChange={(e) => {
               setFileType(e);
               setFields(getFileTypeFields(e));
+              setStartTime(null);
+              setEndTime(null);
             }}
             value={fileType}
             placeholder="選擇檔案類型"
@@ -194,7 +228,10 @@ const FrequentData = function () {
         <Col span={6}>
           {isGroup ? "類股" : "股票"}
           <Select
-            style={{ width: "100%", display: isGroup ? undefined : "none" }}
+            style={{
+              width: "100%",
+              display: isGroup ? undefined : "none",
+            }}
             onChange={(e) => {
               setGroup(e);
             }}
@@ -211,7 +248,10 @@ const FrequentData = function () {
               })}
           </Select>
           <StockSelector
-            style={{ width: "100%", display: !isGroup ? undefined : "none" }}
+            style={{
+              width: "100%",
+              display: !isGroup ? undefined : "none",
+            }}
             onChange={(e) => {
               setStocks(e);
             }}
@@ -223,28 +263,54 @@ const FrequentData = function () {
         <Col span={6}>
           開始時間
           <DatePicker
+            value={startTime}
             allowClear
             style={{ width: "100%" }}
-            showTime
             placeholder="選擇開始時間"
-            disabledDate={(current) => current && current > dayjs()}
+            disabledDate={(current) => {
+              const transferedCurrent = current && current.startOf("day");
+              const transferedEndTime = endTime && endTime;
+
+              return (
+                (transferedCurrent && transferedCurrent > moment()) ||
+                (transferedCurrent &&
+                  !availableDate.includes(
+                    transferedCurrent.format("YYYY-MM-DD")
+                  )) ||
+                (transferedEndTime && transferedCurrent > transferedEndTime) ||
+                (transferedEndTime &&
+                  transferedEndTime.diff(transferedCurrent) / 86400000 >= 5)
+              );
+            }}
             onChange={(time) => {
-              if (time) setStartTime(dayjs(time).toISOString());
-              else setStartTime(time);
+              setStartTime(time && time.startOf("day"));
             }}
           />
         </Col>
         <Col span={6}>
           結束時間
           <DatePicker
+            value={endTime}
             allowClear
             style={{ width: "100%" }}
-            showTime
             placeholder="選擇結束時間"
-            disabledDate={(current) => current && current > dayjs()}
+            disabledDate={(current) => {
+              const transferedCurrent = current && current.startOf("day");
+              const transferedStartTime = startTime && startTime;
+              return (
+                (transferedCurrent && transferedCurrent > moment()) ||
+                (transferedCurrent &&
+                  !availableDate.includes(
+                    transferedCurrent.format("YYYY-MM-DD")
+                  )) ||
+                (transferedStartTime &&
+                  transferedCurrent < transferedStartTime) ||
+                (transferedStartTime &&
+                  transferedCurrent.diff(transferedStartTime) / 86400000 >= 5)
+              );
+            }}
             onChange={(time) => {
-              if (time) setEndTime(dayjs(time).toISOString());
-              else setEndTime(time);
+              setEndTime(time && time.startOf("day"));
             }}
           />
         </Col>
@@ -344,19 +410,13 @@ const FrequentData = function () {
               if (stocks) stockIds = stocks;
             }
 
-            // console.log("stockIds", stockIds);
-            // console.log("time range", startTime, endTime);
-            // console.log("date format", dateFormat);
-            // console.log("sample mode", sampleMode);
-            // console.log("fields ", fields);
             if (stockIds.length) {
-              const { url, method } = getFileTypeAPI(fileType);
+              const { url, method } = getRealDataContentAPI(fileType);
               setIsLoading(true);
-              const createdTime = {
-                max: endTime,
-                min: startTime,
-              };
-
+              const createdTime = {};
+              if (endTime) createdTime.max = endTime.endOf("day").toISOString();
+              if (startTime)
+                createdTime.min = startTime.startOf("day").toISOString();
               await Promise.all(
                 stockIds.map((stockId) => {
                   return defaultAxios({
@@ -396,7 +456,6 @@ const FrequentData = function () {
                       setIsLoading(false);
                     })
                     .catch((err) => {
-                      console.log(err);
                       errorNotification(err?.response?.data);
                     });
                 })
