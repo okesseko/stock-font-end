@@ -2,6 +2,8 @@ import axios from "axios";
 
 export const defaultAxios = axios.create({
   baseURL: "http://140.118.118.173:20023/",
+  // baseURL: "http://localhost:8080/",
+  // baseURL: "http://192.168.1.3:8080/",
 });
 export function settingToken(token) {
   defaultAxios.defaults.headers.common["token"] = token;
