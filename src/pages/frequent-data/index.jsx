@@ -9,7 +9,9 @@ import {
   Row,
   Col,
   InputNumber,
+  Tooltip,
 } from "antd";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { StockSelector } from "../../component/stock-selector";
 import errorNotification from "../../utils/errorNotification";
 const { Option } = Select;
@@ -248,6 +250,7 @@ const FrequentData = function () {
               })}
           </Select>
           <StockSelector
+            isRealData={true}
             style={{
               width: "100%",
               display: !isGroup ? undefined : "none",
@@ -261,7 +264,20 @@ const FrequentData = function () {
       </Row>
       <Row style={{ marginTop: "20px" }}>
         <Col span={6}>
-          開始時間
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+            }}
+          >
+            <Tooltip
+              title={`開始時間與結束時間間隔不可大於5天，沒資料的不可選`}
+            >
+              <ExclamationCircleOutlined />
+            </Tooltip>
+            開始時間
+          </div>
           <DatePicker
             value={startTime}
             allowClear
@@ -317,13 +333,24 @@ const FrequentData = function () {
       </Row>
       <Row style={{ marginTop: "20px" }}>
         <Col span={6}>
-          {isSample ? "時間頻率" : "不取樣"}
-          <Switch
-            checked={isSample}
-            onChange={() => {
-              setIsSample(!isSample);
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
             }}
-          />
+          >
+            <Tooltip title={`若選擇不取樣，會將原始資料全部下載`}>
+              <ExclamationCircleOutlined />
+            </Tooltip>
+            {isSample ? "時間頻率" : "不取樣"}
+            <Switch
+              checked={isSample}
+              onChange={() => {
+                setIsSample(!isSample);
+              }}
+            />
+          </div>
           <div style={{ display: "flex", flexDirection: "row" }}>
             <InputNumber
               disabled={!isSample}

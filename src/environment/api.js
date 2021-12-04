@@ -49,6 +49,10 @@ export const api = {
   },
   getGroup: { url: "api/group", method: "GET" },
 
+  getRealDataAvailableStock: {
+    url: "api/real-data/available-stock",
+    method: "GET",
+  },
   getRealDataOrderContent: {
     url: "api/real-data/order/content",
     method: "GET",
