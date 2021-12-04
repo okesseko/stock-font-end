@@ -484,6 +484,7 @@ const FrequentData = function () {
                     })
                     .catch((err) => {
                       errorNotification(err?.response?.data);
+                      setIsLoading(false);
                     });
                 })
               );
