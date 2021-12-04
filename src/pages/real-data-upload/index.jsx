@@ -1,4 +1,4 @@
-import { Button, Table } from "antd";
+import { Button, Table, Modal } from "antd";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { api, defaultAxios } from "../../environment/api";
 import errorNotification from "../../utils/errorNotification";
@@ -251,12 +251,20 @@ const ContentContainer = ({ type }) => {
         type="primary"
         danger
         onClick={() => {
-          setIsLoading(true);
-          const ids = realData
-            .filter((v) => v.isFinished === 0)
-            .map((v) => v.id);
-          deleteRealData(ids, type).then(() => {
-            handleGetRealData();
+          Modal.error({
+            closable: true,
+            content: "確定要刪除嗎?",
+            maskClosable: true,
+            okText: "確定",
+            onOk: () => {
+              setIsLoading(true);
+              const ids = realData
+                .filter((v) => v.isFinished === 0)
+                .map((v) => v.id);
+              deleteRealData(ids, type).then(() => {
+                handleGetRealData();
+              });
+            },
           });
         }}
       >
@@ -305,9 +313,17 @@ const ContentContainer = ({ type }) => {
                 shape="circle"
                 className="inline-flex justify-center items-center"
                 onClick={() => {
-                  setIsLoading(true);
-                  deleteRealData([id], type).then(() => {
-                    handleGetRealData();
+                  Modal.error({
+                    closable: true,
+                    content: `確定要刪除${id}嗎?`,
+                    maskClosable: true,
+                    okText: "確定",
+                    onOk: () => {
+                      setIsLoading(true);
+                      deleteRealData([id], type).then(() => {
+                        handleGetRealData();
+                      });
+                    },
                   });
                 }}
                 icon={<DeleteOutlined />}

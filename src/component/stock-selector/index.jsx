@@ -4,22 +4,36 @@ import { api, defaultAxios } from "../../environment/api";
 import errorNotification from "../../utils/errorNotification";
 
 const { Option } = Select;
-export const StockSelector = ({ style, mode, onChange }) => {
+export const StockSelector = ({ style, mode, onChange, isRealData }) => {
   const [stocks, setStocks] = useState();
   const [stockList, setStockList] = useState();
 
   useEffect(() => {
-    defaultAxios({
-      url: api.getStock.url,
-      method: api.getStock.method,
-    })
-      .then(({ data: { content: stockList } }) => {
-        setStockList(stockList);
+    if (isRealData) {
+      defaultAxios({
+        url: api.getRealDataAvailableStock.url,
+        method: api.getRealDataAvailableStock.method,
       })
-      .catch((err) => {
-        errorNotification(err?.response?.data);
-      });
-  }, []);
+        .then(({ data }) => {
+          setStockList(data);
+        })
+        .catch((err) => {
+          errorNotification(err?.response?.data);
+        });
+    } else {
+      defaultAxios({
+        url: api.getStock.url,
+        method: api.getStock.method,
+      })
+        .then(({ data: { content: stockList } }) => {
+          setStockList(stockList);
+        })
+        .catch((err) => {
+          errorNotification(err?.response?.data);
+        });
+    }
+  }, [isRealData]);
+
   return (
     <Select
       style={{ ...style }}

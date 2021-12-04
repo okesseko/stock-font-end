@@ -2,6 +2,8 @@ import axios from "axios";
 
 export const defaultAxios = axios.create({
   baseURL: "http://140.118.118.173:20023/",
+  // baseURL: "http://localhost:8080/",
+  // baseURL: "http://192.168.1.3:8080/",
 });
 export function settingToken(token) {
   defaultAxios.defaults.headers.common["token"] = token;
@@ -49,16 +51,33 @@ export const api = {
   },
   getGroup: { url: "api/group", method: "GET" },
 
+  getRealDataAvailableStock: {
+    url: "api/real-data/available-stock",
+    method: "GET",
+  },
   getRealDataOrderContent: {
     url: "api/real-data/order/content",
     method: "GET",
   },
+  getRealDataOrderAvailableDate: {
+    url: "api/real-data/order/available",
+    method: "GET",
+  },
+
   getRealDataTransactionContent: {
     url: "api/real-data/transaction/content",
     method: "GET",
   },
+  getRealDataTransactionAvailableDate: {
+    url: "api/real-data/transaction/available",
+    method: "GET",
+  },
   getRealDataDisplayContent: {
     url: "api/real-data/display/content",
+    method: "GET",
+  },
+  getRealDataDisplayAvailableDate: {
+    url: "api/real-data/display/available",
     method: "GET",
   },
 
