@@ -19,7 +19,7 @@ const Create = ({
   }, [defaultValue]);
   return (
     <Modal
-      title={defaultValue ? "修改權限" : "新增權限"}
+      title={defaultValue ? "修改角色" : "新增角色"}
       visible={visible}
       onOk={() => {
         form.submit();
@@ -72,14 +72,14 @@ const Create = ({
         initialValues={{ remember: true }}
       >
         <Form.Item
-          label="權限名稱"
+          label="角色名稱"
           name="name"
-          rules={[{ required: true, message: "請輸入權限" }]}
+          rules={[{ required: true, message: "請輸入角色" }]}
         >
-          <Input placeholder="請輸入權限名稱" />
+          <Input placeholder="請輸入角色名稱" />
         </Form.Item>
         <Form.Item
-          label="api 可打上限"
+          label="每日請求上限"
           name="totalApiTime"
           rules={[
             { required: true, message: "請輸入上限" },

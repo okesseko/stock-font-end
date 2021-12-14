@@ -33,8 +33,8 @@ const Create = ({ visible, setVisible, defaultValue, reset, role = [] }) => {
           const { totalApiTime, restApiTime, ...other } = value;
           if (defaultValue) {
             defaultAxios({
-              url: api.putRole.url,
-              method: api.putRole.method,
+              url: api.putInvestor.url,
+              method: api.putInvestor.method,
               data: {
                 id: defaultValue.id,
                 totalApiTime: parseInt(totalApiTime),
@@ -52,8 +52,8 @@ const Create = ({ visible, setVisible, defaultValue, reset, role = [] }) => {
               });
           } else {
             defaultAxios({
-              url: api.postRole.url,
-              method: api.postRole.method,
+              url: api.postInvestor.url,
+              method: api.postInvestor.method,
               data: {
                 totalApiTime: parseInt(totalApiTime),
                 restApiTime: parseInt(restApiTime),
@@ -87,23 +87,30 @@ const Create = ({ visible, setVisible, defaultValue, reset, role = [] }) => {
           <Input placeholder="請輸入密碼" />
         </Form.Item>
         <Form.Item
-          label="api 可打上限"
+          label="每日請求上限"
           name="totalApiTime"
-          rules={[{ required: true, message: "請輸入上限" }]}
+          rules={[
+            { required: defaultValue ? true : false, message: "請輸入上限" },
+          ]}
+          style={{ display: defaultValue ? undefined : "none" }}
         >
           <Input type="number" placeholder="請輸入數字" />
         </Form.Item>
         <Form.Item
-          label="api 重製上限"
+          label="剩餘請求次數"
           name="restApiTime"
-          rules={[{ required: true, message: "請輸入上限" }]}
+          rules={[
+            { required: defaultValue ? true : false, message: "請輸入次數" },
+          ]}
+          style={{ display: defaultValue ? undefined : "none" }}
         >
           <Input type="number" placeholder="請輸入數字" />
         </Form.Item>
         <Form.Item
-          label="權限"
+          label="角色"
           name="roleId"
-          rules={[{ required: true, message: "請選擇" }]}
+          rules={[{ required: defaultValue ? true : false, message: "請選擇" }]}
+          style={{ display: defaultValue ? undefined : "none" }}
         >
           <Select
             placeholder="請選擇"

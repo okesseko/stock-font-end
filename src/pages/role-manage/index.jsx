@@ -31,7 +31,7 @@ const RoleManagement = () => {
         errorNotification(err?.response?.data);
       });
   }, []);
-  
+
   useEffect(() => {
     defaultAxios({
       url: api.getRole.url,
@@ -127,7 +127,7 @@ const RoleManagement = () => {
             setVisible(true);
           }}
         >
-          新增權限
+          新增角色
         </Button>
       </div>
       <Table
@@ -142,7 +142,7 @@ const RoleManagement = () => {
             dataIndex: "name",
           },
           {
-            title: "api 可打上限",
+            title: "每日請求上限",
             dataIndex: "totalApiTime",
           },
           {

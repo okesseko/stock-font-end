@@ -72,7 +72,7 @@ const RouterLink = ({ setToken }) => {
         <NavLink to="/stock-font-end/stock">股票管理</NavLink>
       </li>
       <li className="py-5 text-xl border-b border-black">
-        <NavLink to="/stock-font-end/role-management">權限管理</NavLink>
+        <NavLink to="/stock-font-end/role-management">角色管理</NavLink>
       </li>
       <li className="py-5 text-xl border-b border-black">
         <NavLink to="/stock-font-end/investor-management">帳戶管理</NavLink>

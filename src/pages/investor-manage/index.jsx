@@ -112,15 +112,15 @@ const InvestorManagement = () => {
             dataIndex: "account",
           },
           {
-            title: "api 可打上限",
+            title: "每日請求上限",
             dataIndex: "totalApiTime",
           },
           {
-            title: "api 重製上限",
+            title: "剩餘請求次數",
             dataIndex: "restApiTime",
           },
           {
-            title: "權限",
+            title: "角色",
             dataIndex: "role",
             render: (data) => data.name,
           },
