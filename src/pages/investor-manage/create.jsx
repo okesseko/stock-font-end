@@ -89,20 +89,14 @@ const Create = ({ visible, setVisible, defaultValue, reset, role = [] }) => {
         <Form.Item
           label="api 可打上限"
           name="totalApiTime"
-          rules={[
-            { required: true, message: "請輸入上限" },
-            { min: 1, message: "不可小於1" },
-          ]}
+          rules={[{ required: true, message: "請輸入上限" }]}
         >
           <Input type="number" placeholder="請輸入數字" />
         </Form.Item>
         <Form.Item
           label="api 重製上限"
           name="restApiTime"
-          rules={[
-            { required: true, message: "請輸入上限" },
-            { min: 1, message: "不可小於1" },
-          ]}
+          rules={[{ required: true, message: "請輸入上限" }]}
         >
           <Input type="number" placeholder="請輸入數字" />
         </Form.Item>
