@@ -16,7 +16,10 @@ import ReplayChart from "./pages/replay";
 import Stock from "./pages/stock";
 import Login from "./pages/login";
 import Q1Chart from "./pages/Q1-chart";
+import RoleManagement from "./pages/role-manage";
 import RouterLink from "./component/router-link";
+import InvestorManagement from "./pages/investor-manage";
+
 import { useEffect, useState } from "react";
 import { settingToken } from "./environment/api";
 const events = require("events");
@@ -67,6 +70,7 @@ const App = () => {
               path="/stock-font-end/auto-chart"
               component={AutoChart}
             />
+
             <GuardedRoute
               path="/stock-font-end/replay-chart"
               component={ReplayChart}
@@ -98,6 +102,14 @@ const App = () => {
               component={Simulator}
             />
             <GuardedRoute path="/stock-font-end/stock" component={Stock} />
+            <GuardedRoute
+              path="/stock-font-end/role-management"
+              component={RoleManagement}
+            />
+            <GuardedRoute
+              path="/stock-font-end/investor-management"
+              component={InvestorManagement}
+            />
             <Redirect
               from="*"
               to={auth ? "/stock-font-end/" : "/stock-font-end/login"}

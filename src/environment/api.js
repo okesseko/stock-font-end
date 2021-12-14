@@ -108,4 +108,15 @@ export const api = {
     url: "api/real-data/display/content",
     method: "POST",
   },
+
+  getRole: { url: "api/rbac/role", method: "GET" },
+  postRole: { url: "api/rbac/role", method: "POST" },
+  putRole: { url: "api/rbac/role", method: "PUT" },
+  deleteRole: { url: "api/rbac/role", method: "DELETE" },
+  getRolePermission: { url: "api/rbac/permission", method: "GET" },
+
+  getInvestor: { url: "api/investor", method: "GET" },
+  postInvestor: { url: "api/investor", method: "POST" },
+  putInvestor: { url: "api/investor", method: "PUT" },
+  deleteInvestor: { url: "api/investor", method: "DELETE" },
 };
