@@ -6,7 +6,6 @@ import errorNotification from "../../utils/errorNotification";
 const Create = ({ visible, setVisible, defaultValue, reset, role = [] }) => {
   const [form] = Form.useForm();
   useEffect(() => {
-    console.log(defaultValue, "de");
     if (defaultValue) {
       form.setFieldsValue(defaultValue);
     }
@@ -31,11 +30,17 @@ const Create = ({ visible, setVisible, defaultValue, reset, role = [] }) => {
         layout="vertical"
         form={form}
         onFinish={(value) => {
+          const { totalApiTime, restApiTime, ...other } = value;
           if (defaultValue) {
             defaultAxios({
               url: api.putRole.url,
               method: api.putRole.method,
-              data: { ...value, id: defaultValue.id },
+              data: {
+                id: defaultValue.id,
+                totalApiTime: parseInt(totalApiTime),
+                restApiTime: parseInt(restApiTime),
+                ...other,
+              },
             })
               .catch((err) => {
                 errorNotification(err?.response?.data);
@@ -49,7 +54,11 @@ const Create = ({ visible, setVisible, defaultValue, reset, role = [] }) => {
             defaultAxios({
               url: api.postRole.url,
               method: api.postRole.method,
-              data: value,
+              data: {
+                totalApiTime: parseInt(totalApiTime),
+                restApiTime: parseInt(restApiTime),
+                ...other,
+              },
             })
               .catch((err) => {
                 errorNotification(err?.response?.data);
@@ -60,8 +69,6 @@ const Create = ({ visible, setVisible, defaultValue, reset, role = [] }) => {
                 setVisible(false);
               });
           }
-
-          console.log(value);
         }}
         initialValues={{ remember: true }}
       >
@@ -75,7 +82,7 @@ const Create = ({ visible, setVisible, defaultValue, reset, role = [] }) => {
         <Form.Item
           label="密碼"
           name="password"
-          rules={[{ required: true, message: "請輸入密碼" }]}
+          rules={[{ required: !defaultValue, message: "請輸入密碼" }]}
         >
           <Input placeholder="請輸入密碼" />
         </Form.Item>
