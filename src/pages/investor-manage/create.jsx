@@ -9,6 +9,7 @@ const Create = ({ visible, setVisible, defaultValue, reset, role = [] }) => {
     if (defaultValue) {
       form.setFieldsValue(defaultValue);
     }
+    
   }, [defaultValue]);
   return (
     <Modal
