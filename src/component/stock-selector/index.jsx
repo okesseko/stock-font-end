@@ -4,7 +4,7 @@ import { api, defaultAxios } from "../../environment/api";
 import errorNotification from "../../utils/errorNotification";
 
 const { Option } = Select;
-export const StockSelector = ({ style, mode, onChange, isRealData }) => {
+export const StockSelector = ({ style, mode, onChange, isRealData, onEnd }) => {
   const [stocks, setStocks] = useState();
   const [stockList, setStockList] = useState();
 
@@ -45,6 +45,11 @@ export const StockSelector = ({ style, mode, onChange, isRealData }) => {
       value={stocks}
       placeholder="選擇股票"
       showSearch
+      onDropdownVisibleChange={(e) => {
+        if (e === false) {
+          onEnd && onEnd();
+        }
+      }}
     >
       {stockList &&
         stockList.map((stock) => {

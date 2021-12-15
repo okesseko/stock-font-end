@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { defaultAxios, api } from "../../environment/api";
 import moment from "moment";
 import {
@@ -10,6 +10,7 @@ import {
   Col,
   InputNumber,
   Tooltip,
+  Spin,
 } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import { StockSelector } from "../../component/stock-selector";
@@ -159,12 +160,14 @@ const FrequentData = function () {
   const [endTime, setEndTime] = useState();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isButtonLoading, setIsButtonLoading] = useState(false);
 
   const [isGroup, setIsGroup] = useState(false);
 
   const [groupList, setGroupList] = useState();
-  useEffect(() => {
+  const handleStockSelectorChange = useCallback(() => {
     if (stocks) {
+      setIsLoading(true);
       const { url, method } = getRealDataAvailableAPI(fileType);
       Promise.all(
         stocks.map((stock) => {
@@ -173,17 +176,27 @@ const FrequentData = function () {
             method,
           });
         })
-      ).then((datas) => {
-        const dateSet = new Set();
-        datas.forEach(({ data }) => {
-          data.forEach((date) => {
-            dateSet.add(date);
+      )
+        .then((datas) => {
+          const dateSet = new Set();
+          datas.forEach(({ data }) => {
+            data.forEach((date) => {
+              dateSet.add(date);
+            });
           });
+          setAvailableDate(Array.from(dateSet));
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          errorNotification(err?.response?.data);
+          setIsLoading(false);
         });
-        setAvailableDate(Array.from(dateSet));
-      });
     }
   }, [fileType, stocks]);
+
+  useEffect(() => {
+    handleStockSelectorChange();
+  }, [handleStockSelectorChange]);
   useEffect(() => {
     defaultAxios({
       url: api.getGroup.url,
@@ -197,304 +210,309 @@ const FrequentData = function () {
       });
   }, []);
   return (
-    <div style={{ padding: "20px" }}>
-      <Row>
-        <Col span={6}>
-          {/* <Switch
+    <Spin spinning={isLoading}>
+      <div style={{ padding: "20px" }}>
+        <Row>
+          <Col span={6}>
+            {/* <Switch
             checked={isGroup}
             onChange={() => {
               setIsGroup(!isGroup);
             }}
           /> */}
-          檔案類型
-          <Select
-            style={{ width: "100%" }}
-            onChange={(e) => {
-              setFileType(e);
-              setFields(getFileTypeFields(e));
-              setStartTime(null);
-              setEndTime(null);
-            }}
-            value={fileType}
-            placeholder="選擇檔案類型"
-          >
-            {FILET_TYPE.map((fileType) => {
-              return (
-                <Option key={Math.random()} value={fileType.value}>
-                  {fileType.header}
-                </Option>
-              );
-            })}
-          </Select>
-        </Col>
-        <Col span={6}>
-          {isGroup ? "類股" : "股票"}
-          <Select
-            style={{
-              width: "100%",
-              display: isGroup ? undefined : "none",
-            }}
-            onChange={(e) => {
-              setGroup(e);
-            }}
-            value={group}
-            placeholder="選擇類股"
-          >
-            {groupList &&
-              groupList.map((group, index) => {
-                return (
-                  <Option key={Math.random()} value={index}>
-                    {group.name}
-                  </Option>
-                );
-              })}
-          </Select>
-          <StockSelector
-            isRealData={true}
-            style={{
-              width: "100%",
-              display: !isGroup ? undefined : "none",
-            }}
-            onChange={(e) => {
-              setStocks(e);
-            }}
-            mode="multiple"
-          />
-        </Col>
-      </Row>
-      <Row style={{ marginTop: "20px" }}>
-        <Col span={6}>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <Tooltip
-              title={`開始時間與結束時間間隔不可大於5天，沒資料的不可選`}
-            >
-              <ExclamationCircleOutlined />
-            </Tooltip>
-            開始時間
-          </div>
-          <DatePicker
-            value={startTime}
-            allowClear
-            style={{ width: "100%" }}
-            placeholder="選擇開始時間"
-            disabledDate={(current) => {
-              const transferedCurrent = current && current.startOf("day");
-              const transferedEndTime = endTime && endTime;
-
-              return (
-                (transferedCurrent && transferedCurrent > moment()) ||
-                (transferedCurrent &&
-                  !availableDate.includes(
-                    transferedCurrent.format("YYYY-MM-DD")
-                  )) ||
-                (transferedEndTime && transferedCurrent > transferedEndTime) ||
-                (transferedEndTime &&
-                  transferedEndTime.diff(transferedCurrent) / 86400000 >= 5)
-              );
-            }}
-            onChange={(time) => {
-              setStartTime(time && time.startOf("day"));
-            }}
-          />
-        </Col>
-        <Col span={6}>
-          結束時間
-          <DatePicker
-            value={endTime}
-            allowClear
-            style={{ width: "100%" }}
-            placeholder="選擇結束時間"
-            disabledDate={(current) => {
-              const transferedCurrent = current && current.startOf("day");
-              const transferedStartTime = startTime && startTime;
-              return (
-                (transferedCurrent && transferedCurrent > moment()) ||
-                (transferedCurrent &&
-                  !availableDate.includes(
-                    transferedCurrent.format("YYYY-MM-DD")
-                  )) ||
-                (transferedStartTime &&
-                  transferedCurrent < transferedStartTime) ||
-                (transferedStartTime &&
-                  transferedCurrent.diff(transferedStartTime) / 86400000 >= 5)
-              );
-            }}
-            onChange={(time) => {
-              setEndTime(time && time.startOf("day"));
-            }}
-          />
-        </Col>
-      </Row>
-      <Row style={{ marginTop: "20px" }}>
-        <Col span={6}>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <Tooltip title={`若選擇不取樣，會將原始資料全部下載`}>
-              <ExclamationCircleOutlined />
-            </Tooltip>
-            {isSample ? "時間頻率" : "不取樣"}
-            <Switch
-              checked={isSample}
-              onChange={() => {
-                setIsSample(!isSample);
-              }}
-            />
-          </div>
-          <div style={{ display: "flex", flexDirection: "row" }}>
-            <InputNumber
-              disabled={!isSample}
-              style={{ width: "100%" }}
-              value={unit}
-              step={1}
-              onChange={(e) => {
-                setUnit(Math.floor(e));
-              }}
-            />
+            檔案類型
             <Select
-              disabled={!isSample}
-              allowClear
               style={{ width: "100%" }}
               onChange={(e) => {
-                setDateFormat(e);
+                setFileType(e);
+                setFields(getFileTypeFields(e));
+                setStartTime(null);
+                setEndTime(null);
               }}
-              value={dateFormat}
-              placeholder="選擇時間頻率"
+              value={fileType}
+              placeholder="選擇檔案類型"
             >
-              {DATE_FORMAT.map((dateFormat) => {
+              {FILET_TYPE.map((fileType) => {
                 return (
-                  <Option key={Math.random()} value={dateFormat.value}>
-                    {dateFormat.header}
+                  <Option key={Math.random()} value={fileType.value}>
+                    {fileType.header}
                   </Option>
                 );
               })}
             </Select>
-          </div>
-        </Col>
-        <Col span={6}>
-          取樣模式
-          <Select
-            disabled={dateFormat === undefined || !isSample}
-            style={{ width: "100%" }}
-            onChange={(e) => {
-              setSampleMode(e);
-            }}
-            value={sampleMode}
-            placeholder="選擇取樣模式"
-          >
-            {SAMPLE_MODE.map((sampleMode) => {
-              return (
-                <Option key={Math.random()} value={sampleMode.value}>
-                  {sampleMode.header}
-                </Option>
-              );
-            })}
-          </Select>
-        </Col>
-      </Row>
-      <Row style={{ marginTop: "20px" }}>
-        <Col span={12}>
-          欄位
-          <Select
-            style={{ width: "100%" }}
-            onChange={(e) => {
-              setFields(e);
-            }}
-            value={fields}
-            mode="multiple"
-            placeholder="選擇欄位"
-          >
-            {getFileTypeFields(fileType).map((field) => {
-              return (
-                <Option key={Math.random()} value={field}>
-                  {field}
-                </Option>
-              );
-            })}
-          </Select>
-        </Col>
-      </Row>
-      <Row style={{ marginTop: "20px" }}>
-        <Button
-          loading={isLoading}
-          onClick={async () => {
-            let stockIds = [];
-            if (isGroup) {
-              if (!isNaN(group)) {
-                stockIds = groupList[group].stocks.map((stock) => stock.id);
+          </Col>
+          <Col span={6}>
+            {isGroup ? "類股" : "股票"}
+            <Select
+              style={{
+                width: "100%",
+                display: isGroup ? undefined : "none",
+              }}
+              onChange={(e) => {
+                setGroup(e);
+              }}
+              value={group}
+              placeholder="選擇類股"
+            >
+              {groupList &&
+                groupList.map((group, index) => {
+                  return (
+                    <Option key={Math.random()} value={index}>
+                      {group.name}
+                    </Option>
+                  );
+                })}
+            </Select>
+            <StockSelector
+              isRealData={true}
+              style={{
+                width: "100%",
+                display: !isGroup ? undefined : "none",
+              }}
+              onChange={(e) => {
+                setStocks(e);
+              }}
+              // onEnd={handleStockSelectorChange}
+              mode="multiple"
+            />
+          </Col>
+        </Row>
+        <Row style={{ marginTop: "20px" }}>
+          <Col span={6}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <Tooltip
+                title={`開始時間與結束時間間隔不可大於5天，沒資料的不可選`}
+              >
+                <ExclamationCircleOutlined />
+              </Tooltip>
+              開始時間
+            </div>
+            <DatePicker
+              value={startTime}
+              allowClear
+              style={{ width: "100%" }}
+              placeholder="選擇開始時間"
+              disabledDate={(current) => {
+                const transferedCurrent = current && current.startOf("day");
+                const transferedEndTime = endTime && endTime;
+
+                return (
+                  (transferedCurrent && transferedCurrent > moment()) ||
+                  (transferedCurrent &&
+                    !availableDate.includes(
+                      transferedCurrent.format("YYYY-MM-DD")
+                    )) ||
+                  (transferedEndTime &&
+                    transferedCurrent > transferedEndTime) ||
+                  (transferedEndTime &&
+                    transferedEndTime.diff(transferedCurrent) / 86400000 >= 5)
+                );
+              }}
+              onChange={(time) => {
+                setStartTime(time && time.startOf("day"));
+              }}
+            />
+          </Col>
+          <Col span={6}>
+            結束時間
+            <DatePicker
+              value={endTime}
+              allowClear
+              style={{ width: "100%" }}
+              placeholder="選擇結束時間"
+              disabledDate={(current) => {
+                const transferedCurrent = current && current.startOf("day");
+                const transferedStartTime = startTime && startTime;
+                return (
+                  (transferedCurrent && transferedCurrent > moment()) ||
+                  (transferedCurrent &&
+                    !availableDate.includes(
+                      transferedCurrent.format("YYYY-MM-DD")
+                    )) ||
+                  (transferedStartTime &&
+                    transferedCurrent < transferedStartTime) ||
+                  (transferedStartTime &&
+                    transferedCurrent.diff(transferedStartTime) / 86400000 >= 5)
+                );
+              }}
+              onChange={(time) => {
+                setEndTime(time && time.startOf("day"));
+              }}
+            />
+          </Col>
+        </Row>
+        <Row style={{ marginTop: "20px" }}>
+          <Col span={6}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <Tooltip title={`若選擇不取樣，會將原始資料全部下載`}>
+                <ExclamationCircleOutlined />
+              </Tooltip>
+              {isSample ? "時間頻率" : "不取樣"}
+              <Switch
+                checked={isSample}
+                onChange={() => {
+                  setIsSample(!isSample);
+                }}
+              />
+            </div>
+            <div style={{ display: "flex", flexDirection: "row" }}>
+              <InputNumber
+                disabled={!isSample}
+                style={{ width: "100%" }}
+                value={unit}
+                step={1}
+                onChange={(e) => {
+                  setUnit(Math.floor(e));
+                }}
+              />
+              <Select
+                disabled={!isSample}
+                allowClear
+                style={{ width: "100%" }}
+                onChange={(e) => {
+                  setDateFormat(e);
+                }}
+                value={dateFormat}
+                placeholder="選擇時間頻率"
+              >
+                {DATE_FORMAT.map((dateFormat) => {
+                  return (
+                    <Option key={Math.random()} value={dateFormat.value}>
+                      {dateFormat.header}
+                    </Option>
+                  );
+                })}
+              </Select>
+            </div>
+          </Col>
+          <Col span={6}>
+            取樣模式
+            <Select
+              disabled={dateFormat === undefined || !isSample}
+              style={{ width: "100%" }}
+              onChange={(e) => {
+                setSampleMode(e);
+              }}
+              value={sampleMode}
+              placeholder="選擇取樣模式"
+            >
+              {SAMPLE_MODE.map((sampleMode) => {
+                return (
+                  <Option key={Math.random()} value={sampleMode.value}>
+                    {sampleMode.header}
+                  </Option>
+                );
+              })}
+            </Select>
+          </Col>
+        </Row>
+        <Row style={{ marginTop: "20px" }}>
+          <Col span={12}>
+            欄位
+            <Select
+              style={{ width: "100%" }}
+              onChange={(e) => {
+                setFields(e);
+              }}
+              value={fields}
+              mode="multiple"
+              placeholder="選擇欄位"
+            >
+              {getFileTypeFields(fileType).map((field) => {
+                return (
+                  <Option key={Math.random()} value={field}>
+                    {field}
+                  </Option>
+                );
+              })}
+            </Select>
+          </Col>
+        </Row>
+        <Row style={{ marginTop: "20px" }}>
+          <Button
+            loading={isButtonLoading}
+            onClick={async () => {
+              let stockIds = [];
+              if (isGroup) {
+                if (!isNaN(group)) {
+                  stockIds = groupList[group].stocks.map((stock) => stock.id);
+                }
+              } else {
+                if (stocks) stockIds = stocks;
               }
-            } else {
-              if (stocks) stockIds = stocks;
-            }
 
-            if (stockIds.length) {
-              const { url, method } = getRealDataContentAPI(fileType);
-              setIsLoading(true);
-              const createdTime = {};
-              if (endTime) createdTime.max = endTime.endOf("day").toISOString();
-              if (startTime)
-                createdTime.min = startTime.startOf("day").toISOString();
-              await Promise.all(
-                stockIds.map((stockId) => {
-                  return defaultAxios({
-                    url,
-                    method,
-                    params: {
-                      createdTime,
-                      unit,
-                      dateFormat: isSample ? dateFormat : undefined,
-                      sampleMode,
-                      fields,
-                      stockId,
-                    },
-                  })
-                    .then(({ data, headers }) => {
-                      const fileName = headers["filename"];
-                      const header = data.length
-                        ? Object.keys(data[0]).join(",") + "\n"
-                        : "";
-                      const transferData =
-                        header +
-                        data
-                          .map((v) => {
-                            return Object.values(v).join(",");
-                          })
-                          .join("\n");
-
-                      const url = window.URL.createObjectURL(
-                        new Blob([transferData])
-                      );
-                      const link = document.createElement("a");
-                      link.href = url;
-                      link.setAttribute("download", fileName);
-                      document.body.appendChild(link);
-                      link.click();
-                      window.URL.revokeObjectURL(url);
-                      setIsLoading(false);
+              if (stockIds.length) {
+                const { url, method } = getRealDataContentAPI(fileType);
+                setIsButtonLoading(true);
+                const createdTime = {};
+                if (endTime)
+                  createdTime.max = endTime.endOf("day").toISOString();
+                if (startTime)
+                  createdTime.min = startTime.startOf("day").toISOString();
+                await Promise.all(
+                  stockIds.map((stockId) => {
+                    return defaultAxios({
+                      url,
+                      method,
+                      params: {
+                        createdTime,
+                        unit,
+                        dateFormat: isSample ? dateFormat : undefined,
+                        sampleMode,
+                        fields,
+                        stockId,
+                      },
                     })
-                    .catch((err) => {
-                      errorNotification(err?.response?.data);
-                      setIsLoading(false);
-                    });
-                })
-              );
-            }
-          }}
-        >
-          DOWNLOAD CSV
-        </Button>
-      </Row>
-    </div>
+                      .then(({ data, headers }) => {
+                        const fileName = headers["filename"];
+                        const header = data.length
+                          ? Object.keys(data[0]).join(",") + "\n"
+                          : "";
+                        const transferData =
+                          header +
+                          data
+                            .map((v) => {
+                              return Object.values(v).join(",");
+                            })
+                            .join("\n");
+
+                        const url = window.URL.createObjectURL(
+                          new Blob([transferData])
+                        );
+                        const link = document.createElement("a");
+                        link.href = url;
+                        link.setAttribute("download", fileName);
+                        document.body.appendChild(link);
+                        link.click();
+                        window.URL.revokeObjectURL(url);
+                        setIsButtonLoading(false);
+                      })
+                      .catch((err) => {
+                        errorNotification(err?.response?.data);
+                        setIsButtonLoading(false);
+                      });
+                  })
+                );
+              }
+            }}
+          >
+            DOWNLOAD CSV
+          </Button>
+        </Row>
+      </div>
+    </Spin>
   );
 };
 
