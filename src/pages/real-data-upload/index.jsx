@@ -10,63 +10,94 @@ const check = (...arg) => {
   if (true) console.log(...arg);
 };
 
-const getGetRealDataApiByType = (type) => {
-  switch (type) {
+const getGetRealDataApiByType = (fileType, marketType) => {
+  switch (fileType) {
     case "transaction":
-      return api.getRealDataTransaction;
+      return marketType === "stock"
+        ? api.getRealDataStockTransaction
+        : api.getRealDataFutureTransaction;
     case "display":
-      return api.getRealDataDisplay;
+      return marketType === "stock"
+        ? api.getRealDataStockDisplay
+        : api.getRealDataFutureDisplay;
     default:
-      return api.getRealDataOrder;
+      return marketType === "stock"
+        ? api.getRealDataStockOrder
+        : api.getRealDataFutureOrder;
   }
 };
 
-const getPostRealDataApiByType = (type) => {
-  switch (type) {
+const getPostRealDataApiByType = (fileType, marketType) => {
+  console.log(fileType, marketType);
+  switch (fileType) {
     case "transaction":
-      return api.postRealDataTransaction;
+      return marketType === "stock"
+        ? api.postRealDataStockTransaction
+        : api.postRealDataFutureTransaction;
     case "display":
-      return api.postRealDataDisplay;
+      return marketType === "stock"
+        ? api.postRealDataStockDisplay
+        : api.postRealDataFutureDisplay;
     default:
-      return api.postRealDataOrder;
+      return marketType === "stock"
+        ? api.postRealDataStockOrder
+        : api.postRealDataFutureOrder;
   }
 };
 
-const getPutRealDataApiByType = (type) => {
-  switch (type) {
+const getPutRealDataApiByType = (fileType, marketType) => {
+  switch (fileType) {
     case "transaction":
-      return api.putRealDataTransaction;
+      return marketType === "stock"
+        ? api.putRealDataStockTransaction
+        : api.putRealDataFutureTransaction;
     case "display":
-      return api.putRealDataDisplay;
+      return marketType === "stock"
+        ? api.putRealDataStockDisplay
+        : api.putRealDataFutureDisplay;
     default:
-      return api.putRealDataOrder;
+      return marketType === "stock"
+        ? api.putRealDataStockOrder
+        : api.putRealDataFutureOrder;
   }
 };
 
-const getDeleteRealDataApiByType = (type) => {
-  switch (type) {
+const getDeleteRealDataApiByType = (fileType, marketType) => {
+  switch (fileType) {
     case "transaction":
-      return api.deleteRealDataTransaction;
+      return marketType === "stock"
+        ? api.deleteRealDataStockTransaction
+        : api.deleteRealDataFutureTransaction;
     case "display":
-      return api.deleteRealDataDisplay;
+      return marketType === "stock"
+        ? api.deleteRealDataStockDisplay
+        : api.deleteRealDataFutureDisplay;
     default:
-      return api.deleteRealDataOrder;
+      return marketType === "stock"
+        ? api.deleteRealDataStockOrder
+        : api.deleteRealDataFutureOrder;
   }
 };
 
-const getPostRealDataContentApiByType = (type) => {
-  switch (type) {
+const getPostRealDataContentApiByType = (fileType, marketType) => {
+  switch (fileType) {
     case "transaction":
-      return api.postRealDataTransactionContent;
+      return marketType === "stock"
+        ? api.postRealDataStockTransactionContent
+        : api.postRealDataFutureTransactionContent;
     case "display":
-      return api.postRealDataDisplayContent;
+      return marketType === "stock"
+        ? api.postRealDataStockDisplayContent
+        : api.postRealDataFutureDisplayContent;
     default:
-      return api.postRealDataOrderContent;
+      return marketType === "stock"
+        ? api.postRealDataStockOrderContent
+        : api.postRealDataFutureOrderContent;
   }
 };
 
-const getRealData = async (type, page) => {
-  const { url, method } = getGetRealDataApiByType(type);
+const getRealData = async (fileType, marketType, page) => {
+  const { url, method } = getGetRealDataApiByType(fileType, marketType);
   return defaultAxios({
     url,
     method,
@@ -76,8 +107,8 @@ const getRealData = async (type, page) => {
   });
 };
 
-const postRealData = async (id, type) => {
-  const { url, method } = getPostRealDataApiByType(type);
+const postRealData = async (id, fileType, marketType) => {
+  const { url, method } = getPostRealDataApiByType(fileType, marketType);
   return defaultAxios({
     url,
     method,
@@ -85,8 +116,8 @@ const postRealData = async (id, type) => {
   });
 };
 
-const putRealData = async (id, type) => {
-  const { url, method } = getPutRealDataApiByType(type);
+const putRealData = async (id, fileType, marketType) => {
+  const { url, method } = getPutRealDataApiByType(fileType, marketType);
   return defaultAxios({
     url,
     method,
@@ -94,8 +125,8 @@ const putRealData = async (id, type) => {
   });
 };
 
-const deleteRealData = async (ids, type) => {
-  const { url, method } = getDeleteRealDataApiByType(type);
+const deleteRealData = async (ids, fileType, marketType) => {
+  const { url, method } = getDeleteRealDataApiByType(fileType, marketType);
   return defaultAxios({
     url,
     method,
@@ -103,8 +134,8 @@ const deleteRealData = async (ids, type) => {
   });
 };
 
-const postRealDataContent = async (id, type, data) => {
-  const { url, method } = getPostRealDataContentApiByType(type);
+const postRealDataContent = async (id, fileType, marketType, data) => {
+  const { url, method } = getPostRealDataContentApiByType(fileType, marketType);
   return defaultAxios({
     url,
     method,
@@ -113,7 +144,7 @@ const postRealDataContent = async (id, type, data) => {
   });
 };
 
-const UploadProgress = ({ file, isLoading, type }) => {
+const UploadProgress = ({ file, isLoading, fileType, marketType }) => {
   const [progress, setProgress] = useState(0);
   const [currentFile, setCurrentFile] = useState();
   const [isError, setIsError] = useState(false);
@@ -145,7 +176,12 @@ const UploadProgress = ({ file, isLoading, type }) => {
         }
         Promise.all(
           insertArr.map((arr) => {
-            return postRealDataContent(currentFile.name, type, arr);
+            return postRealDataContent(
+              currentFile.name,
+              fileType,
+              marketType,
+              arr
+            );
           })
         )
           .then(() => {
@@ -158,7 +194,7 @@ const UploadProgress = ({ file, isLoading, type }) => {
       });
       fileReader.readAsText(partFile);
     } else {
-      putRealData(currentFile.name, type)
+      putRealData(currentFile.name, fileType, marketType)
         .then(() => {
           // toggle real data status
           check(3);
@@ -168,7 +204,7 @@ const UploadProgress = ({ file, isLoading, type }) => {
           setIsError(true);
         });
     }
-  }, [currentFile, progress, type]);
+  }, [currentFile, progress, fileType, marketType]);
 
   useEffect(() => {
     //TODO 在按一次上傳 file為何會變??
@@ -177,9 +213,9 @@ const UploadProgress = ({ file, isLoading, type }) => {
   }, [file]);
 
   useEffect(() => {
-    if (isLoading && currentFile && type) {
+    if (isLoading && currentFile && fileType) {
       if (isFirstUpload.current) {
-        postRealData(currentFile.name, type)
+        postRealData(currentFile.name, fileType, marketType)
           .then(() => {
             isFirstUpload.current = false;
             handleNextProgress();
@@ -192,7 +228,7 @@ const UploadProgress = ({ file, isLoading, type }) => {
           });
       } else handleNextProgress();
     }
-  }, [isLoading, currentFile, type, handleNextProgress]);
+  }, [isLoading, currentFile, fileType, marketType, handleNextProgress]);
 
   return currentFile ? (
     <div>
@@ -206,7 +242,7 @@ const UploadProgress = ({ file, isLoading, type }) => {
   );
 };
 
-const ContentContainer = ({ type }) => {
+const ContentContainer = ({ fileType, marketType }) => {
   const [fileList, setFileList] = useState([]);
   const [isLoadingList, setIsLoadingList] = useState([]);
   const [realData, setRealData] = useState([]);
@@ -216,12 +252,12 @@ const ContentContainer = ({ type }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleGetRealData = useCallback(() => {
-    getRealData(type, { page, pageSize }).then(({ data }) => {
+    getRealData(fileType, marketType, { page, pageSize }).then(({ data }) => {
       setRealData(data.content);
       setTotalSize(data.totalSize);
       setIsLoading(false);
     });
-  }, [page, pageSize, type]);
+  }, [page, pageSize, fileType, marketType]);
 
   useEffect(() => {
     handleGetRealData();
@@ -261,7 +297,7 @@ const ContentContainer = ({ type }) => {
               const ids = realData
                 .filter((v) => v.isFinished === 0)
                 .map((v) => v.id);
-              deleteRealData(ids, type).then(() => {
+              deleteRealData(ids, fileType, marketType).then(() => {
                 handleGetRealData();
               });
             },
@@ -277,7 +313,8 @@ const ContentContainer = ({ type }) => {
               key={Math.random()}
               file={file}
               isLoading={isLoadingList[index]}
-              type={type}
+              fileType={fileType}
+              marketType={marketType}
             />
           );
         })}
@@ -320,7 +357,7 @@ const ContentContainer = ({ type }) => {
                     okText: "確定",
                     onOk: () => {
                       setIsLoading(true);
-                      deleteRealData([id], type).then(() => {
+                      deleteRealData([id], fileType, marketType).then(() => {
                         handleGetRealData();
                       });
                     },
@@ -352,26 +389,42 @@ const RealDataUpload = () => {
       <span style={{ color: "red" }}>
         若"已完成"為否 請將該筆資料刪除後再重新上傳
       </span>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-around",
-        }}
-      >
-        <div>
-          委託檔
-          <ContentContainer type="order" />
-        </div>
-        <div>
-          成交檔
-          <ContentContainer type="transaction" />
-        </div>
-        <div>
-          揭示檔
-          <ContentContainer type="display" />
-        </div>
-      </div>
+      {[
+        { marketType: "stock", title: "證交" },
+        { marketType: "future", title: "期交" },
+      ].map(({ marketType, title }) => {
+        return (
+          <div
+            style={{ marginTop: "20px", marginBottom: "20px" }}
+            key={Math.random()}
+          >
+            {title}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "space-around",
+              }}
+            >
+              <div>
+                委託檔
+                <ContentContainer fileType="order" marketType={marketType} />
+              </div>
+              <div>
+                成交檔
+                <ContentContainer
+                  fileType="transaction"
+                  marketType={marketType}
+                />
+              </div>
+              <div>
+                揭示檔
+                <ContentContainer fileType="display" marketType={marketType} />
+              </div>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };

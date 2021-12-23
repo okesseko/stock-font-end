@@ -77,25 +77,29 @@ const getFileTypeFields = (fileType) => {
       return ORDER_FIELDS;
   }
 };
-const getRealDataContentAPI = (fileType) => {
+const getRealDataContentAPI = (fileType, marketType) => {
   switch (fileType) {
     case "transaction":
-      return api.getRealDataTransactionContent;
+      return marketType === "stock"
+        ? api.getRealDataStockTransactionContent
+        : api.getRealDataFutureTransactionContent;
     case "display":
-      return api.getRealDataDisplayContent;
+      return marketType === "stock"
+        ? api.getRealDataStockDisplayContent
+        : api.getRealDataFutureDisplayContent;
     default:
-      return api.getRealDataOrderContent;
+      return marketType === "stock"
+        ? api.getRealDataStockOrderContent
+        : api.getRealDataFutureOrderContent;
   }
 };
 
-const getRealDataAvailableAPI = (fileType) => {
-  switch (fileType) {
-    case "transaction":
-      return api.getRealDataTransactionAvailableDate;
-    case "display":
-      return api.getRealDataDisplayAvailableDate;
+const getRealDataAvailableAPI = (marketType) => {
+  switch (marketType) {
+    case "stock":
+      return api.getAvailableStock;
     default:
-      return api.getRealDataOrderAvailableDate;
+      return api.getAvailableFuture;
   }
 };
 
@@ -145,10 +149,14 @@ const SAMPLE_MODE = [
   },
 ];
 
-const FrequentData = function () {
+const FrequentDataElement = function ({ marketType }) {
   const [group, setGroup] = useState();
   const [stocks, setStocks] = useState([]);
   const [fileType, setFileType] = useState("order");
+  const [datePickerMode, setDatePickerMode] = useState({
+    start: "year",
+    end: "year",
+  });
   const [unit, setUnit] = useState(1);
   const [isSample, setIsSample] = useState(true);
   const [dateFormat, setDateFormat] = useState(3);
@@ -165,15 +173,29 @@ const FrequentData = function () {
   const [isGroup, setIsGroup] = useState(false);
 
   const [groupList, setGroupList] = useState();
+
+  const getTitle = (marketType) => {
+    switch (marketType) {
+      case "stock":
+        return "證交";
+      case "future":
+        return "期交";
+      default:
+        return "";
+    }
+  };
   const handleStockSelectorChange = useCallback(() => {
-    if (stocks) {
+    if (stocks.length !== 0) {
       setIsLoading(true);
-      const { url, method } = getRealDataAvailableAPI(fileType);
+      const { url, method } = getRealDataAvailableAPI(marketType);
       Promise.all(
         stocks.map((stock) => {
           return defaultAxios({
             url: url + `/${stock}`,
             method,
+            params: {
+              type: fileType,
+            },
           });
         })
       )
@@ -192,7 +214,7 @@ const FrequentData = function () {
           setIsLoading(false);
         });
     }
-  }, [fileType, stocks]);
+  }, [fileType, marketType, stocks]);
 
   useEffect(() => {
     handleStockSelectorChange();
@@ -212,6 +234,7 @@ const FrequentData = function () {
   return (
     <Spin spinning={isLoading}>
       <div style={{ padding: "20px" }}>
+        {getTitle(marketType)}
         <Row>
           <Col span={6}>
             {/* <Switch
@@ -264,7 +287,10 @@ const FrequentData = function () {
                 })}
             </Select>
             <StockSelector
-              isRealData={true}
+              isRealData={{
+                marketType,
+                fileType,
+              }}
               style={{
                 width: "100%",
                 display: !isGroup ? undefined : "none",
@@ -294,14 +320,23 @@ const FrequentData = function () {
               開始時間
             </div>
             <DatePicker
+              picker="date"
+              mode={datePickerMode.start}
+              onPanelChange={(value, mode) => {
+                setDatePickerMode({ ...datePickerMode, start: mode });
+              }}
+              onOpenChange={(open) => {
+                if (!open)
+                  setDatePickerMode({ ...datePickerMode, start: "year" });
+              }}
               value={startTime}
               allowClear
               style={{ width: "100%" }}
               placeholder="選擇開始時間"
+              disabled={stocks.length === 0}
               disabledDate={(current) => {
                 const transferedCurrent = current && current.startOf("day");
                 const transferedEndTime = endTime && endTime;
-
                 return (
                   (transferedCurrent && transferedCurrent > moment()) ||
                   (transferedCurrent &&
@@ -322,10 +357,20 @@ const FrequentData = function () {
           <Col span={6}>
             結束時間
             <DatePicker
+              picker="date"
+              mode={datePickerMode.end}
+              onPanelChange={(value, mode) => {
+                setDatePickerMode({ ...datePickerMode, end: mode });
+              }}
+              onOpenChange={(open) => {
+                if (!open)
+                  setDatePickerMode({ ...datePickerMode, end: "year" });
+              }}
               value={endTime}
               allowClear
               style={{ width: "100%" }}
               placeholder="選擇結束時間"
+              disabled={stocks.length === 0}
               disabledDate={(current) => {
                 const transferedCurrent = current && current.startOf("day");
                 const transferedStartTime = startTime && startTime;
@@ -453,26 +498,26 @@ const FrequentData = function () {
                 if (stocks) stockIds = stocks;
               }
 
-              if (stockIds.length) {
-                const { url, method } = getRealDataContentAPI(fileType);
+              if (stockIds.length && startTime && endTime) {
+                const { url, method } = getRealDataContentAPI(
+                  fileType,
+                  marketType
+                );
                 setIsButtonLoading(true);
-                const createdTime = {};
-                if (endTime)
-                  createdTime.max = endTime.endOf("day").toISOString();
-                if (startTime)
-                  createdTime.min = startTime.startOf("day").toISOString();
                 await Promise.all(
                   stockIds.map((stockId) => {
                     return defaultAxios({
                       url,
                       method,
                       params: {
-                        createdTime,
                         unit,
                         dateFormat: isSample ? dateFormat : undefined,
                         sampleMode,
                         fields,
                         stockId,
+                        futureId: stockId,
+                        startTime: startTime.startOf("day").toISOString(),
+                        endTime: endTime.endOf("day").toISOString(),
                       },
                     })
                       .then(({ data, headers }) => {
@@ -505,6 +550,11 @@ const FrequentData = function () {
                       });
                   })
                 );
+              } else {
+                errorNotification({
+                  statusCode: 400,
+                  message: "stock, startTime, endTime are required",
+                });
               }
             }}
           >
@@ -513,6 +563,15 @@ const FrequentData = function () {
         </Row>
       </div>
     </Spin>
+  );
+};
+
+const FrequentData = function () {
+  return (
+    <div>
+      <FrequentDataElement marketType="stock" />
+      <FrequentDataElement marketType="future" />
+    </div>
   );
 };
 

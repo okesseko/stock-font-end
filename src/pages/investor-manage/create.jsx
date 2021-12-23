@@ -9,7 +9,6 @@ const Create = ({ visible, setVisible, defaultValue, reset, role = [] }) => {
     if (defaultValue) {
       form.setFieldsValue(defaultValue);
     }
-    
   }, [defaultValue]);
   return (
     <Modal
@@ -31,14 +30,13 @@ const Create = ({ visible, setVisible, defaultValue, reset, role = [] }) => {
         layout="vertical"
         form={form}
         onFinish={(value) => {
-          const { totalApiTime, restApiTime, ...other } = value;
+          const { restApiTime, ...other } = value;
           if (defaultValue) {
             defaultAxios({
               url: api.putInvestor.url,
               method: api.putInvestor.method,
               data: {
                 id: defaultValue.id,
-                totalApiTime: parseInt(totalApiTime),
                 restApiTime: parseInt(restApiTime),
                 ...other,
               },
@@ -56,7 +54,6 @@ const Create = ({ visible, setVisible, defaultValue, reset, role = [] }) => {
               url: api.postInvestor.url,
               method: api.postInvestor.method,
               data: {
-                totalApiTime: parseInt(totalApiTime),
                 restApiTime: parseInt(restApiTime),
                 ...other,
               },
@@ -86,16 +83,6 @@ const Create = ({ visible, setVisible, defaultValue, reset, role = [] }) => {
           rules={[{ required: !defaultValue, message: "請輸入密碼" }]}
         >
           <Input placeholder="請輸入密碼" />
-        </Form.Item>
-        <Form.Item
-          label="每日請求上限"
-          name="totalApiTime"
-          rules={[
-            { required: defaultValue ? true : false, message: "請輸入上限" },
-          ]}
-          style={{ display: defaultValue ? undefined : "none" }}
-        >
-          <Input type="number" placeholder="請輸入數字" />
         </Form.Item>
         <Form.Item
           label="剩餘請求次數"

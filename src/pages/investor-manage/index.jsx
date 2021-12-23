@@ -112,9 +112,10 @@ const InvestorManagement = () => {
             dataIndex: "account",
           },
           {
-            title: "每日請求上限",
-            dataIndex: "totalApiTime",
+            title: "憑證",
+            dataIndex: "token",
           },
+
           {
             title: "剩餘請求次數",
             dataIndex: "restApiTime",
@@ -155,7 +156,6 @@ const InvestorManagement = () => {
                       id: record.id,
                       account: record.account,
                       password: record.password,
-                      totalApiTime: record.totalApiTime,
                       restApiTime: record.restApiTime,
                       roleId: record.role.id,
                     });

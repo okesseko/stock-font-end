@@ -8,7 +8,7 @@ import dayjs from "dayjs";
 const { TabPane } = Tabs;
 
 const getRealDataOrderContent = async (params) => {
-  const { url, method } = api.getRealDataOrderContent;
+  const { url, method } = api.getRealDataStockOrderContent;
   params.isSimulatedOrder = true;
   return defaultAxios({
     url,
@@ -260,11 +260,10 @@ const RealDataSimulator = ({ customResetStock, onReset }) => {
           <DatePicker
             allowClear
             style={{ width: "100%" }}
-            showTime
             placeholder="選擇開始時間"
             disabledDate={(current) => current && current > dayjs()}
             onChange={(time) => {
-              if (time) setStartTime(dayjs(time).toISOString());
+              if (time) setStartTime(dayjs(time).startOf("day").toISOString());
               else setStartTime(time);
             }}
           />
@@ -274,11 +273,10 @@ const RealDataSimulator = ({ customResetStock, onReset }) => {
           <DatePicker
             allowClear
             style={{ width: "100%" }}
-            showTime
             placeholder="選擇結束時間"
             disabledDate={(current) => current && current > dayjs()}
             onChange={(time) => {
-              if (time) setEndTime(dayjs(time).toISOString());
+              if (time) setEndTime(dayjs(time).startOf("day").toISOString());
               else setEndTime(time);
             }}
           />
@@ -296,9 +294,13 @@ const RealDataSimulator = ({ customResetStock, onReset }) => {
               });
             }
 
+            console.log(startTime, endTime);
             getRealDataOrderContent({
               stockId,
-              createdTime: { min: startTime, max: endTime },
+              createdTime: {
+                min: startTime,
+                max: endTime,
+              },
             })
               .then(({ data }) => {
                 setOrders(

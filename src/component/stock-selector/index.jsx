@@ -10,12 +10,24 @@ export const StockSelector = ({ style, mode, onChange, isRealData, onEnd }) => {
 
   useEffect(() => {
     if (isRealData) {
+      const { marketType, fileType } = isRealData;
+      const { url, method } =
+        marketType === "future"
+          ? api.getAvailableFuture
+          : api.getAvailableStock;
       defaultAxios({
-        url: api.getRealDataAvailableStock.url,
-        method: api.getRealDataAvailableStock.method,
+        url,
+        method,
+        params: {
+          type: fileType,
+        },
       })
         .then(({ data }) => {
-          setStockList(data);
+          setStockList(
+            data.map((id) => {
+              return { id };
+            })
+          );
         })
         .catch((err) => {
           errorNotification(err?.response?.data);
