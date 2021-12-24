@@ -3,9 +3,11 @@ import { Form, Input, Button, Alert } from "antd";
 import { defaultAxios, api } from "../../environment/api";
 import errorNotification from "../../utils/errorNotification";
 import { useHistory } from "react-router-dom";
+import Create from "./create";
 
 const Login = ({ setToken }) => {
   const [loginError, setLoginError] = useState();
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const history = useHistory();
   return (
     <div
@@ -60,7 +62,18 @@ const Login = ({ setToken }) => {
             登入
           </Button>
         </Form.Item>
+        <Form.Item className="mt-4">
+          <Button
+            onClick={() => {
+              setIsModalVisible(true);
+            }}
+            className="w-full"
+          >
+            註冊
+          </Button>
+        </Form.Item>
       </Form>
+      <Create visible={isModalVisible} setVisible={setIsModalVisible} />
     </div>
   );
 };
