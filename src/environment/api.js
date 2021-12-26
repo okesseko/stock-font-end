@@ -22,6 +22,7 @@ export const api = {
   logout: { url: "api/investor/logout", method: "POST" },
 
   getOrder: { url: "api/order", method: "GET" },
+  postOrder: { url: "api/order", method: "POST" },
   deleteOrder: { url: "api/order", method: "DELETE" },
   getDisplay: { url: "api/display", method: "GET" },
   getDisplayChart: { url: "api/display/chart", method: "GET" },

@@ -30,7 +30,17 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
     R_B: 0.8,
     R_A: 0.8,
     default_theta_B: 10,
+    default_theta_B1: 0.71,
+    default_theta_B2: 0.81,
+    default_theta_B3: 0.68,
+    default_theta_B4: 0.56,
+    default_theta_B5: 0.47,
     default_theta_A: 10,
+    default_theta_A1: 0.71,
+    default_theta_A2: 0.81,
+    default_theta_A3: 0.68,
+    default_theta_A4: 0.56,
+    default_theta_A5: 0.47,
     R_theta_B: 0.8,
     R_theta_A: 0.8,
     mu_B: 0.94,
@@ -159,8 +169,44 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
     setSetting({ ...setting, default_theta_B: value });
   };
 
+  const handleInputChangeThetaB1 = (value) => {
+    setSetting({ ...setting, default_theta_B1: value });
+  };
+
+  const handleInputChangeThetaB2 = (value) => {
+    setSetting({ ...setting, default_theta_B2: value });
+  };
+
+  const handleInputChangeThetaB3 = (value) => {
+    setSetting({ ...setting, default_theta_B3: value });
+  };
+
+  const handleInputChangeThetaB4 = (value) => {
+    setSetting({ ...setting, default_theta_B4: value });
+  };
+
+  const handleInputChangeThetaB5 = (value) => {
+    setSetting({ ...setting, default_theta_B5: value });
+  };
+
   const handleInputChangeThetaA = (value) => {
     setSetting({ ...setting, default_theta_A: value });
+  };
+
+  const handleInputChangeThetaA1 = (value) => {
+    setSetting({ ...setting, default_theta_A1: value });
+  };
+  const handleInputChangeThetaA2 = (value) => {
+    setSetting({ ...setting, default_theta_A2: value });
+  };
+  const handleInputChangeThetaA3 = (value) => {
+    setSetting({ ...setting, default_theta_A3: value });
+  };
+  const handleInputChangeThetaA4 = (value) => {
+    setSetting({ ...setting, default_theta_A4: value });
+  };
+  const handleInputChangeThetaA5 = (value) => {
+    setSetting({ ...setting, default_theta_A5: value });
   };
 
   const handleInputChangeThetaRatioB = (value) => {
@@ -279,7 +325,7 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
         <TabPane tab="Model (1)" key="1">
           <div>
             <div className="flex justify-center">
-              <div className="w-1/2">
+              <div className="w-full mx-5">
                 <div>batch size: {setting.batch_size}</div>
                 <Slider
                   min={1}
@@ -291,7 +337,7 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
               </div>
             </div>
             <div className="flex justify-center mx-5">
-              <div className="mr-5 pr-5 border-r w-1/4">
+              <div className="mr-5 pr-5 border-r w-1/2">
                 <div>
                   <div>
                     λ<sub>B</sub>: {setting.default_lambda_B}
@@ -347,15 +393,15 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
                     μ<sub>B</sub>: {setting.mu_B}
                   </div>
                   <Slider
-                    min={1}
-                    max={100}
+                    min={0.01}
+                    max={10}
                     step={0.01}
                     value={setting.mu_B}
                     onChange={handleInputChangeMuB}
                   />
                 </div>
               </div>
-              <div className="w-1/4">
+              <div className="w-1/2">
                 <div>
                   <div>
                     λ<sub>A</sub>: {setting.default_lambda_A}
@@ -411,8 +457,8 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
                     μ<sub>A</sub>: {setting.mu_A}
                   </div>
                   <Slider
-                    min={1}
-                    max={100}
+                    min={0.01}
+                    max={10}
                     step={0.01}
                     value={setting.mu_A}
                     onChange={handleInputChangeMuA}
@@ -453,7 +499,7 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
                     α<sub>B</sub>: {setting.default_alpha_B}
                   </div>
                   <Slider
-                    min={1}
+                    min={0.01}
                     max={10}
                     step={0.01}
                     value={setting.default_alpha_B}
@@ -472,41 +518,65 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
                     onChange={handleInputChangeLambdaBK}
                   />
                 </div>
-                {/* <div>
-                  <div>
-                    R<sub>B</sub>: {setting.R_B}
-                  </div>
-                  <Slider
-                    min={0.1}
-                    max={5}
-                    step={0.1}
-                    value={setting.R_B}
-                    onChange={handleInputChangeLambdaRatioB}
-                  />
-                </div> */}
                 <hr className="my-3" />
                 <div>
                   <div>
-                    θ<sub>B</sub>: {setting.default_theta_B}
+                    θ<sub>B1</sub>: {setting.default_theta_B1}
                   </div>
                   <Slider
-                    min={1}
-                    max={100}
-                    step={0.1}
-                    value={setting.default_theta_B}
-                    onChange={handleInputChangeThetaB}
+                    min={0.01}
+                    max={10}
+                    step={0.01}
+                    value={setting.default_theta_B1}
+                    onChange={handleInputChangeThetaB1}
                   />
                 </div>
                 <div>
                   <div>
-                    R<sub>B</sub>: {setting.R_theta_B}
+                    θ<sub>B2</sub>: {setting.default_theta_B2}
                   </div>
                   <Slider
-                    min={0.1}
-                    max={5}
-                    step={0.1}
-                    value={setting.R_theta_B}
-                    onChange={handleInputChangeThetaRatioB}
+                    min={0.01}
+                    max={10}
+                    step={0.01}
+                    value={setting.default_theta_B2}
+                    onChange={handleInputChangeThetaB2}
+                  />
+                </div>
+                <div>
+                  <div>
+                    θ<sub>B3</sub>: {setting.default_theta_B3}
+                  </div>
+                  <Slider
+                    min={0.01}
+                    max={10}
+                    step={0.01}
+                    value={setting.default_theta_B3}
+                    onChange={handleInputChangeThetaB3}
+                  />
+                </div>
+                <div>
+                  <div>
+                    θ<sub>B4</sub>: {setting.default_theta_B4}
+                  </div>
+                  <Slider
+                    min={0.01}
+                    max={10}
+                    step={0.01}
+                    value={setting.default_theta_B4}
+                    onChange={handleInputChangeThetaB4}
+                  />
+                </div>
+                <div>
+                  <div>
+                    θ<sub>B5</sub>: {setting.default_theta_B5}
+                  </div>
+                  <Slider
+                    min={0.01}
+                    max={10}
+                    step={0.01}
+                    value={setting.default_theta_B5}
+                    onChange={handleInputChangeThetaB5}
                   />
                 </div>
                 <hr className="my-3" />
@@ -515,8 +585,8 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
                     μ<sub>B</sub>: {setting.mu_B}
                   </div>
                   <Slider
-                    min={1}
-                    max={100}
+                    min={0.01}
+                    max={10}
                     step={0.01}
                     value={setting.mu_B}
                     onChange={handleInputChangeMuB}
@@ -529,7 +599,7 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
                     α<sub>A</sub>: {setting.default_alpha_A}
                   </div>
                   <Slider
-                    min={1}
+                    min={0.01}
                     max={10}
                     step={0.01}
                     value={setting.default_alpha_A}
@@ -548,41 +618,65 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
                     onChange={handleInputChangeLambdaAK}
                   />
                 </div>
-                {/* <div>
-                  <div>
-                    R<sub>A</sub>: {setting.R_A}
-                  </div>
-                  <Slider
-                    min={0.1}
-                    max={5}
-                    step={0.1}
-                    value={setting.R_A}
-                    onChange={handleInputChangeLambdaRatioA}
-                  />
-                </div> */}
                 <hr className="my-3" />
                 <div>
                   <div>
-                    θ<sub>A</sub>: {setting.default_theta_A}
+                    θ<sub>A1</sub>: {setting.default_theta_A1}
                   </div>
                   <Slider
-                    min={1}
-                    max={100}
-                    step={0.1}
-                    value={setting.default_theta_A}
-                    onChange={handleInputChangeThetaA}
+                    min={0.01}
+                    max={10}
+                    step={0.01}
+                    value={setting.default_theta_A1}
+                    onChange={handleInputChangeThetaA1}
                   />
                 </div>
                 <div>
                   <div>
-                    R<sub>A</sub>: {setting.R_theta_A}
+                    θ<sub>A2</sub>: {setting.default_theta_A2}
                   </div>
                   <Slider
-                    min={0.1}
-                    max={5}
-                    step={0.1}
-                    value={setting.R_theta_A}
-                    onChange={handleInputChangeThetaRatioA}
+                    min={0.01}
+                    max={10}
+                    step={0.01}
+                    value={setting.default_theta_A2}
+                    onChange={handleInputChangeThetaA2}
+                  />
+                </div>
+                <div>
+                  <div>
+                    θ<sub>A3</sub>: {setting.default_theta_A3}
+                  </div>
+                  <Slider
+                    min={0.01}
+                    max={10}
+                    step={0.01}
+                    value={setting.default_theta_A3}
+                    onChange={handleInputChangeThetaA3}
+                  />
+                </div>
+                <div>
+                  <div>
+                    θ<sub>A4</sub>: {setting.default_theta_A4}
+                  </div>
+                  <Slider
+                    min={0.01}
+                    max={10}
+                    step={0.01}
+                    value={setting.default_theta_A4}
+                    onChange={handleInputChangeThetaA4}
+                  />
+                </div>
+                <div>
+                  <div>
+                    θ<sub>A5</sub>: {setting.default_theta_A5}
+                  </div>
+                  <Slider
+                    min={0.01}
+                    max={10}
+                    step={0.01}
+                    value={setting.default_theta_A5}
+                    onChange={handleInputChangeThetaA5}
                   />
                 </div>
                 <hr className="my-3" />
@@ -591,8 +685,8 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
                     μ<sub>A</sub>: {setting.mu_A}
                   </div>
                   <Slider
-                    min={1}
-                    max={100}
+                    min={0.01}
+                    max={10}
                     step={0.01}
                     value={setting.mu_A}
                     onChange={handleInputChangeMuA}

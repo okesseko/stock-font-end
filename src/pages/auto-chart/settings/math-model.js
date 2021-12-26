@@ -62,8 +62,13 @@ function getBinomialSampling(n, p) {
   return randomChoice(probability_list, 1);
 }
 
-function getBatches(n, p) {
+function getBatches(batch_size, n, p, current_tab){
+ if (current_tab == 1) {
+  let p = 0.5;
+  return geometricDistribution(1, batch_size, p);
+ } else if (current_tab == 2) {
   return getBinomialSampling(n, p);
+ }
 }
 
 function sendOrderApi(data) {
@@ -97,7 +102,17 @@ export const renderData = function (params, q, content, firstTime, stockId) {
   let R_B = params.R_B;
   let R_A = params.R_A;
   let default_theta_B = params.default_theta_B;
+  let default_theta_B1 = params.default_theta_B1;
+  let default_theta_B2 = params.default_theta_B2;
+  let default_theta_B3 = params.default_theta_B3;
+  let default_theta_B4 = params.default_theta_B4;
+  let default_theta_B5 = params.default_theta_B5;
   let default_theta_A = params.default_theta_A;
+  let default_theta_A1 = params.default_theta_A1;
+  let default_theta_A2 = params.default_theta_A2;
+  let default_theta_A3 = params.default_theta_A3;
+  let default_theta_A4 = params.default_theta_A4;
+  let default_theta_A5 = params.default_theta_A5;
   let R_theta_B = params.R_theta_B;
   let R_theta_A = params.R_theta_A;
   let mu_B = params.mu_B;
@@ -154,6 +169,23 @@ export const renderData = function (params, q, content, firstTime, stockId) {
     let theta_B = default_theta_B * Math.pow(R_theta_B, count);
     if (current_tab == 2) {
       lambda_B = default_lambda_B_K / Math.pow(count+1, default_alpha_B);
+      switch(count) {
+        case 0:
+        theta_B = default_theta_B1;
+        return;
+        case 1: 
+        theta_B = default_theta_B2;
+        return;
+        case 2: 
+        theta_B = default_theta_B3;
+        return;
+        case 3: 
+        theta_B = default_theta_B4;
+        return;
+        default: 
+        theta_B = default_theta_B5;
+        return;
+      }
     }
     T["LB" + price] = nextExponential(lambda_B);
     T["CB" + price] = nextExponential(theta_B);
@@ -165,6 +197,23 @@ export const renderData = function (params, q, content, firstTime, stockId) {
     let theta_B = default_theta_B * Math.pow(R_theta_B, count);
     if (current_tab == 2) {
       lambda_B = default_lambda_B_K / Math.pow(count+1, default_alpha_B);
+      switch(count) {
+        case 0:
+        theta_B = default_theta_B1;
+        return;
+        case 1: 
+        theta_B = default_theta_B2;
+        return;
+        case 2: 
+        theta_B = default_theta_B3;
+        return;
+        case 3: 
+        theta_B = default_theta_B4;
+        return;
+        default: 
+        theta_B = default_theta_B5;
+        return;
+      }
     }
     T["LB" + price] = nextExponential(lambda_B);
     T["CB" + price] = nextExponential(theta_B);
@@ -176,6 +225,23 @@ export const renderData = function (params, q, content, firstTime, stockId) {
     let theta_A = default_theta_A * Math.pow(R_theta_A, count);
     if (current_tab == 2) {
       lambda_A = default_lambda_A_K / Math.pow(count+1, default_alpha_A);
+      switch(count) {
+        case 0:
+        theta_A = default_theta_A1;
+        return;
+        case 1: 
+        theta_A = default_theta_A2;
+        return;
+        case 2: 
+        theta_A = default_theta_A3;
+        return;
+        case 3: 
+        theta_A = default_theta_A4;
+        return;
+        default: 
+        theta_A = default_theta_A5;
+        return;
+      }
     }
     T["LA" + price] = nextExponential(lambda_A);
     T["CA" + price] = nextExponential(theta_A);
@@ -187,6 +253,23 @@ export const renderData = function (params, q, content, firstTime, stockId) {
     let theta_A = default_theta_A * Math.pow(R_theta_A, count);
     if (current_tab == 2) {
       lambda_A = default_lambda_A_K / Math.pow(count+1, default_alpha_A);
+      switch(count) {
+        case 0:
+        theta_A = default_theta_A1;
+        return;
+        case 1: 
+        theta_A = default_theta_A2;
+        return;
+        case 2: 
+        theta_A = default_theta_A3;
+        return;
+        case 3: 
+        theta_A = default_theta_A4;
+        return;
+        default: 
+        theta_A = default_theta_A5;
+        return;
+      }
     }
     T["LA" + price] = nextExponential(lambda_A);
     T["CA" + price] = nextExponential(theta_A);
@@ -228,7 +311,7 @@ export const renderData = function (params, q, content, firstTime, stockId) {
       case "L":
         // console.log("Limit order");
         let price = Number(lowest[0].substring(2, 10));
-        let quantity = getBatches(n, p);
+        let quantity = getBatches(batch_size, n, p, current_tab);
         sendOrderApi({
           investorId: null,
           stockId,
@@ -270,7 +353,7 @@ export const renderData = function (params, q, content, firstTime, stockId) {
           stockId,
           method: type == "B" ? 0 : 1, // BUY = 0, SELL = 1
           price: 0,
-          quantity: getBatches(n, p),
+          quantity: getBatches(batch_size, n, p, current_tab),
           priceType: 0, // MARKET = 0, LIMIT = 1
           timeRestriction: 0, // ROD = 0, IOC = 1, FOK = 2
         });
