@@ -4,6 +4,7 @@ import { defaultAxios, api } from "../../environment/api";
 import { Button, Typography } from "antd";
 import DisplayChart from "../../component/chart";
 import errorNotification from "../../utils/errorNotification";
+import RealTimeQ1Chart from "./realTimeQ1Chart";
 
 const { Title } = Typography;
 
@@ -63,6 +64,7 @@ const AutoChart = () => {
         使用情境
       </Title>
       <Settings buttonStatus={buttonStatus} stockId={stockId} />
+      <RealTimeQ1Chart stockId={stockId} buttonStatus={buttonStatus} />
     </div>
   );
 };

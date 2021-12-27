@@ -5,7 +5,9 @@ import { defaultAxios, api } from "../../environment/api";
 import { useHistory } from "react-router-dom";
 import errorNotification from "../../utils/errorNotification";
 
-const RouterLink = ({ setToken }) => {
+import { LINK_MAPPING_DATA } from "../../authData";
+
+const RouterLink = ({ setToken, permission }) => {
   const history = useHistory();
   return (
     <ul className="sticky px-4 bg-gray-200 w-48 flex-shrink-0 min-h-screen">
@@ -32,51 +34,19 @@ const RouterLink = ({ setToken }) => {
       </li>
       <li className=" py-5 text-xl border-b border-black">
         <NavLink to="/stock-font-end/" exact>
-          main
+          首頁
         </NavLink>
       </li>
       <li className="py-5 text-xl border-b border-black">
-        <NavLink to="/stock-font-end/echart-example">echart example</NavLink>
+        <NavLink to="/stock-font-end/echart-example">範例</NavLink>
       </li>
-      <li className="py-5 text-xl border-b border-black">
-        <NavLink to="/stock-font-end/auto-chart">LOB 圖表</NavLink>
-      </li>
-      <li className="py-5 text-xl border-b border-black">
-        <NavLink to="/stock-font-end/replay-chart">重播紀錄</NavLink>
-      </li>
-      <li className="py-5 text-xl border-b border-black">
-        <NavLink to="/stock-font-end/Q1-chart">Q1 圖表</NavLink>
-      </li>
-      <li className="py-5 text-xl border-b border-black">
-        <NavLink to="/stock-font-end/order-table">委託紀錄表單</NavLink>
-      </li>
-      <li className="py-5 text-xl border-b border-black">
-        <NavLink to="/stock-font-end/price-table">成交紀錄表單</NavLink>
-      </li>
-      <li className="py-5 text-xl border-b border-black">
-        <NavLink to="/stock-font-end/quick-order">閃電下單</NavLink>
-      </li>
-      <li className="py-5 text-xl border-b border-black">
-        <NavLink to="/stock-font-end/case">情境管理</NavLink>
-      </li>
-      <li className="py-5 text-xl border-b border-black">
-        <NavLink to="/stock-font-end/frequent-data">高頻資料</NavLink>
-      </li>
-      <li className="py-5 text-xl border-b border-black">
-        <NavLink to="/stock-font-end/real-data-upload">上傳真實資料</NavLink>
-      </li>
-      <li className="py-5 text-xl border-b border-black">
-        <NavLink to="/stock-font-end/simulator">模擬下單</NavLink>
-      </li>
-      <li className="py-5 text-xl border-b border-black">
-        <NavLink to="/stock-font-end/stock">股票管理</NavLink>
-      </li>
-      <li className="py-5 text-xl border-b border-black">
-        <NavLink to="/stock-font-end/role-management">角色管理</NavLink>
-      </li>
-      <li className="py-5 text-xl border-b border-black">
-        <NavLink to="/stock-font-end/investor-management">帳戶管理</NavLink>
-      </li>
+      {permission.map((data) => (
+        <li className="py-5 text-xl border-b border-black">
+          <NavLink to={`/stock-font-end/${data}`}>
+            {LINK_MAPPING_DATA[data]}
+          </NavLink>
+        </li>
+      ))}
     </ul>
   );
 };

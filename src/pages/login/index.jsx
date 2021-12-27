@@ -5,7 +5,7 @@ import errorNotification from "../../utils/errorNotification";
 import { useHistory } from "react-router-dom";
 import Create from "./create";
 
-const Login = ({ setToken }) => {
+const Login = ({ setToken, setPermission }) => {
   const [loginError, setLoginError] = useState();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const history = useHistory();
@@ -33,8 +33,13 @@ const Login = ({ setToken }) => {
         onFinish={(data) => {
           defaultAxios({ url: api.login.url, method: api.login.method, data })
             .then((res) => {
-              localStorage.setItem("token", res.data);
-              setToken(res.data);
+              localStorage.setItem("token", res.data.token);
+              localStorage.setItem(
+                "permission",
+                JSON.stringify(res.data.permission)
+              );
+              setToken(res.data.token);
+              setPermission(res.data.permission);
               history.replace("/stock-font-end/");
             })
             .catch((err) => {

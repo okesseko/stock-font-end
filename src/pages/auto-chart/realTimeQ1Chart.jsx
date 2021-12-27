@@ -1,26 +1,17 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-  Slider,
-  Tabs,
-  Typography,
-  Table,
-  Button,
-  DatePicker,
-  Form,
-} from "antd";
-import { StockSelector } from "../../component/stock-selector";
+import React, { useState, useRef, useEffect } from "react";
+import { Slider, Typography, Table, Button, Form } from "antd";
 import { api, defaultAxios } from "../../environment/api";
 import errorNotification from "../../utils/errorNotification";
 import dayjs from "dayjs";
 
 const { Title } = Typography;
 
-const Q1Chart = () => {
+const RealTimeQ1Chart = ({ stockId, buttonStatus }) => {
   const [form] = Form.useForm();
   const rowBuffer = useRef({});
+  const startTime = useRef("");
+  const repeatTimer = useRef();
   const [q1Variable, setQ1Variable] = useState({
-    startTime: "",
-    endTime: "",
     s: 2,
     a: 10,
     b: 10,
@@ -74,15 +65,18 @@ const Q1Chart = () => {
       url: api.getDisplay.url,
       method: api.getDisplay.method,
       params: {
-        stockId: 1,
-        createdTime: { min: q1Variable.startTime, max: q1Variable.endTime },
+        stockId,
+        createdTime: {
+          min: startTime.current,
+          max: dayjs().toISOString(),
+        },
       },
     })
       .then((res) => {
-        console.log(res.data.content);
         const filteredData = res.data.content.filter(
           (data) => data.firstOrderBuyPrice && data.firstOrderSellPrice
         );
+        console.log(filteredData);
 
         const timeTicker =
           Math.round(
@@ -137,9 +131,21 @@ const Q1Chart = () => {
         setTable({ columns, dataSource });
       })
       .catch((err) => {
+        console.log(err);
         errorNotification(err?.response?.data);
       });
   }
+
+  useEffect(() => {
+    if (buttonStatus === "start") {
+      startTime.current = dayjs().toISOString();
+      repeatTimer.current = setInterval(() => {
+        getData(columnCount(), rowCount());
+      }, 1000);
+    } else {
+      clearInterval(repeatTimer.current);
+    }
+  }, [buttonStatus]);
 
   return (
     <div className="px-4">
@@ -149,6 +155,7 @@ const Q1Chart = () => {
       <div className="flex flex-col items-start pb-5">
         <Form
           form={form}
+          className="w-full"
           initialValues={{
             s: 2,
             a: 10,
@@ -156,31 +163,9 @@ const Q1Chart = () => {
             g: 2,
           }}
           onValuesChange={(_, allValues) => {
-            const { createdTime = [], ...other } = allValues;
-            setQ1Variable({
-              ...other,
-              startTime: dayjs(createdTime[0]).toISOString(),
-              endTime: dayjs(createdTime[1]).toISOString(),
-            });
-          }}
-          onFinish={() => {
-            getData(columnCount(), rowCount());
+            setQ1Variable(allValues);
           }}
         >
-          {/* <Form.Item
-            rules={[{ required: true, message: "請選擇股票" }]}
-            label="選擇股票"
-            name="stock"
-          >
-            <StockSelector style={{ width: "100%" }} />
-          </Form.Item> */}
-          <Form.Item
-            rules={[{ required: true, message: "請選擇時間" }]}
-            label="播放時間"
-            name="createdTime"
-          >
-            <DatePicker.RangePicker showTime className="w-full" />
-          </Form.Item>
           <Form.Item label={`s: ${q1Variable.s}`} name="s">
             <Slider min={1} max={5} step={1} />
           </Form.Item>
@@ -193,18 +178,18 @@ const Q1Chart = () => {
           <Form.Item label={`g: ${q1Variable.g}`} name="g">
             <Slider min={1} max={10} step={1} />
           </Form.Item>
-          <Button type="primary" htmlType="submit">
-            開始計算
-          </Button>
         </Form>
       </div>
       <Table
         className="max-w-full"
         dataSource={table.dataSource}
         columns={table.columns}
+        // pagination={{
+        //   pageSize: 100,
+        // }}
       />
     </div>
   );
 };
 
-export default Q1Chart;
+export default RealTimeQ1Chart;
