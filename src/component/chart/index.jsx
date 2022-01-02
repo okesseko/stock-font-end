@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import BarChart from "../../pages/echart-example/bar";
+import BarStatisticsChart from "../../pages/echart-example/bar-statistics";
 import BarLineChart from "../../pages/echart-example/bar-line";
 import { Button, Select } from "antd";
 import { StockSelector } from "../stock-selector";
@@ -56,6 +57,21 @@ const DisplayTimeChart = ({
   );
 };
 
+const DisplayStatisticsChart = ({
+  data = { xAxis: [], quantity: [], type: "", },
+  onDateFormatChange,
+}) => {
+  return (
+    <div>      
+      <BarStatisticsChart 
+        data={data}
+        onDateFormatChange={(v) => {
+          onDateFormatChange && onDateFormatChange(v);
+        }}
+      />
+    </div>
+  );
+};
 const DisplayTickChart = ({ data = {} }) => {
   const [showType, setShowType] = useState("all");
   return (
@@ -148,6 +164,7 @@ const DisplayChart = ({
   // chart data
   const [tickChartData, setTickChartData] = useState({});
   const [timeChartData, setTimeChartData] = useState([]);
+  const [statisticsChartData, setStatisticsChartData] = useState([]);
   const [splitChartData, setSplitChartData] = useState([]);
 
   const clearInterval = () => {
@@ -158,6 +175,7 @@ const DisplayChart = ({
   const resetChart = () => {
     setTickChartData({});
     setTimeChartData([]);
+    setStatisticsChartData([]);
     setSplitChartData([]);
     setLatestTimeChartTime(undefined);
   };
@@ -181,6 +199,28 @@ const DisplayChart = ({
       interval.current,
       latestTimeChartTime
     );
+    Promise.all([
+      defaultAxios({
+        url: api.getDisplay.url,
+        method: api.getDisplay.method,
+        params: {
+          stockId,
+          isGetLatest: true,
+        },
+      })
+    ]).then((data) => {
+      const _statisticsChartData = data[0].data;
+      const newStatisticsChartData = JSON.parse(JSON.stringify(statisticsChartData));
+      
+      newStatisticsChartData.push({
+        xAxis: _statisticsChartData.createdTime,
+        fiveTickRange: _statisticsChartData.fiveTickRange,
+        marketBuyQuantity: _statisticsChartData.marketBuyQuantity,
+        marketSellQuantity: _statisticsChartData.marketSellQuantity,
+      });
+
+      setStatisticsChartData(newStatisticsChartData);
+    })
     getChartData(
       (stock && stock.id) || stockId,
       dateFormat,
@@ -221,6 +261,7 @@ const DisplayChart = ({
             }
           });
           setTimeChartData(newTimeChartData);
+          // setStatisticsChartData(newTimeChartData);
           // split chart
           setSplitChartData(
             newTimeChartData.slice(-10).map(({ buy, sell, xAxis }) => {
@@ -235,7 +276,7 @@ const DisplayChart = ({
       .catch((err) => {
         errorNotification(err?.response?.data);
       });
-  }, [stock, stockId, dateFormat, timeChartData, latestTimeChartTime]);
+  }, [stock, stockId, dateFormat, timeChartData, statisticsChartData, latestTimeChartTime]);
 
   useEffect(() => {
     clearInterval();
@@ -286,6 +327,106 @@ const DisplayChart = ({
       {useMemo(() => {
         return <DisplaySplitChart data={splitChartData} />;
       }, [splitChartData])}
+      {useMemo(() => {
+        return (
+          <div className="flex justify-around mt-3 mb-0 items-center">
+            <div className="w-1/2">
+              <DisplayStatisticsChart
+                data={statisticsChartData.reduce(
+                  (p, v) => {
+                    const { 
+                      xAxis,
+                      // quantity,
+                      fiveTickRange,
+                      marketBuyQuantity,
+                      marketSellQuantity
+                    } = v;
+                    p.xAxis.push(xAxis);
+                    p.quantityB1.push(fiveTickRange[5].buyQuantity);
+                    p.quantityB2.push(fiveTickRange[6].buyQuantity);
+                    p.quantityB3.push(fiveTickRange[7].buyQuantity);
+                    p.quantityB4.push(fiveTickRange[8].buyQuantity);
+                    p.quantityB5.push(fiveTickRange[9].buyQuantity);
+                    p.marketBuyQuantity.push(marketBuyQuantity);
+                    p.marketSellQuantity.push(marketSellQuantity);
+                    return p;
+                  },
+                  {
+                    xAxis: [],
+                    quantityA5: [],
+                    quantityA4: [],
+                    quantityA3: [],
+                    quantityA2: [],
+                    quantityA1: [],
+                    quantityB1: [],
+                    quantityB2: [],
+                    quantityB3: [],
+                    quantityB4: [],
+                    quantityB5: [],
+                    fiveTickRange: [],
+                    marketBuyQuantity: [],
+                    marketSellQuantity: [],
+                    charts: [
+                      "B1", "B2", "B3", "B4", "B5"
+                    ],
+                    type: "buy",
+                  }
+                )}
+                onDateFormatChange={(v) => {
+                  setDateFormat(v);
+                }}
+              />
+            </div>
+            <div className="w-1/2">
+              <DisplayStatisticsChart
+                data={statisticsChartData.reduce(
+                  (p, v) => {
+                    const { 
+                      xAxis,
+                      // quantity,
+                      fiveTickRange,
+                      marketBuyQuantity,
+                      marketSellQuantity
+                    } = v;
+                    p.xAxis.push(xAxis);
+                    p.quantityA5.push(fiveTickRange[0].sellQuantity);
+                    p.quantityA4.push(fiveTickRange[1].sellQuantity);
+                    p.quantityA3.push(fiveTickRange[2].sellQuantity);
+                    p.quantityA2.push(fiveTickRange[3].sellQuantity);
+                    p.quantityA1.push(fiveTickRange[4].sellQuantity);
+                    p.marketBuyQuantity.push(marketBuyQuantity);
+                    p.marketSellQuantity.push(marketSellQuantity);
+                    return p;
+                  },
+                  {
+                    xAxis: [],
+                    quantityA5: [],
+                    quantityA4: [],
+                    quantityA3: [],
+                    quantityA2: [],
+                    quantityA1: [],
+                    quantityB1: [],
+                    quantityB2: [],
+                    quantityB3: [],
+                    quantityB4: [],
+                    quantityB5: [],
+                    fiveTickRange: [],
+                    marketBuyQuantity: [],
+                    marketSellQuantity: [],
+                    charts: [
+                      "A1", "A2", "A3", "A4", "A5"
+                    ],
+                    type: "sell",
+                  }
+                )}
+                onDateFormatChange={(v) => {
+                  setDateFormat(v);
+                }}
+              />
+            </div>
+          </div>
+        );
+      }, [statisticsChartData])}
       <div className="flex justify-around my-6 items-center">
         <div className="w-1/6" style={{ display: stock ? "none" : undefined }}>
           選擇股票
