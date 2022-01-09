@@ -83,7 +83,12 @@ const Create = ({
           name="totalApiTime"
           rules={[
             { required: true, message: "請輸入上限" },
-            { min: 1, message: "不可小於1" },
+            {
+              validator: (_, value) => {
+                if (value > 0) return Promise.resolve();
+                return Promise.reject("不可小於1");
+              },
+            },
           ]}
         >
           <Input type="number" placeholder="請輸入數字" />

@@ -1,11 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { defaultAxios, api } from "../../environment/api";
 import errorNotification from "../../utils/errorNotification";
-import { Table, Button, Row, Col, Select, Input, Typography } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { Table, Button, Row, Col, Select, Modal, Typography } from "antd";
+import {
+  EditOutlined,
+  DeleteOutlined,
+  ExclamationCircleOutlined,
+} from "@ant-design/icons";
 import Create from "./create";
 import dayjs from "dayjs";
 
+const { confirm } = Modal;
 const { Title } = Typography;
 const InvestorManagement = () => {
   const [investorData, setInvestorData] = useState([]);
@@ -17,6 +22,33 @@ const InvestorManagement = () => {
   const [reset, setReset] = useState(0);
   const [editValue, setEditValue] = useState();
   const [checked, setChecked] = useState([]);
+
+  function showDeleteConfirm(id) {
+    confirm({
+      title: "確定要刪除?",
+      icon: <ExclamationCircleOutlined />,
+      content: "刪除後將無法復原",
+      okText: "確定",
+      okType: "danger",
+      cancelText: "取消",
+      onOk() {
+        defaultAxios({
+          url: api.deleteInvestor.url,
+          method: api.deleteInvestor.method,
+          data: {
+            id,
+          },
+        })
+          .catch((err) => {
+            errorNotification(err?.response?.data);
+          })
+          .finally(() => {
+            setChecked([]);
+            setReset(Math.random());
+          });
+      },
+    });
+  }
 
   useEffect(() => {
     defaultAxios({
@@ -71,22 +103,7 @@ const InvestorManagement = () => {
           disabled={!checked.length}
           type="default"
           className="mr-4"
-          onClick={() => {
-            defaultAxios({
-              url: api.deleteInvestor.url,
-              method: api.deleteInvestor.method,
-              data: {
-                id: checked,
-              },
-            })
-              .catch((err) => {
-                errorNotification(err?.response?.data);
-              })
-              .finally(() => {
-                setChecked([]);
-                setReset(Math.random());
-              });
-          }}
+          onClick={() => showDeleteConfirm(checked)}
         >
           刪除勾選
         </Button>
@@ -166,21 +183,7 @@ const InvestorManagement = () => {
                   type="link"
                   shape="circle"
                   className="inline-flex justify-center items-center"
-                  onClick={() => {
-                    defaultAxios({
-                      url: api.deleteInvestor.url,
-                      method: api.deleteInvestor.method,
-                      data: {
-                        id: [record.id],
-                      },
-                    })
-                      .catch((err) => {
-                        errorNotification(err?.response?.data);
-                      })
-                      .finally(() => {
-                        setReset(Math.random());
-                      });
-                  }}
+                  onClick={() => showDeleteConfirm([record.id])}
                   icon={<DeleteOutlined />}
                 />
               </span>
