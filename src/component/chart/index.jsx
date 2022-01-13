@@ -330,7 +330,7 @@ const DisplayChart = ({
       {useMemo(() => {
         return (
           <div className="flex justify-around mt-3 mb-0 items-center">
-            <div className="w-1/2">
+            {/* <div className="w-1/2">
               <DisplayStatisticsChart
                 data={statisticsChartData.reduce(
                   (p, v) => {
@@ -423,7 +423,7 @@ const DisplayChart = ({
                   setDateFormat(v);
                 }}
               />
-            </div>
+            </div> */}
           </div>
         );
       }, [statisticsChartData])}
