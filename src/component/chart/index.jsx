@@ -38,6 +38,13 @@ const getChartData = (stockId, dateFormat, latestTimeChartTime) => {
           }),
       },
     }),
+    defaultAxios({
+      url: api.getDisplay.url,
+      method: api.getDisplay.method,
+      params: {
+        stockId,
+      },
+    }),
   ]);
 };
 
@@ -160,6 +167,7 @@ const DisplayChart = ({
   const [stockId, setStockId] = useState();
   const [dateFormat, setDateFormat] = useState(4);
   const [latestTimeChartTime, setLatestTimeChartTime] = useState();
+  const [latestStatisticsChartTime, setLatestStatisticsChartTime] = useState();
 
   // chart data
   const [tickChartData, setTickChartData] = useState({});
@@ -178,6 +186,7 @@ const DisplayChart = ({
     setStatisticsChartData([]);
     setSplitChartData([]);
     setLatestTimeChartTime(undefined);
+    setLatestStatisticsChartTime(undefined);
   };
 
   useEffect(() => {
@@ -199,34 +208,12 @@ const DisplayChart = ({
       interval.current,
       latestTimeChartTime
     );
-    Promise.all([
-      defaultAxios({
-        url: api.getDisplay.url,
-        method: api.getDisplay.method,
-        params: {
-          stockId,
-          isGetLatest: true,
-        },
-      })
-    ]).then((data) => {
-      const _statisticsChartData = data[0].data;
-      const newStatisticsChartData = JSON.parse(JSON.stringify(statisticsChartData));
-      
-      newStatisticsChartData.push({
-        xAxis: _statisticsChartData.createdTime,
-        fiveTickRange: _statisticsChartData.fiveTickRange,
-        marketBuyQuantity: _statisticsChartData.marketBuyQuantity,
-        marketSellQuantity: _statisticsChartData.marketSellQuantity,
-      });
-
-      setStatisticsChartData(newStatisticsChartData);
-    })
     getChartData(
       (stock && stock.id) || stockId,
       dateFormat,
       latestTimeChartTime
     )
-      .then(([{ data: tickChartData }, { data: _timeChartData }]) => {
+      .then(([{ data: tickChartData }, { data: _timeChartData }, { data: _statisticsChart }]) => {
         // tick chart
         setTickChartData(tickChartData);
 
@@ -272,6 +259,37 @@ const DisplayChart = ({
             })
           );
         }
+
+        // statistics chart
+        const _statisticsChartData = _statisticsChart.content;
+        const newStatisticsChartData = JSON.parse(JSON.stringify(statisticsChartData));
+        if (_statisticsChartData.length) {
+          _statisticsChartData.forEach(({ originCreatedTime, ...statisticsChart }) => {
+            const LENGTH = newStatisticsChartData.length;
+            if (
+              LENGTH &&
+              newStatisticsChartData[LENGTH - 1].xAxis === statisticsChart.createdTime
+            ) {
+              newStatisticsChartData[LENGTH - 1] = {
+                xAxis: statisticsChart.createdTime,
+                fiveTickRange: statisticsChart.fiveTickRange,
+                marketBuyQuantity: statisticsChart.marketBuyQuantity,
+                marketSellQuantity: statisticsChart.marketSellQuantity,
+              };
+            } else {
+              newStatisticsChartData.push({
+                xAxis: statisticsChart.createdTime,
+                fiveTickRange: statisticsChart.fiveTickRange,
+                marketBuyQuantity: statisticsChart.marketBuyQuantity,
+                marketSellQuantity: statisticsChart.marketSellQuantity,
+              });
+            }
+            if (originCreatedTime) {
+              setLatestStatisticsChartTime(new Date(originCreatedTime).getTime() + 1);
+            }
+          });
+        }  
+        setStatisticsChartData(newStatisticsChartData);
       })
       .catch((err) => {
         errorNotification(err?.response?.data);
@@ -330,7 +348,7 @@ const DisplayChart = ({
       {useMemo(() => {
         return (
           <div className="flex justify-around mt-3 mb-0 items-center">
-            {/* <div className="w-1/2">
+            <div className="w-1/2">
               <DisplayStatisticsChart
                 data={statisticsChartData.reduce(
                   (p, v) => {
@@ -423,7 +441,7 @@ const DisplayChart = ({
                   setDateFormat(v);
                 }}
               />
-            </div> */}
+            </div>
           </div>
         );
       }, [statisticsChartData])}

@@ -35,7 +35,7 @@ const RealTimeQ1Chart = ({ stockId, buttonStatus }) => {
         dataIndex: index,
         render: ({ raise, total }) => {
           console.log(raise, total);
-          return (raise / total || 0).toFixed(2);
+          return (raise / total || 0).toFixed(4);
         },
       });
       rowBuffer.current = {
