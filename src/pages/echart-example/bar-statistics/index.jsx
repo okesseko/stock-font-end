@@ -152,7 +152,7 @@ const BarStatisticsChart = ({
       containLabel: true,
     },
     legend: {
-      data: ["成交量"],
+      data: ["單量"],
     },
     // backgroundColor: "black",
     xAxis: [
@@ -172,7 +172,7 @@ const BarStatisticsChart = ({
       {
         type: "value",
         scale: true,
-        name: "成交量",
+        name: "單量",
       },
     ],
     dataZoom: [
@@ -188,7 +188,7 @@ const BarStatisticsChart = ({
     ],
     series: [
       {
-        name: "成交量",
+        name: "單量",
         type: "bar",
         yAxisIndex: 0,
         data: quantity,

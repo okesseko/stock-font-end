@@ -15,7 +15,7 @@ const check = (...arg) => {
   }
 };
 
-const getChartData = (stockId, dateFormat, latestTimeChartTime) => {
+const getChartData = (stockId, dateFormat, latestTimeChartTime, latestStatisticsChartTime) => {
   return Promise.all([
     defaultAxios({
       url: api.getDisplay.url,
@@ -43,6 +43,11 @@ const getChartData = (stockId, dateFormat, latestTimeChartTime) => {
       method: api.getDisplay.method,
       params: {
         stockId,
+        createdTime: 
+          latestStatisticsChartTime &&
+          JSON.stringify({
+            min: new Date(latestStatisticsChartTime).toISOString(),
+          }),
       },
     }),
   ]);
@@ -206,12 +211,14 @@ const DisplayChart = ({
       (stock && stock.id) || stockId,
       dateFormat,
       interval.current,
-      latestTimeChartTime
+      latestTimeChartTime,
+      latestStatisticsChartTime
     );
     getChartData(
       (stock && stock.id) || stockId,
       dateFormat,
-      latestTimeChartTime
+      latestTimeChartTime,
+      latestStatisticsChartTime
     )
       .then(([{ data: tickChartData }, { data: _timeChartData }, { data: _statisticsChart }]) => {
         // tick chart
@@ -288,13 +295,13 @@ const DisplayChart = ({
               setLatestStatisticsChartTime(new Date(originCreatedTime).getTime() + 1);
             }
           });
+          setStatisticsChartData(newStatisticsChartData);
         }  
-        setStatisticsChartData(newStatisticsChartData);
       })
       .catch((err) => {
         errorNotification(err?.response?.data);
       });
-  }, [stock, stockId, dateFormat, timeChartData, statisticsChartData, latestTimeChartTime]);
+  }, [stock, stockId, dateFormat, timeChartData, statisticsChartData, latestTimeChartTime, latestStatisticsChartTime]);
 
   useEffect(() => {
     clearInterval();
