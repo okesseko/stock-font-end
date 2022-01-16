@@ -48,6 +48,7 @@ const getChartData = (stockId, dateFormat, latestTimeChartTime, latestStatistics
           JSON.stringify({
             min: new Date(latestStatisticsChartTime).toISOString(),
           }),
+        order: JSON.stringify({ order: "ASC",orderBy:"createdTime" }),
       },
     }),
   ]);
