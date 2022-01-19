@@ -35,7 +35,7 @@ const RealTimeQ1Chart = ({ stockId, buttonStatus }) => {
         dataIndex: index,
         render: ({ raise, total }) => {
           console.log(raise, total);
-          return (raise / total || 0).toFixed(2);
+          return (raise / total || 0).toFixed(4);
         },
       });
       rowBuffer.current = {
@@ -78,57 +78,60 @@ const RealTimeQ1Chart = ({ stockId, buttonStatus }) => {
         );
         console.log(filteredData);
 
-        const timeTicker =
+        if (filteredData.length) {
           Math.round(
             (filteredData[0].fiveTickRange[0].price -
               filteredData[0].fiveTickRange[1].price) *
               1e2
           ) / 1e2;
 
-        for (let index = 0; index < filteredData.length; index++) {
-          const targetData = filteredData[index];
-          let a1 = 0;
-          let b1 = 0;
-          let s =
-            Math.round(
-              (targetData.firstOrderSellPrice - targetData.firstOrderBuyPrice) *
-                1e2
-            ) /
-            1e2 /
-            timeTicker;
+          for (let index = 0; index < filteredData.length; index++) {
+            const targetData = filteredData[index];
+            let a1 = 0;
+            let b1 = 0;
+            let s =
+              Math.round(
+                (targetData.firstOrderSellPrice -
+                  targetData.firstOrderBuyPrice) *
+                  1e2
+              ) /
+              1e2 /
+              timeTicker;
 
-          if (s !== q1Variable.s) continue;
+            if (s !== q1Variable.s) continue;
 
-          targetData.fiveTickRange.forEach((ticker) => {
-            if (ticker.price === targetData.firstOrderBuyPrice) {
-              b1 = ticker.buyQuantity;
-            }
-            if (ticker.price === targetData.firstOrderSellPrice) {
-              a1 = ticker.sellQuantity;
-            }
-          });
+            targetData.fiveTickRange.forEach((ticker) => {
+              if (ticker.price === targetData.firstOrderBuyPrice) {
+                b1 = ticker.buyQuantity;
+              }
+              if (ticker.price === targetData.firstOrderSellPrice) {
+                a1 = ticker.sellQuantity;
+              }
+            });
 
-          if (rowData[b1] && rowData[b1][a1]) {
-            let m =
-              (targetData.firstOrderBuyPrice + targetData.firstOrderSellPrice) /
-              2;
-            if (
-              rowData[b1][a1].last &&
-              rowData[b1][a1].last !== m &&
-              rowData[b1][a1].last < m
-            ) {
-              rowData[b1][a1].raise++;
+            if (rowData[b1] && rowData[b1][a1]) {
+              let m =
+                (targetData.firstOrderBuyPrice +
+                  targetData.firstOrderSellPrice) /
+                2;
+              if (
+                rowData[b1][a1].last &&
+                rowData[b1][a1].last !== m &&
+                rowData[b1][a1].last < m
+              ) {
+                rowData[b1][a1].raise++;
+              }
+              rowData[b1][a1].total++;
+              rowData[b1][a1].last = m;
             }
-            rowData[b1][a1].total++;
-            rowData[b1][a1].last = m;
           }
-        }
 
-        const dataSource = Object.entries(rowData).map(([key, val]) => ({
-          name: key,
-          ...val,
-        }));
-        setTable({ columns, dataSource });
+          const dataSource = Object.entries(rowData).map(([key, val]) => ({
+            name: key,
+            ...val,
+          }));
+          setTable({ columns, dataSource });
+        }
       })
       .catch((err) => {
         console.log(err);

@@ -12,8 +12,8 @@ export const StockSelector = ({ style, mode, onChange, isRealData, onEnd }) => {
     if (isRealData) {
       const { marketType, fileType } = isRealData;
       const { url, method } =
-        marketType === "future"
-          ? api.getAvailableFuture
+        marketType === "futures"
+          ? api.getAvailableFutures
           : api.getAvailableStock;
       defaultAxios({
         url,

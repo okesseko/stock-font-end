@@ -82,6 +82,7 @@ const App = () => {
             />
             {permission.map((data) => (
               <GuardedRoute
+                key={Math.random()}
                 path={`/stock-font-end/${data}`}
                 component={AUTH_MAPPING_DATA[data]}
               />

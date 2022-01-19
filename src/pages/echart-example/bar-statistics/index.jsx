@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 const BarStatisticsChart = ({
   data = { 
     xAxis: [], 
-    quantity: [], 
+    // quantity: [], 
     quantityA5: [],
     quantityA4: [],
     quantityA3: [],
@@ -23,11 +23,61 @@ const BarStatisticsChart = ({
     type: ""
   },
   onDateFormatChange,
-}) => {  
+}) => {
+  let timer;
   const [dataChart, setDataChart] = useState(1);
   const [dataZoom, setDataZoom] = useState(10);
   const [dateFormat, setDateFormat] = useState(4);
   const [quantity, setQuantity] = useState([]);
+  const [average, setAverage] = useState(0);
+  const [variance, setVariance] = useState(0);
+  const [standardD, setStandardD] = useState(0);
+  const [isRunning, setIsRunning] = useState(true);
+
+  function sd(a){
+    var sd=0;
+    for(var i in a){
+        sd += Math.pow((Math.abs(a[i]-mean(a))),2);
+    }
+    return sqrt(sd/a.length);
+  }
+
+  function sqrt(n){
+    var i =1;
+    var answer=1;
+    while(i<n){
+        //console.log('i= '+ i + ' answer= '+answer);
+        if(i*i<=n && (i+0.0001)*(i+0.0001)>n){            
+            answer= Math.round(i*100)/100;
+            return answer;   
+        }
+        i=i+0.0001;
+    }
+    return 1;
+  }
+
+  function mean(a){
+    var total = 0;
+    for (var i in a){
+        total += a[i];
+    }
+    return total/a.length;
+  }
+  
+  const findVariance = (arr = []) => {
+    if(!arr.length){
+       return 0;
+    };
+    const sum = arr.reduce((acc, val) => acc + val);
+    const { length: num } = arr;
+    const median = sum / num;
+    let variance = 0;
+    arr.forEach(num => {
+       variance += ((num - median) * (num - median));
+    });
+    variance /= num;
+    return variance;
+  };
 
   const getQuantity = (value) => {
     if (data.type == "buy") {
@@ -51,7 +101,41 @@ const BarStatisticsChart = ({
         default: setQuantity(data.marketSellQuantity); break;
       }
     }
+
   }
+
+  useEffect(() => {
+    getQuantity(dataChart);
+    if (isRunning) {
+    //   // getQuantity(1);
+    //   timer = setInterval(() => {
+    //     // if (quantity.length > 0) {
+    //     const avg = (quantity.reduce((acc, val) => acc + val, 0) / quantity.length).toFixed(4);
+    //     if (!isNaN(avg)) {
+    //       console.log(avg);
+    //       setAverage(avg);
+    //     }
+    //     // }
+    //   }, 1000);
+    } else {
+
+    }
+
+
+    const avg = (quantity.reduce((acc, val) => acc + val, 0) / quantity.length).toFixed(4);
+    if (!isNaN(avg)) {
+      setAverage(avg);
+    }
+    const varce = findVariance(quantity).toFixed(4);
+    if (!isNaN(varce)) {
+      setVariance(varce);
+    }
+    const standard = sd(quantity).toFixed(4);
+    if (!isNaN(standard)) {
+      setStandardD(standard);
+    }
+  }, [data]);
+  
   const options = {
     tooltip: {
       trigger: "axis",
@@ -68,7 +152,7 @@ const BarStatisticsChart = ({
       containLabel: true,
     },
     legend: {
-      data: ["成交量"],
+      data: ["單量"],
     },
     // backgroundColor: "black",
     xAxis: [
@@ -88,7 +172,7 @@ const BarStatisticsChart = ({
       {
         type: "value",
         scale: true,
-        name: "成交量",
+        name: "單量",
       },
     ],
     dataZoom: [
@@ -104,7 +188,7 @@ const BarStatisticsChart = ({
     ],
     series: [
       {
-        name: "成交量",
+        name: "單量",
         type: "bar",
         yAxisIndex: 0,
         data: quantity,
@@ -117,6 +201,17 @@ const BarStatisticsChart = ({
 
   return (
     <>
+      <div className="flex flex-row">
+        <div className="flex flex-col justify-end p-4 pb-0">
+          平均數: {average}
+        </div>
+        <div className="flex flex-col justify-end p-4 pb-0">
+          變異數: {variance}
+        </div>
+        <div className="flex flex-col justify-end p-4 pb-0">
+          標準差: {standardD}
+        </div>
+      </div>
       <div className="flex flex-row">
         <div className="flex flex-col justify-end p-4">
           統計圖表之表
@@ -136,7 +231,10 @@ const BarStatisticsChart = ({
               // { label: "Cancel " + data.charts[3], value: 9 },
               // { label: "Cancel " + data.charts[4], value: 10 },
             ]}
-            onChange={(val) => { setDataChart(val); getQuantity(val); }}
+            onChange={(val) => { 
+              setDataChart(val);
+              getQuantity(val);
+            }}
           />
         </div>
         <div className="flex flex-col justify-end p-4">

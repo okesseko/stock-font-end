@@ -2,6 +2,7 @@ import React from "react";
 import { Modal, Form, Input } from "antd";
 import { defaultAxios, api } from "../../environment/api";
 import errorNotification from "../../utils/errorNotification";
+import { notification } from "antd";
 
 const Create = ({ visible, setVisible }) => {
   const [form] = Form.useForm();
@@ -30,6 +31,12 @@ const Create = ({ visible, setVisible }) => {
             method: api.postInvestor.method,
             data: value,
           })
+            .then(() => {
+              notification.success({
+                message: "認證信進已寄出",
+                description: "請至信箱開通該帳號",
+              });
+            })
             .catch((err) => {
               errorNotification(err?.response?.data);
             })
@@ -53,6 +60,13 @@ const Create = ({ visible, setVisible }) => {
           rules={[{ required: true, message: "請輸入密碼" }]}
         >
           <Input placeholder="請輸入密碼" />
+        </Form.Item>
+        <Form.Item
+          label="電子郵件"
+          name="mail"
+          rules={[{ required: true, message: "請輸入電子郵件" }]}
+        >
+          <Input placeholder="請輸入電子郵件" />
         </Form.Item>
       </Form>
     </Modal>

@@ -82,15 +82,15 @@ const getRealDataContentAPI = (fileType, marketType) => {
     case "transaction":
       return marketType === "stock"
         ? api.getRealDataStockTransactionContent
-        : api.getRealDataFutureTransactionContent;
+        : api.getRealDataFuturesTransactionContent;
     case "display":
       return marketType === "stock"
         ? api.getRealDataStockDisplayContent
-        : api.getRealDataFutureDisplayContent;
+        : api.getRealDataFuturesDisplayContent;
     default:
       return marketType === "stock"
         ? api.getRealDataStockOrderContent
-        : api.getRealDataFutureOrderContent;
+        : api.getRealDataFuturesOrderContent;
   }
 };
 
@@ -99,7 +99,7 @@ const getRealDataAvailableAPI = (marketType) => {
     case "stock":
       return api.getAvailableStock;
     default:
-      return api.getAvailableFuture;
+      return api.getAvailableFutures;
   }
 };
 
@@ -178,7 +178,7 @@ const FrequentDataElement = function ({ marketType }) {
     switch (marketType) {
       case "stock":
         return "證交";
-      case "future":
+      case "futures":
         return "期交";
       default:
         return "";
@@ -515,7 +515,7 @@ const FrequentDataElement = function ({ marketType }) {
                         sampleMode,
                         fields,
                         stockId,
-                        futureId: stockId,
+                        futuresId: stockId,
                         startTime: startTime.startOf("day").toISOString(),
                         endTime: endTime.endOf("day").toISOString(),
                       },
@@ -570,7 +570,7 @@ const FrequentData = function () {
   return (
     <div>
       <FrequentDataElement marketType="stock" />
-      <FrequentDataElement marketType="future" />
+      <FrequentDataElement marketType="futures" />
     </div>
   );
 };
