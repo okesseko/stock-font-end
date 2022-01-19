@@ -41,7 +41,7 @@ const RouterLink = ({ setToken, permission }) => {
         <NavLink to="/stock-font-end/echart-example">範例</NavLink>
       </li>
       {permission.map((data) => (
-        <li className="py-5 text-xl border-b border-black">
+        <li className="py-5 text-xl border-b border-black" key={Math.random()}>
           <NavLink to={`/stock-font-end/${data}`}>
             {LINK_MAPPING_DATA[data]}
           </NavLink>

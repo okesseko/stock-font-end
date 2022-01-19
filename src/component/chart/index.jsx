@@ -15,7 +15,12 @@ const check = (...arg) => {
   }
 };
 
-const getChartData = (stockId, dateFormat, latestTimeChartTime, latestStatisticsChartTime) => {
+const getChartData = (
+  stockId,
+  dateFormat,
+  latestTimeChartTime,
+  latestStatisticsChartTime
+) => {
   return Promise.all([
     defaultAxios({
       url: api.getDisplay.url,
@@ -43,12 +48,12 @@ const getChartData = (stockId, dateFormat, latestTimeChartTime, latestStatistics
       method: api.getDisplay.method,
       params: {
         stockId,
-        createdTime: 
+        createdTime:
           latestStatisticsChartTime &&
           JSON.stringify({
             min: new Date(latestStatisticsChartTime).toISOString(),
           }),
-        order: JSON.stringify({ order: "ASC",orderBy:"createdTime" }),
+        order: JSON.stringify({ order: "ASC", orderBy: "createdTime" }),
       },
     }),
   ]);
@@ -71,12 +76,12 @@ const DisplayTimeChart = ({
 };
 
 const DisplayStatisticsChart = ({
-  data = { xAxis: [], quantity: [], type: "", },
+  data = { xAxis: [], quantity: [], type: "" },
   onDateFormatChange,
 }) => {
   return (
-    <div>      
-      <BarStatisticsChart 
+    <div>
+      <BarStatisticsChart
         data={data}
         onDateFormatChange={(v) => {
           onDateFormatChange && onDateFormatChange(v);
@@ -221,88 +226,109 @@ const DisplayChart = ({
       latestTimeChartTime,
       latestStatisticsChartTime
     )
-      .then(([{ data: tickChartData }, { data: _timeChartData }, { data: _statisticsChart }]) => {
-        // tick chart
-        setTickChartData(tickChartData);
+      .then(
+        ([
+          { data: tickChartData },
+          { data: _timeChartData },
+          { data: _statisticsChart },
+        ]) => {
+          // tick chart
+          setTickChartData(tickChartData);
 
-        // time chart
-        const newTimeChartData = JSON.parse(JSON.stringify(timeChartData));
-        if (_timeChartData.length) {
-          _timeChartData.forEach(({ originCreatedTime, ...timeChart }) => {
-            const LENGTH = newTimeChartData.length;
-            if (
-              LENGTH &&
-              newTimeChartData[LENGTH - 1].xAxis === timeChart.createdTime
-            ) {
-              newTimeChartData[LENGTH - 1] = {
-                xAxis: timeChart.createdTime,
-                price: timeChart.close,
-                quantity:
-                  timeChart.quantity + newTimeChartData[LENGTH - 1].quantity,
-                buy: timeChart.firstOrderBuy,
-                sell: timeChart.firstOrderSell,
-              };
-            } else {
-              newTimeChartData.push({
-                xAxis: timeChart.createdTime,
-                price: timeChart.close,
-                quantity: timeChart.quantity,
-                buy: timeChart.firstOrderBuy,
-                sell: timeChart.firstOrderSell,
-              });
-            }
-            if (originCreatedTime) {
-              setLatestTimeChartTime(new Date(originCreatedTime).getTime() + 1);
-            }
-          });
-          setTimeChartData(newTimeChartData);
-          // setStatisticsChartData(newTimeChartData);
-          // split chart
-          setSplitChartData(
-            newTimeChartData.slice(-10).map(({ buy, sell, xAxis }) => {
-              return {
-                x: xAxis,
-                y: sell - buy,
-              };
-            })
+          // time chart
+          const newTimeChartData = JSON.parse(JSON.stringify(timeChartData));
+          if (_timeChartData.length) {
+            _timeChartData.forEach(({ originCreatedTime, ...timeChart }) => {
+              const LENGTH = newTimeChartData.length;
+              if (
+                LENGTH &&
+                newTimeChartData[LENGTH - 1].xAxis === timeChart.createdTime
+              ) {
+                newTimeChartData[LENGTH - 1] = {
+                  xAxis: timeChart.createdTime,
+                  price: timeChart.close,
+                  quantity:
+                    timeChart.quantity + newTimeChartData[LENGTH - 1].quantity,
+                  buy: timeChart.firstOrderBuy,
+                  sell: timeChart.firstOrderSell,
+                };
+              } else {
+                newTimeChartData.push({
+                  xAxis: timeChart.createdTime,
+                  price: timeChart.close,
+                  quantity: timeChart.quantity,
+                  buy: timeChart.firstOrderBuy,
+                  sell: timeChart.firstOrderSell,
+                });
+              }
+              if (originCreatedTime) {
+                setLatestTimeChartTime(
+                  new Date(originCreatedTime).getTime() + 1
+                );
+              }
+            });
+            setTimeChartData(newTimeChartData);
+            // setStatisticsChartData(newTimeChartData);
+            // split chart
+            setSplitChartData(
+              newTimeChartData.slice(-10).map(({ buy, sell, xAxis }) => {
+                return {
+                  x: xAxis,
+                  y: sell - buy,
+                };
+              })
+            );
+          }
+
+          // statistics chart
+          const _statisticsChartData = _statisticsChart.content;
+          const newStatisticsChartData = JSON.parse(
+            JSON.stringify(statisticsChartData)
           );
+          if (_statisticsChartData.length) {
+            _statisticsChartData.forEach((statisticsChart, index, arr) => {
+              const LENGTH = newStatisticsChartData.length;
+              if (
+                LENGTH &&
+                newStatisticsChartData[LENGTH - 1].xAxis ===
+                  statisticsChart.createdTime
+              ) {
+                newStatisticsChartData[LENGTH - 1] = {
+                  xAxis: statisticsChart.createdTime,
+                  fiveTickRange: statisticsChart.fiveTickRange,
+                  marketBuyQuantity: statisticsChart.marketBuyQuantity,
+                  marketSellQuantity: statisticsChart.marketSellQuantity,
+                };
+              } else {
+                newStatisticsChartData.push({
+                  xAxis: statisticsChart.createdTime,
+                  fiveTickRange: statisticsChart.fiveTickRange,
+                  marketBuyQuantity: statisticsChart.marketBuyQuantity,
+                  marketSellQuantity: statisticsChart.marketSellQuantity,
+                });
+              }
+              if (arr.length - 1 === index && statisticsChart.createdTime) {
+                setLatestStatisticsChartTime(
+                  new Date(statisticsChart.createdTime).getTime() + 1
+                );
+              }
+            });
+            setStatisticsChartData(newStatisticsChartData);
+          }
         }
-
-        // statistics chart
-        const _statisticsChartData = _statisticsChart.content;
-        const newStatisticsChartData = JSON.parse(JSON.stringify(statisticsChartData));
-        if (_statisticsChartData.length) {
-          _statisticsChartData.forEach(({ originCreatedTime, ...statisticsChart }) => {
-            const LENGTH = newStatisticsChartData.length;
-            if (
-              LENGTH &&
-              newStatisticsChartData[LENGTH - 1].xAxis === statisticsChart.createdTime
-            ) {
-              newStatisticsChartData[LENGTH - 1] = {
-                xAxis: statisticsChart.createdTime,
-                fiveTickRange: statisticsChart.fiveTickRange,
-                marketBuyQuantity: statisticsChart.marketBuyQuantity,
-                marketSellQuantity: statisticsChart.marketSellQuantity,
-              };
-            } else {
-              newStatisticsChartData.push({
-                xAxis: statisticsChart.createdTime,
-                fiveTickRange: statisticsChart.fiveTickRange,
-                marketBuyQuantity: statisticsChart.marketBuyQuantity,
-                marketSellQuantity: statisticsChart.marketSellQuantity,
-              });
-            }
-            if (originCreatedTime) {
-              setLatestStatisticsChartTime(new Date(originCreatedTime).getTime() + 1);
-            }
-          });
-          setStatisticsChartData(newStatisticsChartData);
-        }  
-      })
+      )
       .catch((err) => {
         errorNotification(err?.response?.data);
       });
-  }, [stock, stockId, dateFormat, timeChartData, statisticsChartData, latestTimeChartTime, latestStatisticsChartTime]);
+  }, [
+    stock,
+    stockId,
+    dateFormat,
+    timeChartData,
+    statisticsChartData,
+    latestTimeChartTime,
+    latestStatisticsChartTime,
+  ]);
 
   useEffect(() => {
     clearInterval();
@@ -360,12 +386,12 @@ const DisplayChart = ({
               <DisplayStatisticsChart
                 data={statisticsChartData.reduce(
                   (p, v) => {
-                    const { 
+                    const {
                       xAxis,
                       // quantity,
                       fiveTickRange,
                       marketBuyQuantity,
-                      marketSellQuantity
+                      marketSellQuantity,
                     } = v;
                     p.xAxis.push(xAxis);
                     p.quantityB1.push(fiveTickRange[5].buyQuantity);
@@ -392,9 +418,7 @@ const DisplayChart = ({
                     fiveTickRange: [],
                     marketBuyQuantity: [],
                     marketSellQuantity: [],
-                    charts: [
-                      "B1", "B2", "B3", "B4", "B5"
-                    ],
+                    charts: ["B1", "B2", "B3", "B4", "B5"],
                     type: "buy",
                   }
                 )}
@@ -407,12 +431,12 @@ const DisplayChart = ({
               <DisplayStatisticsChart
                 data={statisticsChartData.reduce(
                   (p, v) => {
-                    const { 
+                    const {
                       xAxis,
                       // quantity,
                       fiveTickRange,
                       marketBuyQuantity,
-                      marketSellQuantity
+                      marketSellQuantity,
                     } = v;
                     p.xAxis.push(xAxis);
                     p.quantityA5.push(fiveTickRange[0].sellQuantity);
@@ -439,9 +463,7 @@ const DisplayChart = ({
                     fiveTickRange: [],
                     marketBuyQuantity: [],
                     marketSellQuantity: [],
-                    charts: [
-                      "A1", "A2", "A3", "A4", "A5"
-                    ],
+                    charts: ["A1", "A2", "A3", "A4", "A5"],
                     type: "sell",
                   }
                 )}
