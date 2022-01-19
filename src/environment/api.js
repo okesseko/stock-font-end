@@ -55,8 +55,8 @@ export const api = {
     method: "GET",
   },
 
-  getAvailableFuture: {
-    url: "api/available/future",
+  getAvailableFutures: {
+    url: "api/available/futures",
     method: "GET",
   },
   //Available -----
@@ -128,72 +128,78 @@ export const api = {
     method: "POST",
   },
 
-  getRealDataFutureOrder: { url: "api/real-data/future/order", method: "GET" },
-  postRealDataFutureOrder: {
-    url: "api/real-data/future/order",
-    method: "POST",
-  },
-  putRealDataFutureOrder: { url: "api/real-data/future/order", method: "PUT" },
-  deleteRealDataFutureOrder: {
-    url: "api/real-data/future/order",
-    method: "DELETE",
-  },
-  getRealDataFutureOrderContent: {
-    url: "api/real-data/future/order/content",
+  getRealDataFuturesOrder: {
+    url: "api/real-data/futures/order",
     method: "GET",
   },
-  postRealDataFutureOrderContent: {
-    url: "api/real-data/future/order/content",
+  postRealDataFuturesOrder: {
+    url: "api/real-data/futures/order",
+    method: "POST",
+  },
+  putRealDataFuturesOrder: {
+    url: "api/real-data/futures/order",
+    method: "PUT",
+  },
+  deleteRealDataFuturesOrder: {
+    url: "api/real-data/futures/order",
+    method: "DELETE",
+  },
+  getRealDataFuturesOrderContent: {
+    url: "api/real-data/futures/order/content",
+    method: "GET",
+  },
+  postRealDataFuturesOrderContent: {
+    url: "api/real-data/futures/order/content",
     method: "POST",
   },
 
-  getRealDataFutureTransaction: {
-    url: "api/real-data/future/transaction",
+  getRealDataFuturesTransaction: {
+    url: "api/real-data/futures/transaction",
     method: "GET",
   },
-  postRealDataFutureTransaction: {
-    url: "api/real-data/future/transaction",
+  postRealDataFuturesTransaction: {
+    url: "api/real-data/futures/transaction",
     method: "POST",
   },
-  putRealDataFutureTransaction: {
-    url: "api/real-data/future/transaction",
+  putRealDataFuturesTransaction: {
+    url: "api/real-data/futures/transaction",
     method: "PUT",
   },
-  deleteRealDataFutureTransaction: {
-    url: "api/real-data/future/transaction",
+  deleteRealDataFuturesTransaction: {
+    url: "api/real-data/futures/transaction",
     method: "DELETE",
   },
-  getRealDataFutureTransactionContent: {
-    url: "api/real-data/future/transaction/content",
+  getRealDataFuturesTransactionContent: {
+    url: "api/real-data/futures/transaction/content",
     method: "GET",
   },
-  postRealDataFutureTransactionContent: {
-    url: "api/real-data/future/transaction/content",
+  postRealDataFuturesTransactionContent: {
+    url: "api/real-data/futures/transaction/content",
     method: "POST",
   },
 
-  getRealDataFutureDisplay: {
-    url: "api/real-data/future/display",
+  getRealDataFuturesDisplay: {
+    url: "api/real-data/futures/display",
     method: "GET",
   },
-  postRealDataFutureDisplay: {
-    url: "api/real-data/future/display",
+  postRealDataFuturesDisplay: {
+    url: "api/real-data/futures/display",
     method: "POST",
   },
-  putRealDataFutureDisplay: {
-    url: "api/real-data/future/display",
+  putRealDataFuturesDisplay: {
+    url: "api/real-data/futures/display",
     method: "PUT",
   },
-  deleteRealDataFutureDisplay: {
-    url: "api/real-data/future/display",
+  deleteRealDataFuturesDisplay: {
+    url: "api/real-data/futures/display",
     method: "DELETE",
   },
-  getRealDataFutureDisplayContent: {
-    url: "api/real-data/future/display/content",
+  getRealDataFuturesDisplayContent: {
+    url: "api/real-data/futures/display/content",
     method: "GET",
   },
-  postRealDataFutureDisplayContent: {
-    url: "api/real-data/future/display/content",
+  postRealDataFuturesDisplayContent: {
+    url: "api/real-data/futures/display/content",
     method: "POST",
   },
   //Real data -----

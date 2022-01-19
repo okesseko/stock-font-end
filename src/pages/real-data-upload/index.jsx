@@ -15,15 +15,15 @@ const getGetRealDataApiByType = (fileType, marketType) => {
     case "transaction":
       return marketType === "stock"
         ? api.getRealDataStockTransaction
-        : api.getRealDataFutureTransaction;
+        : api.getRealDataFuturesTransaction;
     case "display":
       return marketType === "stock"
         ? api.getRealDataStockDisplay
-        : api.getRealDataFutureDisplay;
+        : api.getRealDataFuturesDisplay;
     default:
       return marketType === "stock"
         ? api.getRealDataStockOrder
-        : api.getRealDataFutureOrder;
+        : api.getRealDataFuturesOrder;
   }
 };
 
@@ -33,15 +33,15 @@ const getPostRealDataApiByType = (fileType, marketType) => {
     case "transaction":
       return marketType === "stock"
         ? api.postRealDataStockTransaction
-        : api.postRealDataFutureTransaction;
+        : api.postRealDataFuturesTransaction;
     case "display":
       return marketType === "stock"
         ? api.postRealDataStockDisplay
-        : api.postRealDataFutureDisplay;
+        : api.postRealDataFuturesDisplay;
     default:
       return marketType === "stock"
         ? api.postRealDataStockOrder
-        : api.postRealDataFutureOrder;
+        : api.postRealDataFuturesOrder;
   }
 };
 
@@ -50,15 +50,15 @@ const getPutRealDataApiByType = (fileType, marketType) => {
     case "transaction":
       return marketType === "stock"
         ? api.putRealDataStockTransaction
-        : api.putRealDataFutureTransaction;
+        : api.putRealDataFuturesTransaction;
     case "display":
       return marketType === "stock"
         ? api.putRealDataStockDisplay
-        : api.putRealDataFutureDisplay;
+        : api.putRealDataFuturesDisplay;
     default:
       return marketType === "stock"
         ? api.putRealDataStockOrder
-        : api.putRealDataFutureOrder;
+        : api.putRealDataFuturesOrder;
   }
 };
 
@@ -67,15 +67,15 @@ const getDeleteRealDataApiByType = (fileType, marketType) => {
     case "transaction":
       return marketType === "stock"
         ? api.deleteRealDataStockTransaction
-        : api.deleteRealDataFutureTransaction;
+        : api.deleteRealDataFuturesTransaction;
     case "display":
       return marketType === "stock"
         ? api.deleteRealDataStockDisplay
-        : api.deleteRealDataFutureDisplay;
+        : api.deleteRealDataFuturesDisplay;
     default:
       return marketType === "stock"
         ? api.deleteRealDataStockOrder
-        : api.deleteRealDataFutureOrder;
+        : api.deleteRealDataFuturesOrder;
   }
 };
 
@@ -84,15 +84,15 @@ const getPostRealDataContentApiByType = (fileType, marketType) => {
     case "transaction":
       return marketType === "stock"
         ? api.postRealDataStockTransactionContent
-        : api.postRealDataFutureTransactionContent;
+        : api.postRealDataFuturesTransactionContent;
     case "display":
       return marketType === "stock"
         ? api.postRealDataStockDisplayContent
-        : api.postRealDataFutureDisplayContent;
+        : api.postRealDataFuturesDisplayContent;
     default:
       return marketType === "stock"
         ? api.postRealDataStockOrderContent
-        : api.postRealDataFutureOrderContent;
+        : api.postRealDataFuturesOrderContent;
   }
 };
 
@@ -391,7 +391,7 @@ const RealDataUpload = () => {
       </span>
       {[
         { marketType: "stock", title: "證交" },
-        { marketType: "future", title: "期交" },
+        { marketType: "futures", title: "期交" },
       ].map(({ marketType, title }) => {
         return (
           <div
