@@ -9,40 +9,60 @@ import RouterLink from "./component/router-link";
 import { AUTH_MAPPING_DATA } from "./authData";
 
 import { useEffect, useState } from "react";
-import { settingToken } from "./environment/api";
+import { settingToken, api, defaultAxios } from "./environment/api";
 const events = require("events");
 
 export const appEventEmitter = new events.EventEmitter();
 
 const App = () => {
+  const [router, setRouter] = useState("");
   const [auth, setAuth] = useState(!!localStorage.getItem("token"));
   const [token, setToken] = useState(localStorage.getItem("token") || "");
   const [permission, setPermission] = useState(
     JSON.parse(localStorage.getItem("permission")) || []
   );
 
-  const GuardedRoute = ({ component: Component, ...rest }) => (
-    <Route
-      {...rest}
-      render={(props) =>
-        auth ? (
-          <Component {...props} />
-        ) : (
-          <Redirect to="/stock-font-end/login/" />
-        )
-      }
-    />
-  );
+  const GuardedRoute = ({ component: Component, ...rest }) => {
+    setRouter(rest.path);
+    return (
+      <Route
+        {...rest}
+        render={(props) =>
+          auth ? (
+            <Component {...props} />
+          ) : (
+            <Redirect to="/stock-font-end/login/" />
+          )
+        }
+      />
+    );
+  };
   useEffect(() => {
     appEventEmitter.on("unauthorization", (msg) => {
       localStorage.removeItem("token");
       setAuth(false);
     });
   }, []);
+
   useEffect(() => {
     setAuth(!!token);
     settingToken(token);
   }, [token]);
+
+  useEffect(() => {
+    defaultAxios({
+      url: api.getRolePermission.url,
+      method: api.getRolePermission.method,
+    })
+      .then((res) => {
+        console.log("123");
+        setPermission(res.data);
+      })
+      .catch((err) => {
+        errorNotification(err?.response?.data);
+      });
+  }, [router]);
+
   return (
     <HashRouter>
       <div className="flex ">
