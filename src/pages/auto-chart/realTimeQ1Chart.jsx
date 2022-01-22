@@ -79,11 +79,12 @@ const RealTimeQ1Chart = ({ stockId, buttonStatus }) => {
         console.log(filteredData);
 
         if (filteredData.length) {
-          Math.round(
-            (filteredData[0].fiveTickRange[0].price -
-              filteredData[0].fiveTickRange[1].price) *
-              1e2
-          ) / 1e2;
+          const timeTicker =
+            Math.round(
+              (filteredData[0].fiveTickRange[0].price -
+                filteredData[0].fiveTickRange[1].price) *
+                1e2
+            ) / 1e2;
 
           for (let index = 0; index < filteredData.length; index++) {
             const targetData = filteredData[index];
