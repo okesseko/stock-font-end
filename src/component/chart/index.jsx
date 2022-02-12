@@ -379,7 +379,7 @@ const DisplayChart = ({
       {useMemo(() => {
         return <DisplaySplitChart data={splitChartData} />;
       }, [splitChartData])}
-      {useMemo(() => {
+      {/* {useMemo(() => {
         return (
           <div className="flex justify-around mt-3 mb-0 items-center">
             <div className="w-1/2">
@@ -474,7 +474,7 @@ const DisplayChart = ({
             </div>
           </div>
         );
-      }, [statisticsChartData])}
+      }, [statisticsChartData])} */}
       <div className="flex justify-around my-6 items-center">
         <div className="w-1/6" style={{ display: stock ? "none" : undefined }}>
           選擇股票

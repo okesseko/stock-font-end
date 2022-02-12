@@ -282,7 +282,7 @@ const RealDataSimulator = ({ customResetStock, onReset }) => {
   return (
     <div>
       <div className="flex justify-around my-6 items-center">
-        <div className="w-1/6">
+        {/* <div className="w-1/6">
           選擇資料類型
           <Select
             className="w-20 ml-2"
@@ -295,15 +295,15 @@ const RealDataSimulator = ({ customResetStock, onReset }) => {
               setMarketType(val);
             }}
           />
-        </div>
+        </div> */}
         <div className="w-1/6">
           選擇商品
           <StockSelector
             style={{ width: "100%" }}
-            isRealData={{
-              marketType,
-              fileType: "order",
-            }}
+            // isRealData={{
+            //   marketType,
+            //   fileType: "order",
+            // }}
             onChange={(e) => {
               setStockId(e);
             }}
@@ -397,7 +397,7 @@ const RealDataSimulator = ({ customResetStock, onReset }) => {
                 errorNotification(err?.response?.data);
               });
           }}
-          disabled={!stockId}
+          disabled={!stockId || !startTime || !endTime}
         >
           載入委託
         </Button>
