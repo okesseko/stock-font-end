@@ -55,7 +55,6 @@ const App = () => {
       method: api.getRolePermission.method,
     })
       .then((res) => {
-        console.log("123");
         setPermission(res.data);
       })
       .catch((err) => {

@@ -21,7 +21,6 @@ const Create = ({ visible, setVisible, defaultValue, reset }) => {
       onCancel={() => {
         form.resetFields();
         setVisible(false);
-        console.log("cancel");
       }}
       okText="確認"
       cancelText="取消"

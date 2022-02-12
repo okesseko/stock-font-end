@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { StockSelector } from "../../component/stock-selector";
 import { api, defaultAxios } from "../../environment/api";
 import errorNotification from "../../utils/errorNotification";
+import moment from "moment";
 import dayjs from "dayjs";
 
 const { TabPane } = Tabs;
@@ -234,22 +235,75 @@ export const OrderSender = ({ orders, stockId, onReset }) => {
   );
 };
 
+const getRealDataAvailableAPI = (marketType) => {
+  switch (marketType) {
+    case "stock":
+      return api.getAvailableStock;
+    default:
+      return api.getAvailableFutures;
+  }
+};
+
 const RealDataSimulator = ({ customResetStock, onReset }) => {
   // Functional state
   const [orders, setOrders] = useState([]);
+  const [marketType, setMarketType] = useState("stock");
+  const [isLoading, setIsLoading] = useState(false);
+  const [availableDate, setAvailableDate] = useState([]);
 
   //Query state
   const [stockId, setStockId] = useState();
   const [startTime, setStartTime] = useState();
   const [endTime, setEndTime] = useState();
   debugOrders(orders, "real");
+
+  useEffect(() => {
+    if (stockId) {
+      setIsLoading(true);
+      const { url, method } = getRealDataAvailableAPI(marketType);
+      return defaultAxios({
+        url: url + `/${stockId}`,
+        method,
+        params: {
+          type: "order",
+        },
+      })
+        .then(({ data }) => {
+          setAvailableDate(data);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          errorNotification(err?.response?.data);
+          setIsLoading(false);
+        });
+    }
+  }, [stockId]);
+
   return (
     <div>
       <div className="flex justify-around my-6 items-center">
         <div className="w-1/6">
-          選擇股票
+          選擇資料類型
+          <Select
+            className="w-20 ml-2"
+            value={marketType}
+            options={[
+              { value: "stock", label: "證交" },
+              { value: "futures", label: "期交" },
+            ]}
+            onChange={(val) => {
+              setMarketType(val);
+            }}
+          />
+        </div>
+        <div className="w-1/6">
+          選擇商品
           <StockSelector
             style={{ width: "100%" }}
+            isRealData={{
+              marketType,
+              fileType: "order",
+            }}
             onChange={(e) => {
               setStockId(e);
             }}
@@ -260,11 +314,24 @@ const RealDataSimulator = ({ customResetStock, onReset }) => {
           <DatePicker
             allowClear
             style={{ width: "100%" }}
+            disabled={!stockId}
             placeholder="選擇開始時間"
-            disabledDate={(current) => current && current > dayjs()}
+            disabledDate={(current) => {
+              const transferedCurrent = current && current.startOf("day");
+              const transferedEndTime = endTime && endTime;
+              return (
+                (transferedCurrent && transferedCurrent > moment()) ||
+                (transferedCurrent &&
+                  !availableDate.includes(
+                    transferedCurrent.format("YYYY-MM-DD")
+                  )) ||
+                (transferedEndTime && transferedCurrent > transferedEndTime) ||
+                (transferedEndTime &&
+                  transferedEndTime.diff(transferedCurrent) / 86400000 >= 5)
+              );
+            }}
             onChange={(time) => {
-              if (time) setStartTime(dayjs(time).startOf("day").toISOString());
-              else setStartTime(time);
+              setStartTime(time && time.startOf("day"));
             }}
           />
         </div>
@@ -273,11 +340,25 @@ const RealDataSimulator = ({ customResetStock, onReset }) => {
           <DatePicker
             allowClear
             style={{ width: "100%" }}
+            disabled={!stockId}
             placeholder="選擇結束時間"
-            disabledDate={(current) => current && current > dayjs()}
+            disabledDate={(current) => {
+              const transferedCurrent = current && current.startOf("day");
+              const transferedStartTime = startTime && startTime;
+              return (
+                (transferedCurrent && transferedCurrent > moment()) ||
+                (transferedCurrent &&
+                  !availableDate.includes(
+                    transferedCurrent.format("YYYY-MM-DD")
+                  )) ||
+                (transferedStartTime &&
+                  transferedCurrent < transferedStartTime) ||
+                (transferedStartTime &&
+                  transferedCurrent.diff(transferedStartTime) / 86400000 >= 5)
+              );
+            }}
             onChange={(time) => {
-              if (time) setEndTime(dayjs(time).startOf("day").toISOString());
-              else setEndTime(time);
+              setEndTime(time && time.startOf("day"));
             }}
           />
         </div>
@@ -294,12 +375,11 @@ const RealDataSimulator = ({ customResetStock, onReset }) => {
               });
             }
 
-            console.log(startTime, endTime);
             getRealDataOrderContent({
               stockId,
               createdTime: {
-                min: startTime,
-                max: endTime,
+                min: startTime.startOf("day").toISOString(),
+                max: endTime.endOf("day").toISOString(),
               },
             })
               .then(({ data }) => {

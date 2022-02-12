@@ -298,7 +298,6 @@ const FrequentDataElement = function ({ marketType }) {
               onChange={(e) => {
                 setStocks(e);
               }}
-              // onEnd={handleStockSelectorChange}
               mode="multiple"
             />
           </Col>

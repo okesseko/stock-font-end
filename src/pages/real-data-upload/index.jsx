@@ -368,6 +368,9 @@ const ContentContainer = ({ fileType, marketType }) => {
             ),
           },
         ]}
+        scroll={{
+          y: "500px",
+        }}
         pagination={{
           pageSize: pageSize,
           total: totalSize,

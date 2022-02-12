@@ -16,9 +16,6 @@ export default class ReadFile extends Component {
   };
 
   handleOnFileLoad = (data) => {
-    console.log("---------------------------");
-    console.log(data);
-
     data.forEach(function (obj, index) {
       if (index > 0 && obj.data[0] != "") {
         console.log(index, obj.data);
@@ -67,9 +64,7 @@ export default class ReadFile extends Component {
   };
 
   handleOnRemoveFile = (data) => {
-    console.log("---------------------------");
     console.log(data);
-    console.log("---------------------------");
   };
 
   handleRemoveFile = (e) => {

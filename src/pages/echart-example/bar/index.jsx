@@ -40,7 +40,6 @@ const BarChart = ({ originData = {}, showType }) => {
               : 0
           );
           if (index === 4) {
-            console.log("dec");
             let b1 = fiveTickRange[index].price,
               a1 = fiveTickRange[index + 1].price;
             while (a1 - b1 > 0.5) {
