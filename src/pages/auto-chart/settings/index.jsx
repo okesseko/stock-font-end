@@ -47,7 +47,7 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
     mu_A: 0.94,
     n: 1, 
     p: 1,
-    batch_size: 1,
+    batch_size: 10,
     s: 1,
     max_a: 13,
     max_b: 11,

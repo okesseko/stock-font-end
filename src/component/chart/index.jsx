@@ -19,7 +19,7 @@ const getChartData = (
   stockId,
   dateFormat,
   latestTimeChartTime,
-  latestStatisticsChartTime
+  // latestStatisticsChartTime
 ) => {
   return Promise.all([
     defaultAxios({
@@ -43,19 +43,19 @@ const getChartData = (
           }),
       },
     }),
-    defaultAxios({
-      url: api.getDisplay.url,
-      method: api.getDisplay.method,
-      params: {
-        stockId,
-        createdTime:
-          latestStatisticsChartTime &&
-          JSON.stringify({
-            min: new Date(latestStatisticsChartTime).toISOString(),
-          }),
-        order: JSON.stringify({ order: "ASC", orderBy: "createdTime" }),
-      },
-    }),
+    // defaultAxios({
+    //   url: api.getDisplay.url,
+    //   method: api.getDisplay.method,
+    //   params: {
+    //     stockId,
+    //     createdTime:
+    //       latestStatisticsChartTime &&
+    //       JSON.stringify({
+    //         min: new Date(latestStatisticsChartTime).toISOString(),
+    //       }),
+    //     order: JSON.stringify({ order: "ASC", orderBy: "createdTime" }),
+    //   },
+    // }),
   ]);
 };
 
@@ -178,12 +178,12 @@ const DisplayChart = ({
   const [stockId, setStockId] = useState();
   const [dateFormat, setDateFormat] = useState(4);
   const [latestTimeChartTime, setLatestTimeChartTime] = useState();
-  const [latestStatisticsChartTime, setLatestStatisticsChartTime] = useState();
+  // const [latestStatisticsChartTime, setLatestStatisticsChartTime] = useState();
 
   // chart data
   const [tickChartData, setTickChartData] = useState({});
   const [timeChartData, setTimeChartData] = useState([]);
-  const [statisticsChartData, setStatisticsChartData] = useState([]);
+  // const [statisticsChartData, setStatisticsChartData] = useState([]);
   const [splitChartData, setSplitChartData] = useState([]);
 
   const clearInterval = () => {
@@ -194,10 +194,10 @@ const DisplayChart = ({
   const resetChart = () => {
     setTickChartData({});
     setTimeChartData([]);
-    setStatisticsChartData([]);
+    // setStatisticsChartData([]);
     setSplitChartData([]);
     setLatestTimeChartTime(undefined);
-    setLatestStatisticsChartTime(undefined);
+    // setLatestStatisticsChartTime(undefined);
   };
 
   useEffect(() => {
@@ -218,19 +218,19 @@ const DisplayChart = ({
       dateFormat,
       interval.current,
       latestTimeChartTime,
-      latestStatisticsChartTime
+      // latestStatisticsChartTime
     );
     getChartData(
       (stock && stock.id) || stockId,
       dateFormat,
       latestTimeChartTime,
-      latestStatisticsChartTime
+      // latestStatisticsChartTime
     )
       .then(
         ([
           { data: tickChartData },
           { data: _timeChartData },
-          { data: _statisticsChart },
+          // { data: _statisticsChart },
         ]) => {
           // tick chart
           setTickChartData(tickChartData);
@@ -281,40 +281,40 @@ const DisplayChart = ({
           }
 
           // statistics chart
-          const _statisticsChartData = _statisticsChart.content;
-          const newStatisticsChartData = JSON.parse(
-            JSON.stringify(statisticsChartData)
-          );
-          if (_statisticsChartData.length) {
-            _statisticsChartData.forEach((statisticsChart, index, arr) => {
-              const LENGTH = newStatisticsChartData.length;
-              if (
-                LENGTH &&
-                newStatisticsChartData[LENGTH - 1].xAxis ===
-                  statisticsChart.createdTime
-              ) {
-                newStatisticsChartData[LENGTH - 1] = {
-                  xAxis: statisticsChart.createdTime,
-                  fiveTickRange: statisticsChart.fiveTickRange,
-                  marketBuyQuantity: statisticsChart.marketBuyQuantity,
-                  marketSellQuantity: statisticsChart.marketSellQuantity,
-                };
-              } else {
-                newStatisticsChartData.push({
-                  xAxis: statisticsChart.createdTime,
-                  fiveTickRange: statisticsChart.fiveTickRange,
-                  marketBuyQuantity: statisticsChart.marketBuyQuantity,
-                  marketSellQuantity: statisticsChart.marketSellQuantity,
-                });
-              }
-              if (arr.length - 1 === index && statisticsChart.createdTime) {
-                setLatestStatisticsChartTime(
-                  new Date(statisticsChart.createdTime).getTime() + 1
-                );
-              }
-            });
-            setStatisticsChartData(newStatisticsChartData);
-          }
+          // const _statisticsChartData = _statisticsChart.content;
+          // const newStatisticsChartData = JSON.parse(
+          //   JSON.stringify(statisticsChartData)
+          // );
+          // if (_statisticsChartData.length) {
+          //   _statisticsChartData.forEach((statisticsChart, index, arr) => {
+          //     const LENGTH = newStatisticsChartData.length;
+          //     if (
+          //       LENGTH &&
+          //       newStatisticsChartData[LENGTH - 1].xAxis ===
+          //         statisticsChart.createdTime
+          //     ) {
+          //       newStatisticsChartData[LENGTH - 1] = {
+          //         xAxis: statisticsChart.createdTime,
+          //         fiveTickRange: statisticsChart.fiveTickRange,
+          //         marketBuyQuantity: statisticsChart.marketBuyQuantity,
+          //         marketSellQuantity: statisticsChart.marketSellQuantity,
+          //       };
+          //     } else {
+          //       newStatisticsChartData.push({
+          //         xAxis: statisticsChart.createdTime,
+          //         fiveTickRange: statisticsChart.fiveTickRange,
+          //         marketBuyQuantity: statisticsChart.marketBuyQuantity,
+          //         marketSellQuantity: statisticsChart.marketSellQuantity,
+          //       });
+          //     }
+          //     if (arr.length - 1 === index && statisticsChart.createdTime) {
+          //       setLatestStatisticsChartTime(
+          //         new Date(statisticsChart.createdTime).getTime() + 1
+          //       );
+          //     }
+          //   });
+          //   setStatisticsChartData(newStatisticsChartData);
+          // }
         }
       )
       .catch((err) => {
@@ -325,9 +325,9 @@ const DisplayChart = ({
     stockId,
     dateFormat,
     timeChartData,
-    statisticsChartData,
+    // statisticsChartData,
     latestTimeChartTime,
-    latestStatisticsChartTime,
+    // latestStatisticsChartTime,
   ]);
 
   useEffect(() => {
