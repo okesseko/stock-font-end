@@ -87,7 +87,7 @@ function sendOrderApi(data) {
       subMethod: data.subMethod,
     },
   }).catch((err) => {
-    errorNotification(err?.response?.data);
+    // errorNotification(err?.response?.data);
   });
 }
 
@@ -394,7 +394,7 @@ export const renderData = function (params, q, content, firstTime, stockId) {
             }
           })
           .catch((err) => {
-            errorNotification(err?.response?.data);
+            // errorNotification(err?.response?.data);
           });
 
         break;

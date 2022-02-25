@@ -119,7 +119,7 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
         setNextTime(renderData(setting, q, res.data, true));
       })
       .catch((err) => {
-        errorNotification(err?.response?.data);
+        // errorNotification(err?.response?.data);
       });
   }, []);
 
