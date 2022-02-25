@@ -64,7 +64,7 @@ const AutoChart = () => {
         使用情境
       </Title>
       <Settings buttonStatus={buttonStatus} stockId={stockId} />
-      <RealTimeQ1Chart stockId={stockId} buttonStatus={buttonStatus} />
+      {/* <RealTimeQ1Chart stockId={stockId} buttonStatus={buttonStatus} /> */}
     </div>
   );
 };
