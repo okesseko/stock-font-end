@@ -191,7 +191,7 @@ const FrequentDataElement = function ({ marketType }) {
       Promise.all(
         stocks.map((stock) => {
           return defaultAxios({
-            url: url + `/${stock}`,
+            url: url + `/${stock.replace("/", "%2F")}`,
             method,
             params: {
               type: fileType,
@@ -487,6 +487,7 @@ const FrequentDataElement = function ({ marketType }) {
         <Row style={{ marginTop: "20px" }}>
           <Button
             loading={isButtonLoading}
+            disabled={!startTime || !endTime}
             onClick={async () => {
               let stockIds = [];
               if (isGroup) {

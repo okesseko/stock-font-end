@@ -306,6 +306,8 @@ const RealDataSimulator = ({ customResetStock, onReset }) => {
             // }}
             onChange={(e) => {
               setStockId(e);
+              setStartTime(null);
+              setEndTime(null);
             }}
           />
         </div>
@@ -330,6 +332,7 @@ const RealDataSimulator = ({ customResetStock, onReset }) => {
                   transferedEndTime.diff(transferedCurrent) / 86400000 >= 5)
               );
             }}
+            value={startTime}
             onChange={(time) => {
               setStartTime(time && time.startOf("day"));
             }}
@@ -357,6 +360,7 @@ const RealDataSimulator = ({ customResetStock, onReset }) => {
                   transferedCurrent.diff(transferedStartTime) / 86400000 >= 5)
               );
             }}
+            value={endTime}
             onChange={(time) => {
               setEndTime(time && time.startOf("day"));
             }}
@@ -426,6 +430,8 @@ const ReplaySimulator = ({ customResetStock, onReset }) => {
             style={{ width: "100%" }}
             onChange={(e) => {
               setStockId(e);
+              setStartTime(null);
+              setEndTime(null);
             }}
           />
         </div>
@@ -434,12 +440,14 @@ const ReplaySimulator = ({ customResetStock, onReset }) => {
           <DatePicker
             allowClear
             style={{ width: "100%" }}
-            showTime
             placeholder="選擇開始時間"
-            disabledDate={(current) => current && current > dayjs()}
+            disabledDate={(current) =>
+              (current && current > dayjs()) ||
+              (endTime && current.startOf("day") >= endTime.startOf("day"))
+            }
+            value={startTime}
             onChange={(time) => {
-              if (time) setStartTime(dayjs(time).toISOString());
-              else setStartTime(time);
+              setStartTime(time && time.startOf("day"));
             }}
           />
         </div>
@@ -448,12 +456,14 @@ const ReplaySimulator = ({ customResetStock, onReset }) => {
           <DatePicker
             allowClear
             style={{ width: "100%" }}
-            showTime
             placeholder="選擇結束時間"
-            disabledDate={(current) => current && current > dayjs()}
+            disabledDate={(current) =>
+              (current && current > dayjs()) ||
+              (startTime && current.startOf("day") <= startTime.startOf("day"))
+            }
+            value={endTime}
             onChange={(time) => {
-              if (time) setEndTime(dayjs(time).toISOString());
-              else setEndTime(time);
+              setEndTime(time && time.startOf("day"));
             }}
           />
         </div>
@@ -466,7 +476,11 @@ const ReplaySimulator = ({ customResetStock, onReset }) => {
               tempStockId = await customResetStock(stockId);
             }
 
-            getOrder(stockId, startTime, endTime)
+            getOrder(
+              stockId,
+              startTime && startTime.startOf("day").toISOString(),
+              endTime && endTime.endOf("day").toISOString()
+            )
               .then(async ({ data }) => {
                 setOrders(
                   data.content.map((v) => {
@@ -476,9 +490,7 @@ const ReplaySimulator = ({ customResetStock, onReset }) => {
                       stockId: tempStockId,
                     };
                   })
-                ).catch((err) => {
-                  errorNotification(err?.response?.data);
-                });
+                );
                 if (!customResetStock) {
                   await resetStock(stockId).catch((err) => {
                     errorNotification(err?.response?.data);
@@ -541,6 +553,8 @@ const CaseSimulator = ({ customResetStock, onReset }) => {
             style={{ width: "100%" }}
             onChange={(e) => {
               setStockId(e);
+              setSelectedCaseId();
+              setStartTime();
             }}
           />
         </div>
@@ -549,6 +563,7 @@ const CaseSimulator = ({ customResetStock, onReset }) => {
           <Select
             className="w-full"
             options={caseData}
+            value={selectedCaseId}
             onChange={(caseId) => {
               setSelectedCaseId(caseId);
             }}
@@ -559,12 +574,11 @@ const CaseSimulator = ({ customResetStock, onReset }) => {
           <DatePicker
             allowClear
             style={{ width: "100%" }}
-            showTime
             placeholder="選擇開始時間"
             disabledDate={(current) => current && current > dayjs()}
+            value={startTime}
             onChange={(time) => {
-              if (time) setStartTime(dayjs(time).toISOString());
-              else setStartTime(time);
+              setStartTime(time && time.startOf("day"));
             }}
           />
         </div>
@@ -589,7 +603,9 @@ const CaseSimulator = ({ customResetStock, onReset }) => {
               },
             })
               .then(({ data }) => {
-                const baseTime = Date.parse(startTime);
+                const baseTime = Date.parse(
+                  startTime.startOf("day").toISOString()
+                );
                 let accumulatedDelay = 0;
                 const orders = data.content.map(({ delay, id, ...order }) => {
                   accumulatedDelay += delay || 1;
