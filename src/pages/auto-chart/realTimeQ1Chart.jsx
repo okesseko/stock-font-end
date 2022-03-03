@@ -136,7 +136,7 @@ const RealTimeQ1Chart = ({ stockId, buttonStatus }) => {
       })
       .catch((err) => {
         console.log(err);
-        // errorNotification(err?.response?.data);
+        // errorNotification(err);
       });
   }
 

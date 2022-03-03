@@ -42,7 +42,7 @@ const RoleManagement = () => {
           },
         })
           .catch((err) => {
-            errorNotification(err?.response?.data);
+            errorNotification(err);
           })
           .finally(() => {
             setChecked([]);
@@ -62,7 +62,7 @@ const RoleManagement = () => {
         setPermissionData(res.data);
       })
       .catch((err) => {
-        errorNotification(err?.response?.data);
+        errorNotification(err);
       });
   }, []);
 
@@ -81,7 +81,7 @@ const RoleManagement = () => {
         setTotalSize(res.data.totalSize);
       })
       .catch((err) => {
-        errorNotification(err?.response?.data);
+        errorNotification(err);
       });
   }, [page, pageSize, reset]);
 

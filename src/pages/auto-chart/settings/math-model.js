@@ -30,8 +30,8 @@ function geometricDistribution(min, max, prob) {
 }
 
 function randomChoice(p) {
-  let rnd = p.reduce( (a, b) => a + b ) * Math.random();
-  return p.findIndex( a => (rnd -= a) < 0 );
+  let rnd = p.reduce((a, b) => a + b) * Math.random();
+  return p.findIndex((a) => (rnd -= a) < 0);
 }
 
 function randomChoices(p, count) {
@@ -39,36 +39,34 @@ function randomChoices(p, count) {
 }
 
 function C_n_m(n, m) {
-    if (m>(n-m)) {
-      return C_n_m(n, n-m);
-    }
-    let output = 1.0;
-    for(var i=0; i<m; i++) {
-      output=output*(n-i)/(i+1)
-    }
-    return Math.round(output);
+  if (m > n - m) {
+    return C_n_m(n, n - m);
+  }
+  let output = 1.0;
+  for (var i = 0; i < m; i++) {
+    output = (output * (n - i)) / (i + 1);
+  }
+  return Math.round(output);
 }
 
 function getBinomialSampling(n, p) {
-  const n_1 = n-1;
+  const n_1 = n - 1;
   let probability_list = [];
   // number_list = list(range(1,n+1));
-  for(var i=0; i<n_1+1; i++) {
-    probability_list.push(
-      C_n_m(n_1,i)*(p**i)*((1-p)**(n_1-i))
-    );
+  for (var i = 0; i < n_1 + 1; i++) {
+    probability_list.push(C_n_m(n_1, i) * p ** i * (1 - p) ** (n_1 - i));
   }
-  
+
   return randomChoice(probability_list, 1);
 }
 
-function getBatches(batch_size, n, p, current_tab){
- if (current_tab == 1) {
-  let p = 0.5;
-  return geometricDistribution(1, batch_size, p);
- } else if (current_tab == 2) {
-  return getBinomialSampling(n, p);
- }
+function getBatches(batch_size, n, p, current_tab) {
+  if (current_tab == 1) {
+    let p = 0.5;
+    return geometricDistribution(1, batch_size, p);
+  } else if (current_tab == 2) {
+    return getBinomialSampling(n, p);
+  }
 }
 
 function sendOrderApi(data) {
@@ -87,7 +85,7 @@ function sendOrderApi(data) {
       subMethod: data.subMethod,
     },
   }).catch((err) => {
-    // errorNotification(err?.response?.data);
+    // errorNotification(err);
   });
 }
 
@@ -168,23 +166,23 @@ export const renderData = function (params, q, content, firstTime, stockId) {
     let lambda_B = default_lambda_B * Math.pow(R_B, count);
     let theta_B = default_theta_B * Math.pow(R_theta_B, count);
     if (current_tab == 2) {
-      lambda_B = default_lambda_B_K / Math.pow(count+1, default_alpha_B);
-      switch(count) {
+      lambda_B = default_lambda_B_K / Math.pow(count + 1, default_alpha_B);
+      switch (count) {
         case 0:
-        theta_B = default_theta_B1;
-        return;
-        case 1: 
-        theta_B = default_theta_B2;
-        return;
-        case 2: 
-        theta_B = default_theta_B3;
-        return;
-        case 3: 
-        theta_B = default_theta_B4;
-        return;
-        default: 
-        theta_B = default_theta_B5;
-        return;
+          theta_B = default_theta_B1;
+          return;
+        case 1:
+          theta_B = default_theta_B2;
+          return;
+        case 2:
+          theta_B = default_theta_B3;
+          return;
+        case 3:
+          theta_B = default_theta_B4;
+          return;
+        default:
+          theta_B = default_theta_B5;
+          return;
       }
     }
     T["LB" + price] = nextExponential(lambda_B);
@@ -196,23 +194,23 @@ export const renderData = function (params, q, content, firstTime, stockId) {
     let lambda_B = default_lambda_B * Math.pow(R_B, count);
     let theta_B = default_theta_B * Math.pow(R_theta_B, count);
     if (current_tab == 2) {
-      lambda_B = default_lambda_B_K / Math.pow(count+1, default_alpha_B);
-      switch(count) {
+      lambda_B = default_lambda_B_K / Math.pow(count + 1, default_alpha_B);
+      switch (count) {
         case 0:
-        theta_B = default_theta_B1;
-        return;
-        case 1: 
-        theta_B = default_theta_B2;
-        return;
-        case 2: 
-        theta_B = default_theta_B3;
-        return;
-        case 3: 
-        theta_B = default_theta_B4;
-        return;
-        default: 
-        theta_B = default_theta_B5;
-        return;
+          theta_B = default_theta_B1;
+          return;
+        case 1:
+          theta_B = default_theta_B2;
+          return;
+        case 2:
+          theta_B = default_theta_B3;
+          return;
+        case 3:
+          theta_B = default_theta_B4;
+          return;
+        default:
+          theta_B = default_theta_B5;
+          return;
       }
     }
     T["LB" + price] = nextExponential(lambda_B);
@@ -224,23 +222,23 @@ export const renderData = function (params, q, content, firstTime, stockId) {
     let lambda_A = default_lambda_A * Math.pow(R_A, count);
     let theta_A = default_theta_A * Math.pow(R_theta_A, count);
     if (current_tab == 2) {
-      lambda_A = default_lambda_A_K / Math.pow(count+1, default_alpha_A);
-      switch(count) {
+      lambda_A = default_lambda_A_K / Math.pow(count + 1, default_alpha_A);
+      switch (count) {
         case 0:
-        theta_A = default_theta_A1;
-        return;
-        case 1: 
-        theta_A = default_theta_A2;
-        return;
-        case 2: 
-        theta_A = default_theta_A3;
-        return;
-        case 3: 
-        theta_A = default_theta_A4;
-        return;
-        default: 
-        theta_A = default_theta_A5;
-        return;
+          theta_A = default_theta_A1;
+          return;
+        case 1:
+          theta_A = default_theta_A2;
+          return;
+        case 2:
+          theta_A = default_theta_A3;
+          return;
+        case 3:
+          theta_A = default_theta_A4;
+          return;
+        default:
+          theta_A = default_theta_A5;
+          return;
       }
     }
     T["LA" + price] = nextExponential(lambda_A);
@@ -252,23 +250,23 @@ export const renderData = function (params, q, content, firstTime, stockId) {
     let lambda_A = default_lambda_A * Math.pow(R_A, count);
     let theta_A = default_theta_A * Math.pow(R_theta_A, count);
     if (current_tab == 2) {
-      lambda_A = default_lambda_A_K / Math.pow(count+1, default_alpha_A);
-      switch(count) {
+      lambda_A = default_lambda_A_K / Math.pow(count + 1, default_alpha_A);
+      switch (count) {
         case 0:
-        theta_A = default_theta_A1;
-        return;
-        case 1: 
-        theta_A = default_theta_A2;
-        return;
-        case 2: 
-        theta_A = default_theta_A3;
-        return;
-        case 3: 
-        theta_A = default_theta_A4;
-        return;
-        default: 
-        theta_A = default_theta_A5;
-        return;
+          theta_A = default_theta_A1;
+          return;
+        case 1:
+          theta_A = default_theta_A2;
+          return;
+        case 2:
+          theta_A = default_theta_A3;
+          return;
+        case 3:
+          theta_A = default_theta_A4;
+          return;
+        default:
+          theta_A = default_theta_A5;
+          return;
       }
     }
     T["LA" + price] = nextExponential(lambda_A);
@@ -296,11 +294,10 @@ export const renderData = function (params, q, content, firstTime, stockId) {
       if (check == true && q1_array[key].midprice == 0) {
         q1_array[key].midprice = (element.b_price + element.a_price) / 2;
       } else if (check == true && q1_array[key].midprice != 0) {
-        
       }
     });
 
-    console.log('q1_array', q1_array);
+    console.log("q1_array", q1_array);
   }
 
   // console.log("T", T);
@@ -323,22 +320,22 @@ export const renderData = function (params, q, content, firstTime, stockId) {
         });
 
         if (type == "B") {
-          if (array_b.find(element => element == quantity) != undefined) {
+          if (array_b.find((element) => element == quantity) != undefined) {
             q1_array.forEach((element, key) => {
               if (Object.keys(element)[0] == quantity) {
                 q1_array[key][quantity] = true;
                 q1_array[key].b_price = price;
               }
-            })
+            });
           }
         } else {
-          if (array_a.find(element => element == quantity) != undefined) {
+          if (array_a.find((element) => element == quantity) != undefined) {
             q1_array.forEach((element, key) => {
               if (Object.keys(element)[1] == quantity) {
                 q1_array[key][quantity] = true;
                 q1_array[key].a_price = price;
               }
-            })
+            });
           }
         }
 
@@ -394,7 +391,7 @@ export const renderData = function (params, q, content, firstTime, stockId) {
             }
           })
           .catch((err) => {
-            // errorNotification(err?.response?.data);
+            // errorNotification(err);
           });
 
         break;

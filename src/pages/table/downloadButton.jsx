@@ -31,7 +31,7 @@ const DownloadButton = ({ type, stockId, startTime, endTime }) => {
         link.click();
       })
       .catch((err) => {
-        errorNotification(err?.response?.data);
+        errorNotification(err);
       });
   }
 

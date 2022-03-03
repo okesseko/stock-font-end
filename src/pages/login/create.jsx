@@ -38,7 +38,7 @@ const Create = ({ visible, setVisible }) => {
               });
             })
             .catch((err) => {
-              errorNotification(err?.response?.data);
+              errorNotification(err);
             })
             .finally(() => {
               form.resetFields();

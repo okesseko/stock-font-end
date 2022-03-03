@@ -188,7 +188,7 @@ const UploadProgress = ({ file, isLoading, fileType, marketType }) => {
             setProgress(progress + ADDER);
           })
           .catch((err) => {
-            errorNotification(err?.response?.data);
+            errorNotification(err);
             setIsError(true);
           });
       });
@@ -200,7 +200,7 @@ const UploadProgress = ({ file, isLoading, fileType, marketType }) => {
           check(3);
         })
         .catch((err) => {
-          errorNotification(err?.response?.data);
+          errorNotification(err);
           setIsError(true);
         });
     }
@@ -223,7 +223,7 @@ const UploadProgress = ({ file, isLoading, fileType, marketType }) => {
             check(1);
           })
           .catch((err) => {
-            errorNotification(err?.response?.data);
+            errorNotification(err);
             setIsError(true);
           });
       } else handleNextProgress();

@@ -84,12 +84,13 @@ const Q1Chart = () => {
           (data) => data.firstOrderBuyPrice && data.firstOrderSellPrice
         );
 
-        const timeTicker =
-          Math.round(
-            (filteredData[0].fiveTickRange[0].price -
-              filteredData[0].fiveTickRange[1].price) *
-              1e2
-          ) / 1e2;
+        const timeTicker = filteredData.length
+          ? Math.round(
+              (filteredData[0].fiveTickRange[0].price -
+                filteredData[0].fiveTickRange[1].price) *
+                1e2
+            ) / 1e2
+          : 0;
 
         for (let index = 0; index < filteredData.length; index++) {
           const targetData = filteredData[index];
@@ -137,7 +138,7 @@ const Q1Chart = () => {
         setTable({ columns, dataSource });
       })
       .catch((err) => {
-        errorNotification(err?.response?.data);
+        errorNotification(err);
       });
   }
 

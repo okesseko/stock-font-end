@@ -53,7 +53,7 @@ export default class ReadFile extends Component {
             // setData(res.data);
           })
           .catch((err) => {
-            errorNotification(err?.response?.data);
+            errorNotification(err);
           });
       }
     });

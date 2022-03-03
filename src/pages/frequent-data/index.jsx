@@ -210,7 +210,7 @@ const FrequentDataElement = function ({ marketType }) {
           setIsLoading(false);
         })
         .catch((err) => {
-          errorNotification(err?.response?.data);
+          errorNotification(err);
           setIsLoading(false);
         });
     }
@@ -228,7 +228,7 @@ const FrequentDataElement = function ({ marketType }) {
         setGroupList(groupList);
       })
       .catch((err) => {
-        errorNotification(err?.response?.data);
+        errorNotification(err);
       });
   }, []);
   return (
@@ -545,7 +545,7 @@ const FrequentDataElement = function ({ marketType }) {
                         setIsButtonLoading(false);
                       })
                       .catch((err) => {
-                        errorNotification(err?.response?.data);
+                        errorNotification(err);
                         setIsButtonLoading(false);
                       });
                   })

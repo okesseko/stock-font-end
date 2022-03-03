@@ -45,7 +45,7 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
     R_theta_A: 0.8,
     mu_B: 0.94,
     mu_A: 0.94,
-    n: 1, 
+    n: 1,
     p: 1,
     batch_size: 10,
     s: 1,
@@ -57,8 +57,8 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
   const [table, setTable] = useState({
     columns: [
       {
-        title: 'b \\ a',
-        dataIndex: 'name',
+        title: "b \\ a",
+        dataIndex: "name",
         key: Math.random(),
       },
       {
@@ -119,7 +119,7 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
         setNextTime(renderData(setting, q, res.data, true));
       })
       .catch((err) => {
-        // errorNotification(err?.response?.data);
+        // errorNotification(err);
       });
   }, []);
 
@@ -263,58 +263,64 @@ export default function Settings({ buttonStatus = "stop", stockId }) {
     setQ1Array();
   };
 
-  function setQ1Array() { 
+  function setQ1Array() {
     let array_a = [];
     let array_b = [];
     let q1_array = [];
 
-    let start_a = (setting.max_a % setting.gap == 0) ? setting.gap : setting.max_a % setting.gap;
-    for(var i=start_a; i<=setting.max_a; i=i+setting.gap) {
-      array_a.push(i)
+    let start_a =
+      setting.max_a % setting.gap == 0
+        ? setting.gap
+        : setting.max_a % setting.gap;
+    for (var i = start_a; i <= setting.max_a; i = i + setting.gap) {
+      array_a.push(i);
     }
-    let start_b = (setting.max_b % setting.gap == 0) ? setting.gap : setting.max_b % setting.gap;
-    for(var i=start_b; i<=setting.max_b; i=i+setting.gap) {
-      array_b.push(i)
+    let start_b =
+      setting.max_b % setting.gap == 0
+        ? setting.gap
+        : setting.max_b % setting.gap;
+    for (var i = start_b; i <= setting.max_b; i = i + setting.gap) {
+      array_b.push(i);
     }
-  
-    array_a.forEach(a => {
-      array_b.forEach(b => {
+
+    array_a.forEach((a) => {
+      array_b.forEach((b) => {
         q1_array.push({
-          [a]: false, 
+          [a]: false,
           [b]: false,
           midprice: 0,
-          count_up: 0, 
+          count_up: 0,
           count_down: 0,
         });
       });
-    });  
+    });
     setQ({ ...q, array_a: array_a, array_b: array_b, q1_array, q1_array });
   }
 
   function renderTable(gap, max_a, max_b) {
     let columns = [
       {
-        title: 'b \\ a',
-        dataIndex: 'name',
+        title: "b \\ a",
+        dataIndex: "name",
         key: Math.random(),
       },
     ];
     let dataSource = [];
 
-    let start_a = (max_a % gap == 0) ? gap : max_a % gap;
-    for(var i=start_a; i<=max_a; i=i+gap) {
+    let start_a = max_a % gap == 0 ? gap : max_a % gap;
+    for (var i = start_a; i <= max_a; i = i + gap) {
       columns.push({
         title: i,
         dataIndex: i,
         key: i,
-      })
+      });
     }
-    let start_b = (max_b % gap == 0) ? gap : max_b % gap;
-    for(var i=start_b; i<=max_b; i=i+gap) {
+    let start_b = max_b % gap == 0 ? gap : max_b % gap;
+    for (var i = start_b; i <= max_b; i = i + gap) {
       dataSource.push({
         key: i,
         name: i,
-      })
+      });
     }
     setTable({ ...table, columns: columns, dataSource: dataSource });
   }

@@ -71,7 +71,7 @@ const ReplayChart = () => {
                 setIsResetButtonLoading(false);
               })
               .catch((err) => {
-                errorNotification(err?.response?.data);
+                errorNotification(err);
               });
             latestChartTime.current = null;
           }}

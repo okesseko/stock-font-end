@@ -5,10 +5,10 @@ function errorNotification(error) {
   if (error?.statusCode === 401) {
     appEventEmitter.emit("unauthorization");
   }
+  console.log(error)
   notification.open({
     type: "error",
-    message: error?.statusCode,
-    description: error?.message,
+    message: JSON.stringify(error),
     duration: 3,
   });
 }

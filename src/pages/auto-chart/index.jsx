@@ -21,7 +21,7 @@ const AutoChart = () => {
         isReset: true,
       },
     }).catch((err) => {
-      // errorNotification(err?.response?.data);
+      // errorNotification(err);
     });
 
     setButtonStatus("stop");

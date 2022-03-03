@@ -30,7 +30,7 @@ export const StockSelector = ({ style, mode, onChange, isRealData, onEnd }) => {
           );
         })
         .catch((err) => {
-          errorNotification(err?.response?.data);
+          errorNotification(err);
         });
     } else {
       defaultAxios({
@@ -41,7 +41,7 @@ export const StockSelector = ({ style, mode, onChange, isRealData, onEnd }) => {
           setStockList(stockList);
         })
         .catch((err) => {
-          errorNotification(err?.response?.data);
+          errorNotification(err);
         });
     }
   }, [isRealData]);

@@ -56,7 +56,7 @@ const QuickOrder = () => {
             refreshDisplay(showType);
           })
           .catch((err) => {
-            errorNotification(err?.response?.data);
+            errorNotification(err);
           });
     } else {
       defaultAxios({
@@ -75,7 +75,7 @@ const QuickOrder = () => {
           setData(res.data);
         })
         .catch((err) => {
-          errorNotification(err?.response?.data);
+          errorNotification(err);
         });
     }
   }
@@ -101,7 +101,7 @@ const QuickOrder = () => {
           refreshDisplay(showType);
         })
         .catch((err) => {
-          errorNotification(err?.response?.data);
+          errorNotification(err);
         });
     } else {
       defaultAxios({
@@ -120,7 +120,7 @@ const QuickOrder = () => {
           setData(res.data);
         })
         .catch((err) => {
-          errorNotification(err?.response?.data);
+          errorNotification(err);
         });
     }
   }
@@ -147,7 +147,7 @@ const QuickOrder = () => {
           refreshDisplay(showType);
         })
         .catch((err) => {
-          errorNotification(err?.response?.data);
+          errorNotification(err);
         });
     } else {
       defaultAxios({
@@ -167,7 +167,7 @@ const QuickOrder = () => {
           setData(res.data);
         })
         .catch((err) => {
-          errorNotification(err?.response?.data);
+          errorNotification(err);
         });
     }
   }
@@ -196,7 +196,7 @@ const QuickOrder = () => {
           setData(res.data.display);
         })
         .catch((err) => {
-          errorNotification(err?.response?.data);
+          errorNotification(err);
         });
     }
   }
@@ -240,7 +240,7 @@ const QuickOrder = () => {
         setTotalSize(res.data.totalSize);
       })
       .catch((err) => {
-        errorNotification(err?.response?.data);
+        errorNotification(err);
       });
 
     if (isRunning) {
@@ -330,7 +330,7 @@ const QuickOrder = () => {
                   refreshDisplay(showType);
                 })
                 .catch((err) => {
-                  errorNotification(err?.response?.data);
+                  errorNotification(err);
                 });
             }}
           >

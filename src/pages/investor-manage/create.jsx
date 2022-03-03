@@ -41,7 +41,7 @@ const Create = ({ visible, setVisible, defaultValue, reset, role = [] }) => {
               },
             })
               .catch((err) => {
-                errorNotification(err?.response?.data);
+                errorNotification(err);
               })
               .finally(() => {
                 reset(Math.random());
@@ -58,7 +58,7 @@ const Create = ({ visible, setVisible, defaultValue, reset, role = [] }) => {
               },
             })
               .catch((err) => {
-                errorNotification(err?.response?.data);
+                errorNotification(err);
               })
               .finally(() => {
                 reset(Math.random());

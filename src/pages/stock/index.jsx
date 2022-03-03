@@ -31,7 +31,7 @@ const Stock = () => {
         setSelectStock([]);
       })
       .catch((err) => {
-        errorNotification(err?.response?.data);
+        errorNotification(err);
       });
   }
   useEffect(() => {
@@ -48,7 +48,7 @@ const Stock = () => {
         setTotalSize(res.data.totalSize);
       })
       .catch((err) => {
-        errorNotification(err?.response?.data);
+        errorNotification(err);
       });
   }, [page, pageSize, searchCondition, reloadData]);
   useEffect(() => {

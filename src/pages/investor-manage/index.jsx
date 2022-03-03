@@ -40,7 +40,7 @@ const InvestorManagement = () => {
           },
         })
           .catch((err) => {
-            errorNotification(err?.response?.data);
+            errorNotification(err);
           })
           .finally(() => {
             setChecked([]);
@@ -60,7 +60,7 @@ const InvestorManagement = () => {
         setRoleData(res.data.content);
       })
       .catch((err) => {
-        errorNotification(err?.response?.data);
+        errorNotification(err);
       });
   }, []);
 
@@ -78,7 +78,7 @@ const InvestorManagement = () => {
         setTotalSize(res.data.totalSize);
       })
       .catch((err) => {
-        errorNotification(err?.response?.data);
+        errorNotification(err);
       });
   }, [page, pageSize, reset]);
 

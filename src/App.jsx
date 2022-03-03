@@ -58,7 +58,7 @@ const App = () => {
         setPermission(res.data);
       })
       .catch((err) => {
-        // errorNotification(err?.response?.data);
+        // errorNotification(err);
       });
   }, [router]);
 

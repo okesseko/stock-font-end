@@ -21,7 +21,7 @@ const RouterLink = ({ setToken, permission }) => {
               method: api.logout.method,
             })
               .catch((err) => {
-                errorNotification(err?.response?.data);
+                errorNotification(err);
               })
               .finally((res) => {
                 setToken(null);

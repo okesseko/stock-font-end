@@ -318,7 +318,7 @@ const DisplayChart = ({
         }
       )
       .catch((err) => {
-        errorNotification(err?.response?.data);
+        errorNotification(err);
       });
   }, [
     stock,

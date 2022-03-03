@@ -43,7 +43,7 @@ const Create = ({
               data: { ...value, id: defaultValue.id },
             })
               .catch((err) => {
-                errorNotification(err?.response?.data);
+                errorNotification(err);
               })
               .finally(() => {
                 reset(Math.random());
@@ -57,7 +57,7 @@ const Create = ({
               data: value,
             })
               .catch((err) => {
-                errorNotification(err?.response?.data);
+                errorNotification(err);
               })
               .finally(() => {
                 reset(Math.random());

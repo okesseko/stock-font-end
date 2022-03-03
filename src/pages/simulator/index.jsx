@@ -93,7 +93,7 @@ export const OrderSender = ({ orders, stockId, onReset }) => {
     const currentOrder = orders[currentIndex];
     const nextOrder = orders[currentIndex + 1];
     sendOrder(currentOrder).catch((err) => {
-      errorNotification(err?.response?.data);
+      errorNotification(err);
     });
     if (nextOrder) {
       const delay =
@@ -167,7 +167,7 @@ export const OrderSender = ({ orders, stockId, onReset }) => {
               resetStock(
                 order.stockId === stockId ? stockId : order.stockId
               ).catch((err) => {
-                errorNotification(err?.response?.data);
+                errorNotification(err);
               });
             }, 1000);
           }}
@@ -273,7 +273,7 @@ const RealDataSimulator = ({ customResetStock, onReset }) => {
           setIsLoading(false);
         })
         .catch((err) => {
-          errorNotification(err?.response?.data);
+          errorNotification(err);
           setIsLoading(false);
         });
     }
@@ -375,7 +375,7 @@ const RealDataSimulator = ({ customResetStock, onReset }) => {
               tempStockId = await customResetStock(stockId);
             } else {
               await resetStock(stockId).catch((err) => {
-                errorNotification(err?.response?.data);
+                errorNotification(err);
               });
             }
 
@@ -398,7 +398,7 @@ const RealDataSimulator = ({ customResetStock, onReset }) => {
                 );
               })
               .catch((err) => {
-                errorNotification(err?.response?.data);
+                errorNotification(err);
               });
           }}
           disabled={!stockId || !startTime || !endTime}
@@ -493,12 +493,12 @@ const ReplaySimulator = ({ customResetStock, onReset }) => {
                 );
                 if (!customResetStock) {
                   await resetStock(stockId).catch((err) => {
-                    errorNotification(err?.response?.data);
+                    errorNotification(err);
                   });
                 }
               })
               .catch((err) => {
-                errorNotification(err?.response?.data);
+                errorNotification(err);
               });
           }}
         >
@@ -538,7 +538,7 @@ const CaseSimulator = ({ customResetStock, onReset }) => {
           );
         })
         .catch((err) => {
-          errorNotification(err?.response?.data);
+          errorNotification(err);
         });
     }
   }, [stockId]);
@@ -591,7 +591,7 @@ const CaseSimulator = ({ customResetStock, onReset }) => {
               tempStockId = await customResetStock(stockId);
             } else {
               await resetStock(stockId).catch((err) => {
-                errorNotification(err?.response?.data);
+                errorNotification(err);
               });
             }
 
@@ -623,7 +623,7 @@ const CaseSimulator = ({ customResetStock, onReset }) => {
                 setOrders(orders);
               })
               .catch((err) => {
-                errorNotification(err?.response?.data);
+                errorNotification(err);
               });
           }}
         >

@@ -43,7 +43,7 @@ const Login = ({ setToken, setPermission }) => {
               history.replace("/stock-font-end/");
             })
             .catch((err) => {
-              errorNotification(err?.response?.data);
+              errorNotification(err);
               setLoginError(err.message);
             });
         }}

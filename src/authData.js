@@ -30,7 +30,7 @@ const AUTH_MAPPING_DATA = {
 
 const LINK_MAPPING_DATA = {
   stock: "股票管理",
-  "investor-management": "帳戶管理",
+  "investor-management": "權限管理",
   "role-management": "角色管理",
   "auto-chart": "LOB 圖表",
   "replay-chart": "重播紀錄",
