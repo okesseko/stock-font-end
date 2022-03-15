@@ -283,7 +283,7 @@ const RealDataSimulator = ({ customResetStock, onReset }) => {
     <div>
       <div className="flex justify-around my-6 items-center">
         <div className="w-1/6">
-          選擇商品
+          選擇股票
           <StockSelector
             style={{ width: "100%" }}
             onChange={(e) => {
@@ -619,7 +619,7 @@ const CaseSimulator = ({ customResetStock, onReset }) => {
 
 const Simulator = ({ customResetStock, onReset }) => {
   return (
-    <Tabs type="card" centered>
+    <Tabs type="card" centered className="px-4">
       <TabPane tab="真實資料" key="1">
         <RealDataSimulator
           customResetStock={customResetStock}

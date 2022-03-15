@@ -388,7 +388,7 @@ const ContentContainer = ({ fileType, marketType }) => {
 
 const RealDataUpload = () => {
   return (
-    <div style={{ textAlign: "center" }}>
+    <div style={{ textAlign: "center" }} className="p-4">
       <span style={{ color: "red" }}>
         若"已完成"為否 請將該筆資料刪除後再重新上傳
       </span>

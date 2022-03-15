@@ -34,7 +34,7 @@ const OrderTable = () => {
   }, [page, pageSize, stockId, startTime, endTime]);
 
   return (
-    <div>
+    <div className="p-4">
       <StockDatePicker
         onStockChange={(e) => {
           setStockId(e);
