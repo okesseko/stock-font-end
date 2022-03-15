@@ -6,7 +6,6 @@ import dayjs from "dayjs";
 const BarStatisticsChart = ({
   data = { 
     xAxis: [], 
-    // quantity: [], 
     quantityA5: [],
     quantityA4: [],
     quantityA3: [],
@@ -46,7 +45,6 @@ const BarStatisticsChart = ({
     var i =1;
     var answer=1;
     while(i<n){
-        //console.log('i= '+ i + ' answer= '+answer);
         if(i*i<=n && (i+0.0001)*(i+0.0001)>n){            
             answer= Math.round(i*100)/100;
             return answer;   
@@ -106,21 +104,6 @@ const BarStatisticsChart = ({
 
   useEffect(() => {
     getQuantity(dataChart);
-    if (isRunning) {
-    //   // getQuantity(1);
-    //   timer = setInterval(() => {
-    //     // if (quantity.length > 0) {
-    //     const avg = (quantity.reduce((acc, val) => acc + val, 0) / quantity.length).toFixed(4);
-    //     if (!isNaN(avg)) {
-    //       console.log(avg);
-    //       setAverage(avg);
-    //     }
-    //     // }
-    //   }, 1000);
-    } else {
-
-    }
-
 
     const avg = (quantity.reduce((acc, val) => acc + val, 0) / quantity.length).toFixed(4);
     if (!isNaN(avg)) {
@@ -154,7 +137,6 @@ const BarStatisticsChart = ({
     legend: {
       data: ["單量"],
     },
-    // backgroundColor: "black",
     xAxis: [
       {
         type: "category",
@@ -225,11 +207,6 @@ const BarStatisticsChart = ({
               { label: "Order " + data.charts[2], value: 3 },
               { label: "Order " + data.charts[3], value: 4 },
               { label: "Order " + data.charts[4], value: 5 },
-              // { label: "Cancel " + data.charts[0], value: 6 },
-              // { label: "Cancel " + data.charts[1], value: 7 },
-              // { label: "Cancel " + data.charts[2], value: 8 },
-              // { label: "Cancel " + data.charts[3], value: 9 },
-              // { label: "Cancel " + data.charts[4], value: 10 },
             ]}
             onChange={(val) => { 
               setDataChart(val);

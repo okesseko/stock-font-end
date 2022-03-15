@@ -1,14 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import {
-  Slider,
-  Tabs,
-  Typography,
-  Table,
-  Button,
-  DatePicker,
-  Form,
-} from "antd";
-import { StockSelector } from "../../component/stock-selector";
+import React, { useState, useRef } from "react";
+import { Slider, Typography, Table, Button, DatePicker, Form } from "antd";
 import { api, defaultAxios } from "../../environment/api";
 import errorNotification from "../../utils/errorNotification";
 import dayjs from "dayjs";
@@ -168,13 +159,6 @@ const Q1Chart = () => {
             getData(columnCount(), rowCount());
           }}
         >
-          {/* <Form.Item
-            rules={[{ required: true, message: "請選擇股票" }]}
-            label="選擇股票"
-            name="stock"
-          >
-            <StockSelector style={{ width: "100%" }} />
-          </Form.Item> */}
           <Form.Item
             rules={[{ required: true, message: "請選擇時間" }]}
             label="播放時間"

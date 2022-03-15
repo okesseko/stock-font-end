@@ -237,12 +237,6 @@ const FrequentDataElement = function ({ marketType }) {
         {getTitle(marketType)}
         <Row>
           <Col span={6}>
-            {/* <Switch
-            checked={isGroup}
-            onChange={() => {
-              setIsGroup(!isGroup);
-            }}
-          /> */}
             檔案類型
             <Select
               style={{ width: "100%" }}

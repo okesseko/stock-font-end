@@ -166,29 +166,8 @@ const BarChart = ({ originData = {}, showType }) => {
               y: 50,
               name: "qwe",
             },
-            // ...new Array(center).fill(0).map((e, index) => {
-            //   return { xAxis: index + 5, yAxis: 0, symbolSize: [50, 300] };
-            // }),
           ],
         },
-        // markPoint:
-        //   {
-        //     symbol: "rect",
-        //     symbolSize: 40,
-        //     itemStyle: {
-        //       color: "rgba(0,0,0,0.2)",
-        //     },
-        // data: new Array(center).fill(0).map((e, index) => {
-        //   return { xAxis: index + 5, yAxis: 0, symbolSize: [50, 300] };
-        // }),
-        //       .push({
-        //         type:'average',
-        //         name:'qweqwe'
-        //         // xAxis: 5,
-        //         // yAxis: 0,
-        //         // symbolSize: [50, 300],
-        //       }),
-        //   },
       },
     ],
   };

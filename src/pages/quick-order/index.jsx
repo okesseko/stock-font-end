@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-// import ReactDOM from 'react-dom';
-// import CSVReader from 'react-csv-reader';
 import ReadFile from "./read-file";
 import { api, defaultAxios } from "../../environment/api";
 import errorNotification from "../../utils/errorNotification";
@@ -19,7 +17,6 @@ const QuickOrder = () => {
   const [showType, setShowType] = useState("請選擇情境");
   const [timeRestriction, setTimeRestriction] = useState(0);
   const [isAutoTime, setIsAutoTime] = useState(false);
-  // const [isSimulated, setIsSimulated] = useState(false);
 
   const [display, setDisplay] = useState();
 
@@ -337,27 +334,6 @@ const QuickOrder = () => {
             Reset
           </Button>
         )}
-        {/* <Checkbox
-          checked={isAutoTime}
-          onChange={(e) => {
-            const { checked } = e.target;
-            setIsAutoTime(checked);
-            // if (!checked) {
-            //   setIsSimulated(false);
-            // }
-          }}
-        >
-          是否自動填入過去時間
-        </Checkbox> */}
-        {/* <Checkbox
-          checked={isSimulated}
-          onChange={(e) => {
-            setIsSimulated(e.target.checked);
-          }}
-          disabled={!isAutoTime}
-        >
-          是否為虛擬單
-        </Checkbox> */}
       </div>
 
       <div

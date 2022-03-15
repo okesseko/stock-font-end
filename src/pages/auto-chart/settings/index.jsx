@@ -1,16 +1,12 @@
-import { configConsumerProps } from "antd/lib/config-provider";
 import React, { useEffect, useRef, useState } from "react";
 import { renderData } from "./math-model";
 import { defaultAxios, api } from "../../../environment/api";
-import errorNotification from "../../../utils/errorNotification";
-import { Slider, Tabs, Typography, Table } from "antd";
+import { Slider, Tabs, Typography } from "antd";
 
-const { Title } = Typography;
 const { TabPane } = Tabs;
 
 export default function Settings({ buttonStatus = "stop", stockId }) {
   const displayData = useRef();
-  const timeSet = useRef();
   const [nextTime, setNextTime] = useState(0);
 
   const [q, setQ] = useState({

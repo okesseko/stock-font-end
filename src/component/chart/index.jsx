@@ -9,18 +9,7 @@ import errorNotification from "../../utils/errorNotification";
 import ReactECharts from "echarts-for-react";
 import dayjs from "dayjs";
 
-const check = (...arg) => {
-  if (false) {
-    console.log(...arg);
-  }
-};
-
-const getChartData = (
-  stockId,
-  dateFormat,
-  latestTimeChartTime,
-  // latestStatisticsChartTime
-) => {
+const getChartData = (stockId, dateFormat, latestTimeChartTime) => {
   return Promise.all([
     defaultAxios({
       url: api.getDisplay.url,
@@ -43,19 +32,6 @@ const getChartData = (
           }),
       },
     }),
-    // defaultAxios({
-    //   url: api.getDisplay.url,
-    //   method: api.getDisplay.method,
-    //   params: {
-    //     stockId,
-    //     createdTime:
-    //       latestStatisticsChartTime &&
-    //       JSON.stringify({
-    //         min: new Date(latestStatisticsChartTime).toISOString(),
-    //       }),
-    //     order: JSON.stringify({ order: "ASC", orderBy: "createdTime" }),
-    //   },
-    // }),
   ]);
 };
 
@@ -75,21 +51,6 @@ const DisplayTimeChart = ({
   );
 };
 
-const DisplayStatisticsChart = ({
-  data = { xAxis: [], quantity: [], type: "" },
-  onDateFormatChange,
-}) => {
-  return (
-    <div>
-      <BarStatisticsChart
-        data={data}
-        onDateFormatChange={(v) => {
-          onDateFormatChange && onDateFormatChange(v);
-        }}
-      />
-    </div>
-  );
-};
 const DisplayTickChart = ({ data = {} }) => {
   const [showType, setShowType] = useState("all");
   return (
@@ -178,12 +139,10 @@ const DisplayChart = ({
   const [stockId, setStockId] = useState();
   const [dateFormat, setDateFormat] = useState(4);
   const [latestTimeChartTime, setLatestTimeChartTime] = useState();
-  // const [latestStatisticsChartTime, setLatestStatisticsChartTime] = useState();
 
   // chart data
   const [tickChartData, setTickChartData] = useState({});
   const [timeChartData, setTimeChartData] = useState([]);
-  // const [statisticsChartData, setStatisticsChartData] = useState([]);
   const [splitChartData, setSplitChartData] = useState([]);
 
   const clearInterval = () => {
@@ -194,15 +153,12 @@ const DisplayChart = ({
   const resetChart = () => {
     setTickChartData({});
     setTimeChartData([]);
-    // setStatisticsChartData([]);
     setSplitChartData([]);
     setLatestTimeChartTime(undefined);
-    // setLatestStatisticsChartTime(undefined);
   };
 
   useEffect(() => {
     resetChart();
-    check("----");
   }, [stock, stockId, dateFormat]);
 
   useEffect(() => {
@@ -213,122 +169,62 @@ const DisplayChart = ({
   }, [isResetChart, setIsResetChart]);
 
   const handleInterval = useCallback(() => {
-    check(
-      (stock && stock.id) || stockId,
-      dateFormat,
-      interval.current,
-      latestTimeChartTime,
-      // latestStatisticsChartTime
-    );
     getChartData(
       (stock && stock.id) || stockId,
       dateFormat,
-      latestTimeChartTime,
-      // latestStatisticsChartTime
+      latestTimeChartTime
     )
-      .then(
-        ([
-          { data: tickChartData },
-          { data: _timeChartData },
-          // { data: _statisticsChart },
-        ]) => {
-          // tick chart
-          setTickChartData(tickChartData);
+      .then(([{ data: tickChartData }, { data: _timeChartData }]) => {
+        // tick chart
+        setTickChartData(tickChartData);
 
-          // time chart
-          const newTimeChartData = JSON.parse(JSON.stringify(timeChartData));
-          if (_timeChartData.length) {
-            _timeChartData.forEach(({ originCreatedTime, ...timeChart }) => {
-              const LENGTH = newTimeChartData.length;
-              if (
-                LENGTH &&
-                newTimeChartData[LENGTH - 1].xAxis === timeChart.createdTime
-              ) {
-                newTimeChartData[LENGTH - 1] = {
-                  xAxis: timeChart.createdTime,
-                  price: timeChart.close,
-                  quantity:
-                    timeChart.quantity + newTimeChartData[LENGTH - 1].quantity,
-                  buy: timeChart.firstOrderBuy,
-                  sell: timeChart.firstOrderSell,
-                };
-              } else {
-                newTimeChartData.push({
-                  xAxis: timeChart.createdTime,
-                  price: timeChart.close,
-                  quantity: timeChart.quantity,
-                  buy: timeChart.firstOrderBuy,
-                  sell: timeChart.firstOrderSell,
-                });
-              }
-              if (originCreatedTime) {
-                setLatestTimeChartTime(
-                  new Date(originCreatedTime).getTime() + 1
-                );
-              }
-            });
-            setTimeChartData(newTimeChartData);
-            // setStatisticsChartData(newTimeChartData);
-            // split chart
-            setSplitChartData(
-              newTimeChartData.slice(-10).map(({ buy, sell, xAxis }) => {
-                return {
-                  x: xAxis,
-                  y: sell - buy,
-                };
-              })
-            );
-          }
+        // time chart
+        const newTimeChartData = JSON.parse(JSON.stringify(timeChartData));
+        if (_timeChartData.length) {
+          _timeChartData.forEach(({ originCreatedTime, ...timeChart }) => {
+            const LENGTH = newTimeChartData.length;
+            if (
+              LENGTH &&
+              newTimeChartData[LENGTH - 1].xAxis === timeChart.createdTime
+            ) {
+              newTimeChartData[LENGTH - 1] = {
+                xAxis: timeChart.createdTime,
+                price: timeChart.close,
+                quantity:
+                  timeChart.quantity + newTimeChartData[LENGTH - 1].quantity,
+                buy: timeChart.firstOrderBuy,
+                sell: timeChart.firstOrderSell,
+              };
+            } else {
+              newTimeChartData.push({
+                xAxis: timeChart.createdTime,
+                price: timeChart.close,
+                quantity: timeChart.quantity,
+                buy: timeChart.firstOrderBuy,
+                sell: timeChart.firstOrderSell,
+              });
+            }
+            if (originCreatedTime) {
+              setLatestTimeChartTime(new Date(originCreatedTime).getTime() + 1);
+            }
+          });
+          setTimeChartData(newTimeChartData);
 
-          // statistics chart
-          // const _statisticsChartData = _statisticsChart.content;
-          // const newStatisticsChartData = JSON.parse(
-          //   JSON.stringify(statisticsChartData)
-          // );
-          // if (_statisticsChartData.length) {
-          //   _statisticsChartData.forEach((statisticsChart, index, arr) => {
-          //     const LENGTH = newStatisticsChartData.length;
-          //     if (
-          //       LENGTH &&
-          //       newStatisticsChartData[LENGTH - 1].xAxis ===
-          //         statisticsChart.createdTime
-          //     ) {
-          //       newStatisticsChartData[LENGTH - 1] = {
-          //         xAxis: statisticsChart.createdTime,
-          //         fiveTickRange: statisticsChart.fiveTickRange,
-          //         marketBuyQuantity: statisticsChart.marketBuyQuantity,
-          //         marketSellQuantity: statisticsChart.marketSellQuantity,
-          //       };
-          //     } else {
-          //       newStatisticsChartData.push({
-          //         xAxis: statisticsChart.createdTime,
-          //         fiveTickRange: statisticsChart.fiveTickRange,
-          //         marketBuyQuantity: statisticsChart.marketBuyQuantity,
-          //         marketSellQuantity: statisticsChart.marketSellQuantity,
-          //       });
-          //     }
-          //     if (arr.length - 1 === index && statisticsChart.createdTime) {
-          //       setLatestStatisticsChartTime(
-          //         new Date(statisticsChart.createdTime).getTime() + 1
-          //       );
-          //     }
-          //   });
-          //   setStatisticsChartData(newStatisticsChartData);
-          // }
+          // split chart
+          setSplitChartData(
+            newTimeChartData.slice(-10).map(({ buy, sell, xAxis }) => {
+              return {
+                x: xAxis,
+                y: sell - buy,
+              };
+            })
+          );
         }
-      )
+      })
       .catch((err) => {
         errorNotification(err);
       });
-  }, [
-    stock,
-    stockId,
-    dateFormat,
-    timeChartData,
-    // statisticsChartData,
-    latestTimeChartTime,
-    // latestStatisticsChartTime,
-  ]);
+  }, [stock, stockId, dateFormat, timeChartData, latestTimeChartTime]);
 
   useEffect(() => {
     clearInterval();
@@ -376,105 +272,11 @@ const DisplayChart = ({
           />
         );
       }, [timeChartData])}
+
       {useMemo(() => {
         return <DisplaySplitChart data={splitChartData} />;
       }, [splitChartData])}
-      {/* {useMemo(() => {
-        return (
-          <div className="flex justify-around mt-3 mb-0 items-center">
-            <div className="w-1/2">
-              <DisplayStatisticsChart
-                data={statisticsChartData.reduce(
-                  (p, v) => {
-                    const {
-                      xAxis,
-                      // quantity,
-                      fiveTickRange,
-                      marketBuyQuantity,
-                      marketSellQuantity,
-                    } = v;
-                    p.xAxis.push(xAxis);
-                    p.quantityB1.push(fiveTickRange[5].buyQuantity);
-                    p.quantityB2.push(fiveTickRange[6].buyQuantity);
-                    p.quantityB3.push(fiveTickRange[7].buyQuantity);
-                    p.quantityB4.push(fiveTickRange[8].buyQuantity);
-                    p.quantityB5.push(fiveTickRange[9].buyQuantity);
-                    p.marketBuyQuantity.push(marketBuyQuantity);
-                    p.marketSellQuantity.push(marketSellQuantity);
-                    return p;
-                  },
-                  {
-                    xAxis: [],
-                    quantityA5: [],
-                    quantityA4: [],
-                    quantityA3: [],
-                    quantityA2: [],
-                    quantityA1: [],
-                    quantityB1: [],
-                    quantityB2: [],
-                    quantityB3: [],
-                    quantityB4: [],
-                    quantityB5: [],
-                    fiveTickRange: [],
-                    marketBuyQuantity: [],
-                    marketSellQuantity: [],
-                    charts: ["B1", "B2", "B3", "B4", "B5"],
-                    type: "buy",
-                  }
-                )}
-                onDateFormatChange={(v) => {
-                  setDateFormat(v);
-                }}
-              />
-            </div>
-            <div className="w-1/2">
-              <DisplayStatisticsChart
-                data={statisticsChartData.reduce(
-                  (p, v) => {
-                    const {
-                      xAxis,
-                      // quantity,
-                      fiveTickRange,
-                      marketBuyQuantity,
-                      marketSellQuantity,
-                    } = v;
-                    p.xAxis.push(xAxis);
-                    p.quantityA5.push(fiveTickRange[0].sellQuantity);
-                    p.quantityA4.push(fiveTickRange[1].sellQuantity);
-                    p.quantityA3.push(fiveTickRange[2].sellQuantity);
-                    p.quantityA2.push(fiveTickRange[3].sellQuantity);
-                    p.quantityA1.push(fiveTickRange[4].sellQuantity);
-                    p.marketBuyQuantity.push(marketBuyQuantity);
-                    p.marketSellQuantity.push(marketSellQuantity);
-                    return p;
-                  },
-                  {
-                    xAxis: [],
-                    quantityA5: [],
-                    quantityA4: [],
-                    quantityA3: [],
-                    quantityA2: [],
-                    quantityA1: [],
-                    quantityB1: [],
-                    quantityB2: [],
-                    quantityB3: [],
-                    quantityB4: [],
-                    quantityB5: [],
-                    fiveTickRange: [],
-                    marketBuyQuantity: [],
-                    marketSellQuantity: [],
-                    charts: ["A1", "A2", "A3", "A4", "A5"],
-                    type: "sell",
-                  }
-                )}
-                onDateFormatChange={(v) => {
-                  setDateFormat(v);
-                }}
-              />
-            </div>
-          </div>
-        );
-      }, [statisticsChartData])} */}
+
       <div className="flex justify-around my-6 items-center">
         <div className="w-1/6" style={{ display: stock ? "none" : undefined }}>
           選擇股票

@@ -1,10 +1,6 @@
 import { defaultAxios, api } from "../../../environment/api";
-import errorNotification from "../../../utils/errorNotification";
 
 function nextExponential(lambda) {
-  // if ("number" !== typeof lambda) {
-  //   throw new TypeError("nextExponential: lambda must be number.");
-  // }
   lambda = Number(lambda);
 
   if (lambda <= 0) {
@@ -344,7 +340,6 @@ export const renderData = function (params, q, content, firstTime, stockId) {
 
       // 市價單
       case "M":
-        // console.log("Market order");
         sendOrderApi({
           investorId: null,
           stockId,

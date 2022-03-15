@@ -9,13 +9,12 @@ import RouterLink from "./component/router-link";
 import { AUTH_MAPPING_DATA } from "./authData";
 
 import { useEffect, useState } from "react";
-import { settingToken, api, defaultAxios } from "./environment/api";
+import { settingToken } from "./environment/api";
 const events = require("events");
 
 export const appEventEmitter = new events.EventEmitter();
 
 const App = () => {
-  const [router, setRouter] = useState("");
   const [auth, setAuth] = useState(!!localStorage.getItem("token"));
   const [token, setToken] = useState(localStorage.getItem("token") || "");
   const [permission, setPermission] = useState(
@@ -23,7 +22,6 @@ const App = () => {
   );
 
   const GuardedRoute = ({ component: Component, ...rest }) => {
-    setRouter(rest.path);
     return (
       <Route
         {...rest}
@@ -48,19 +46,6 @@ const App = () => {
     setAuth(!!token);
     settingToken(token);
   }, [token]);
-
-  useEffect(() => {
-    defaultAxios({
-      url: api.getRolePermission.url,
-      method: api.getRolePermission.method,
-    })
-      .then((res) => {
-        setPermission(res.data);
-      })
-      .catch((err) => {
-        // errorNotification(err);
-      });
-  }, [router]);
 
   return (
     <HashRouter>

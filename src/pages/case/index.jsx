@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { defaultAxios, api } from "../../environment/api";
 import errorNotification from "../../utils/errorNotification";
-import { Table, Button, Row, Col, Select, Input, Typography } from "antd";
+import { Table, Button, Row, Col, Input, Typography } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import Create from "./create";
 import dayjs from "dayjs";
 import { StockSelector } from "../../component/stock-selector";
-const { Search } = Input;
+
 const { Title } = Typography;
 const Case = () => {
   const [orederData, setOrderData] = useState([]);
@@ -18,6 +18,7 @@ const Case = () => {
   const [editValue, setEditValue] = useState();
   const [checked, setChecked] = useState([]);
   const [searchCondition, setSearchCondition] = useState({});
+
   useEffect(() => {
     defaultAxios({
       url: api.getContainer.url,
@@ -130,12 +131,6 @@ const Case = () => {
           ...rowSelection,
         }}
         columns={[
-          // {
-          //   title: "id",
-          //   dataIndex: "id",
-          //   render: (data) => <span>{data || "NULL"}</span>,
-          //   sorter: (a, b) => a.id - b.id,
-          // },
           {
             title: "股票 ID",
             dataIndex: "stockId",

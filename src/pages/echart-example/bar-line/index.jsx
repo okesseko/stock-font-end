@@ -27,7 +27,6 @@ const BarLineChart = ({
     legend: {
       data: ["成交價", "最佳買價", "最佳賣價", "成交量"],
     },
-    // backgroundColor: "black",
     xAxis: [
       {
         type: "category",

@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Modal, Form, Input, Select } from "antd";
 import { defaultAxios, api } from "../../environment/api";
 import errorNotification from "../../utils/errorNotification";
+import { LINK_MAPPING_DATA } from "../../authData";
 
 const Create = ({
   visible,
@@ -100,7 +101,10 @@ const Create = ({
           <Select
             mode="multiple"
             placeholder="請選擇"
-            options={permission.map((val) => ({ value: val, label: val }))}
+            options={permission.map((val) => ({
+              value: val,
+              label: LINK_MAPPING_DATA[val],
+            }))}
           />
         </Form.Item>
       </Form>

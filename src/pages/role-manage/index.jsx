@@ -9,6 +9,7 @@ import {
 } from "@ant-design/icons";
 import Create from "./create";
 import dayjs from "dayjs";
+import { LINK_MAPPING_DATA } from "../../authData";
 
 const { confirm } = Modal;
 
@@ -171,7 +172,10 @@ const RoleManagement = () => {
             dataIndex: "permissions",
             render: (data) => (
               <span className="whitespace-pre-line">
-                {data.reduce((prev, curr) => prev + curr.id + "\n", "")}
+                {data.reduce(
+                  (prev, curr) => prev + LINK_MAPPING_DATA[curr.id] + "\n",
+                  ""
+                )}
               </span>
             ),
           },

@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Slider, Typography, Table, Button, Form } from "antd";
+import { Slider, Typography, Table, Form } from "antd";
 import { api, defaultAxios } from "../../environment/api";
-import errorNotification from "../../utils/errorNotification";
 import dayjs from "dayjs";
 
 const { Title } = Typography;
@@ -136,7 +135,6 @@ const RealTimeQ1Chart = ({ stockId, buttonStatus }) => {
       })
       .catch((err) => {
         console.log(err);
-        // errorNotification(err);
       });
   }
 
@@ -188,9 +186,6 @@ const RealTimeQ1Chart = ({ stockId, buttonStatus }) => {
         className="max-w-full"
         dataSource={table.dataSource}
         columns={table.columns}
-        // pagination={{
-        //   pageSize: 100,
-        // }}
       />
     </div>
   );
