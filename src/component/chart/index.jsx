@@ -137,7 +137,7 @@ const DisplayChart = ({
 
   //query state
   const [stockId, setStockId] = useState();
-  const [dateFormat, setDateFormat] = useState(4);
+  const [dateFormat, setDateFormat] = useState(3);
   const [latestTimeChartTime, setLatestTimeChartTime] = useState();
 
   // chart data
@@ -149,6 +149,21 @@ const DisplayChart = ({
     if (interval.current) window.clearInterval(interval.current);
     interval.current = undefined;
   };
+
+  function format() {
+    switch (dateFormat) {
+      case 4:
+        return "ms";
+      case 3:
+        return "second";
+      case 0:
+        return "minute";
+      case 1:
+        return "hour";
+      case 2:
+        return "day";
+    }
+  }
 
   const resetChart = () => {
     setTickChartData({});
@@ -183,15 +198,19 @@ const DisplayChart = ({
         if (_timeChartData.length) {
           _timeChartData.forEach(({ originCreatedTime, ...timeChart }) => {
             const LENGTH = newTimeChartData.length;
+            const lastNewTimeChartData = newTimeChartData[LENGTH - 1];
+
             if (
               LENGTH &&
-              newTimeChartData[LENGTH - 1].xAxis === timeChart.createdTime
+              dayjs(lastNewTimeChartData.xAxis).isSame(
+                timeChart.createdTime,
+                format()
+              )
             ) {
               newTimeChartData[LENGTH - 1] = {
                 xAxis: timeChart.createdTime,
                 price: timeChart.close,
-                quantity:
-                  timeChart.quantity + newTimeChartData[LENGTH - 1].quantity,
+                quantity: timeChart.quantity + lastNewTimeChartData.quantity,
                 buy: timeChart.firstOrderBuy,
                 sell: timeChart.firstOrderSell,
               };
@@ -208,6 +227,7 @@ const DisplayChart = ({
               setLatestTimeChartTime(new Date(originCreatedTime).getTime() + 1);
             }
           });
+
           setTimeChartData(newTimeChartData);
 
           // split chart

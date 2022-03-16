@@ -8,7 +8,22 @@ const BarLineChart = ({
   onDateFormatChange,
 }) => {
   const [dataZoom, setDataZoom] = useState(10);
-  const [dateFormat, setDateFormat] = useState(4);
+  const [dateFormat, setDateFormat] = useState(3);
+  function format(){
+    switch (dateFormat) {
+      case 4:
+        return "ms";
+      case 3:
+        return "HH:mm:ss";
+      case 0:
+        return "HH:mm";
+      case 1:
+        return "HH:mm";
+      case 2:
+        return "YYYY-MM-DD";
+    }
+  }
+
   const options = {
     tooltip: {
       trigger: "axis",
@@ -34,7 +49,7 @@ const BarLineChart = ({
         data: data.xAxis,
         axisLabel: {
           formatter: (value, index) => {
-            const day = dayjs(value).format("HH:mm:ss");
+            const day = dayjs(value).format(format());
             return day;
           },
         },
