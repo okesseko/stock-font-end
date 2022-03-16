@@ -134,6 +134,7 @@ const DisplayChart = ({
   const [isRunning, setIsRunning] = useState(false);
   const [frequency, setFrequency] = useState(1);
   const interval = useRef();
+  const lastDateFormatLength = useRef(0);
 
   //query state
   const [stockId, setStockId] = useState();
@@ -227,7 +228,6 @@ const DisplayChart = ({
               setLatestTimeChartTime(new Date(originCreatedTime).getTime() + 1);
             }
           });
-
           setTimeChartData(newTimeChartData);
 
           // split chart
@@ -239,6 +239,20 @@ const DisplayChart = ({
               };
             })
           );
+        } else {
+          const lastTimeChartData = timeChartData[timeChartData.length - 1];
+          if (lastTimeChartData && (dateFormat === 4 || dateFormat === 3)) {
+            setTimeChartData((timeChartData) => [
+              ...timeChartData,
+              {
+                ...lastTimeChartData,
+                xAxis: dayjs(lastTimeChartData.xAxis)
+                  .add(dateFormat === 4 ? 100 : 1, format())
+                  .format("YYYY-MM-DD hh:mm:ss"),
+                quantity: 0,
+              },
+            ]);
+          }
         }
       })
       .catch((err) => {
